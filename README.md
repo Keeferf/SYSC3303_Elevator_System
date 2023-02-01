@@ -1,4 +1,4 @@
-# SYSC3301_Elevator_System
+# SYSC3303_Elevator_System
 
 ## SYSC 3303 Project - Group 5
 
