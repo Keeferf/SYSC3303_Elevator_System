@@ -26,6 +26,10 @@ public class Floor {
 		return floorNum;
 	}
 	
+	/**
+	 * Setter method for the floor number
+	 * @param floorNum : desired floor number
+	 */
 	public void setFloorNum(int floorNum) {
 		this.floorNum = floorNum;
 	}

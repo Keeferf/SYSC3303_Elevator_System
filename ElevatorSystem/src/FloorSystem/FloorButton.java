@@ -8,16 +8,10 @@ package FloorSystem;
  */
 public class FloorButton {
 	
-	public enum Direction{
-		UP,
-		DOWN,
-		STOPPED;
-	}
-	
 	private String time;
 	private Direction direction;
-	private int currFloorNum;
-	private int destFloorNum;
+	private String currFloorNum;
+	private String destFloorNum;
 	
 	/**
 	 * Constructor for FloorButton class
@@ -26,7 +20,7 @@ public class FloorButton {
 	 * @param destFloorNum
 	 * @param direction
 	 */
-	public FloorButton(String time, int currFloorNum, Direction direction, int destFloorNum) {
+	public FloorButton(String time, String currFloorNum, Direction direction, String destFloorNum) {
 		this.time = time;
 		this.currFloorNum = currFloorNum;
 		this.destFloorNum = destFloorNum;
@@ -53,7 +47,7 @@ public class FloorButton {
 	 * Getter method for the current floor
 	 * @return an int that shows the elevators current floor
 	 */
-	public int getCurrFloorNum() {
+	public String getCurrFloorNum() {
 		return currFloorNum;
 	}
 	
@@ -61,7 +55,7 @@ public class FloorButton {
 	 * Setter method for the current floor
 	 * @param currFloorNum : the current floor the elevator is on
 	 */
-	public void setCurrFloorNum(int currFloorNum) {
+	public void setCurrFloorNum(String currFloorNum) {
 		this.currFloorNum = currFloorNum;
 	}
 	
@@ -85,7 +79,7 @@ public class FloorButton {
 	 * Getter method for the destination number where the elevator wants to move to
 	 * @return the destination floor
 	 */
-	public int getDestFloorNum() {
+	public String getDestFloorNum() {
 		return destFloorNum;
 	}
 	
@@ -93,7 +87,7 @@ public class FloorButton {
 	 * Setter method for the selected floor
 	 * @param destFloorNum : floor number destination
 	 */
-	public void setDestFloorNum(int destFloorNum) {
+	public void setDestFloorNum(String destFloorNum) {
 		this.destFloorNum = destFloorNum;
 	}
 	
