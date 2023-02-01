@@ -26,7 +26,7 @@ public class FloorButton {
 	 * @param destFloorNum
 	 * @param direction
 	 */
-	public FloorButton(String time, int currFloorNum, int destFloorNum, Direction direction) {
+	public FloorButton(String time, int currFloorNum, Direction direction, int destFloorNum) {
 		this.time = time;
 		this.currFloorNum = currFloorNum;
 		this.destFloorNum = destFloorNum;
