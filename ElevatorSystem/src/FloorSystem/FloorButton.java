@@ -8,12 +8,6 @@ package FloorSystem;
  */
 public class FloorButton {
 	
-	public enum Direction{
-		UP,
-		DOWN,
-		STOPPED;
-	}
-	
 	private String time;
 	private Direction direction;
 	private String currFloorNum;
