@@ -4,18 +4,18 @@ import java.util.EventObject;
 
 public class FloorButtonEvent extends EventObject {
 	
-	private final int startFloor;
+	private final String startFloor;
 	private final String direction;
-	private final int destination;
+	private final String destination;
 
-	public FloorButtonEvent(Object source, int startFloor, String direction, int destination) {
+	public FloorButtonEvent(Object source, String startFloor, String direction, String destination) {
 		super(source);
 		this.startFloor = startFloor;
 		this.direction = direction;
 		this.destination = destination;
 	}
 	
-	public int getStartFloor() {
+	public String getStartFloor() {
 		return this.startFloor;
 	}
 	
@@ -23,6 +23,6 @@ public class FloorButtonEvent extends EventObject {
 		return this.direction;
 	}
 	
-	public int getDestination() {
+	public String getDestination() {
 		return this.destination;
 	}}
