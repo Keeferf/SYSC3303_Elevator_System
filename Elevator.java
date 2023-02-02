@@ -75,7 +75,7 @@ public class Elevator {
         notifyAll();
         return items;
     }
-	
+	 
 	
 	public int getCurFloor() {
 		return curFloor;
