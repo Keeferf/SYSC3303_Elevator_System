@@ -13,9 +13,8 @@ public class Elevator implements Runnable{
 	private Scheduler schedule;
 
 	
-	public Elevator(int floorToGo, int curFloor, int maxFloor, int groundFloor) {
-		this.floorToGo = floorToGo;
-		this.curFloor = curFloor;
+	public Elevator(int maxFloor, int groundFloor) {
+		this.curFloor = groundFloor;
 		this.maxFloor = maxFloor;
 		this.groundFloor = groundFloor;
 	}
@@ -89,7 +88,7 @@ public class Elevator implements Runnable{
 		Optional<ArrayList<String>> obj = schedule.getRequest(curFloor);
 		ArrayList <String> arr = obj.get();
 		
-		if(obj.isEmpty()) {
+		if(!obj.isEmpty()) {
 			
 			for (int i = 0; i < arr.size(); i++) {
 	           
@@ -193,5 +192,4 @@ public class Elevator implements Runnable{
 	}
 
 }
-
 
