@@ -1,16 +1,17 @@
-package Project;
+package Elevator;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 
-public class Elevator {
+public class Elevator implements Runnable{
 	
 	private int maxFloor;
 	private int groundFloor;
 	private int curFloor;
 	private int floorToGo;
-	//private ArrayList<Floor.Rider> contents = null; // contents
-	//private boolean empty = true; // empty?
+	private Scheduler schedule;
+
 	
 	public Elevator(int floorToGo, int curFloor, int maxFloor, int groundFloor) {
 		this.floorToGo = floorToGo;
@@ -66,7 +67,7 @@ public class Elevator {
 	 * 
 	 * @throws InterruptedException
 	 */
-	public void pressButton(Schedule sch) throws InterruptedException {
+	public void pressButton() throws InterruptedException {
 		if (floorToGo < curFloor) {
 			down();
 		}
@@ -77,39 +78,38 @@ public class Elevator {
 	}
 	
 	
-	
-	/* public synchronized void put(ArrayList<Floor.Rider> items) {
-	        while (!empty) {
-	            try {
-	                wait();
-	            } catch (InterruptedException e) {
-	                return;
-	            }
-	        }
-	        contents = items;
-	        empty = false;
-	        notifyAll();
-	    }
-	
-	
-	
-	public synchronized ArrayList<Floor.Rider> get() {
-        while (empty) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                return null;
-            }
-        }
-        
-        ArrayList<Floor.Rider> items = contents;
-        contents = null;
-        empty = true;
-        notifyAll();
-        return items;
-    }
-	
-	*/
+	/**
+	 * Gets the destination from Scheduler and then moves the elevator as 
+	 * per the passenger's request. 
+	 * 
+	 * @return true or false If the request array is null or not
+	 * @throws InterruptedException 
+	 */
+	private boolean elevatorActivated() throws InterruptedException {
+		Optional<ArrayList<String>> obj = schedule.getRequest(curFloor);
+		ArrayList <String> arr = obj.get();
+		
+		if(obj.isEmpty()) {
+			
+			for (int i = 0; i < arr.size(); i++) {
+	           
+				schedule.destinationReached(arr.get(i));
+				Thread.sleep(500);
+				
+				// Printing and display the elements in ArrayList
+				System.out.print(arr.get(i) + " ");
+				
+				}
+			
+			return true;
+		}
+		
+		else {
+			
+			return false;
+		}
+		
+	}
 	
 	/**
 	 * Returns the Current floor that the Elevator is on.
@@ -167,6 +167,31 @@ public class Elevator {
 		return true;
 		
 	}
+	
+	/**
+	 * Run method for the Thread.
+	 */
 
+	@Override
+	public void run() {
+		
+		while (true) {
+			
+			System.out.println("Elevator Running");
+			try {
+				
+				elevatorActivated();
+				wait();
+				
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+		}
+		
+		
+	}
 
 }
+
+
