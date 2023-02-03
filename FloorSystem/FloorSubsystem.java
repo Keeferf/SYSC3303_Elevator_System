@@ -20,7 +20,7 @@ public class FloorSubsystem implements Runnable{
 	 * Prints out the request which was completed, i.e. the passenger arrived at their destination floor
 	 * @param completedRequest Passenger request which was completed
 	 */
-	public void alert(String completedRequest) {
-		System.out.println(completedRequest);
+	public void alert(ElevatorEvent completedRequest) {
+		System.out.println(completedRequest.toString());
 	}
 }
