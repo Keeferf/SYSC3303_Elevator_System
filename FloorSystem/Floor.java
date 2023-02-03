@@ -6,7 +6,7 @@ package FloorSystem;
  * 
  * @author Keefer Belanger 101152085
  */
-public class Floor {
+public class Floor implements Runnable{
 	
 	private int floorNum;
 	
@@ -32,5 +32,19 @@ public class Floor {
 	 */
 	public void setFloorNum(int floorNum) {
 		this.floorNum = floorNum;
+	}
+	
+	/**
+	 * Prints out the request which was completed, i.e. the passenger arrived at their destination floor
+	 * @param completedRequest Passenger request which was completed
+	 */
+	public void alert(String completedRequest) {
+		System.out.println(completedRequest);
+	}
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 }
