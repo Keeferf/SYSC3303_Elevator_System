@@ -15,4 +15,12 @@ public class FloorSubsystem implements Runnable{
 		// TODO Auto-generated method stub
 		
 	}
+
+	/**
+	 * Prints out the request which was completed, i.e. the passenger arrived at their destination floor
+	 * @param completedRequest Passenger request which was completed
+	 */
+	public void alert(String completedRequest) {
+		System.out.println(completedRequest);
+	}
 }
