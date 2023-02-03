@@ -10,6 +10,8 @@ public class Floor implements Runnable{
 	
 	private int floorNum;
 	
+	
+	
 	/**
 	 * Constructor for Floor class
 	 * @param floorNum

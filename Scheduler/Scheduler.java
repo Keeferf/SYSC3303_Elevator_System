@@ -3,11 +3,12 @@ package Scheduler;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import FloorSystem.Floor;
 import FloorSystem.FloorSubsystem;
 
 public class Scheduler implements Runnable {
 	
-	private FloorSubsystem floors;
+	private Floor floors;
 	private ArrayList<String> upRequests;
 	private ArrayList<String> downRequests;
 
