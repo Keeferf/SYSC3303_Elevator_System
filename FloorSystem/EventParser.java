@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import static java.lang.Integer.parseInt;
@@ -20,12 +19,8 @@ public class EventParser {
 
 
     public EventParser() throws FileNotFoundException {
-
         FileReader fileReader = new FileReader(new File(filename));
-
         reader = new BufferedReader(fileReader);
-        
-        
     }
 
     /**
@@ -63,7 +58,7 @@ public class EventParser {
         if(line[2].equals("UP")) direction = Direction.UP;
         else if(line[2].equals("DOWN")) direction = Direction.DOWN;
         else throw new IllegalArgumentException(line[2] + ": Invalid direction value");
-
+        
         //Process numbers
         int floorToGo = parseInt(line[3]);
         int currFloor = parseInt(line[1]);

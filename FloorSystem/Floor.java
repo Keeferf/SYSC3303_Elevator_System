@@ -6,7 +6,7 @@ package FloorSystem;
  * 
  * @author Keefer Belanger 101152085
  */
-public class Floor {
+public class Floor{
 	
 	private int floorNum;
 	

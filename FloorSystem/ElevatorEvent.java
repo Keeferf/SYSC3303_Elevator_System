@@ -2,9 +2,10 @@ package FloorSystem;
 
 import java.util.EventObject;
 
-public class ElevatorEvent extends EventObject{
+public class ElevatorEvent extends EventObject implements Comparable<ElevatorEvent> {
 
-    private final String timestamp;
+	private static final long serialVersionUID = 1L;
+	private final String timestamp;
     private final Direction direction;
     private final int floorToGo;
     private final int currFloor;
@@ -18,12 +19,10 @@ public class ElevatorEvent extends EventObject{
     }
 
     //Getters
-
-
     public String getTimestamp() {
         return timestamp;
     }
-
+    
     public Direction getDirection() {
         return direction;
     }
@@ -35,4 +34,14 @@ public class ElevatorEvent extends EventObject{
     public int getCurrFloor() {
         return currFloor;
     }
+    
+    @Override
+    public String toString() {
+    	return timestamp + ";" + currFloor + ";" + direction.toString() + ";" + floorToGo;
+    }
+
+    @Override
+	public int compareTo(ElevatorEvent e) {
+		return this.currFloor - e.currFloor;
+	}
 }

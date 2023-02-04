@@ -1,9 +1,10 @@
 package Elevator;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 
+import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
+
 import Scheduler.Scheduler;
 
 
@@ -16,10 +17,11 @@ public class Elevator implements Runnable{
 	private Scheduler schedule;
 
 	
-	public Elevator(int maxFloor, int groundFloor) {
+	public Elevator(int maxFloor, int groundFloor, Scheduler sc) {
 		this.curFloor = groundFloor;
 		this.maxFloor = maxFloor;
 		this.groundFloor = groundFloor;
+		this.schedule = sc;
 	}
 	
 	/**
@@ -88,29 +90,22 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException 
 	 */
 	private boolean elevatorActivated() throws InterruptedException {
-		Optional<ArrayList<ElevatorEvent>> obj = schedule.getRequest(curFloor);
-		ArrayList <ElevatorEvent> arr = obj.get();
-		
-		if(!obj.isEmpty()) {
-			
-			for (int i = 0; i < arr.size(); i++) {
-	           
-				schedule.destinationReached(arr.get(i));
-				Thread.sleep(500);
-				
-				// Printing and display the elements in ArrayList
-				System.out.print(arr.get(i) + " ");
-				
-				}
-			
-			return true;
-		}
-		
-		else {
-			
+		List<ElevatorEvent> arr = schedule.getRequest(this.curFloor);
+		if (arr.size() == 0) {
 			return false;
 		}
 		
+		for (int i = 0; i < arr.size(); i++) {
+            System.out.println(arr.get(i).getDirection());
+            if (arr.get(i).equals(Direction.UP)) {
+            	this.curFloor = Math.max(this.curFloor, arr.get(i).getFloorToGo());
+            } else {
+            	this.curFloor = Math.min(this.curFloor, arr.get(i).getFloorToGo());
+            }
+			schedule.destinationReached(arr.get(i));
+			Thread.sleep(1000);
+		}
+		return true;
 	}
 	
 	/**
@@ -173,26 +168,16 @@ public class Elevator implements Runnable{
 	/**
 	 * Run method for the Thread.
 	 */
-
 	@Override
 	public void run() {
-		
 		while (true) {
-			
-			System.out.println("Elevator Running");
 			try {
-				
 				elevatorActivated();
-				wait();
-				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				System.exit(1);
 			}
 		}
-		
-		
 	}
-
 }
 
