@@ -91,18 +91,13 @@ public class Elevator implements Runnable{
 	 */
 	private boolean elevatorActivated() throws InterruptedException {
 		Optional<ArrayList<ElevatorEvent>> obj = schedule.getRequest(curFloor);
-	
 		
 		if(!obj.isEmpty()) {
 			ArrayList <ElevatorEvent> arr = obj.get();
 			for (int i = 0; i < arr.size(); i++) {
-	           
+	           System.out.println(arr.get(i).getDirection());
 				schedule.destinationReached(arr.get(i));
-				Thread.sleep(500);
-				
-				// Printing and display the elements in ArrayList
-				System.out.print(arr.get(i) + " ");
-				
+				Thread.sleep(1000);
 				}
 			
 			return true;
@@ -175,26 +170,16 @@ public class Elevator implements Runnable{
 	/**
 	 * Run method for the Thread.
 	 */
-
 	@Override
 	public void run() {
-		
 		while (true) {
-			
-			System.out.println("Elevator Running");
 			try {
-				
 				elevatorActivated();
-				wait();
-				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 				System.exit(1);
 			}
 		}
-		
-		
 	}
-
 }
 

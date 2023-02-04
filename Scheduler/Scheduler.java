@@ -29,13 +29,24 @@ public class Scheduler implements Runnable {
     	notifyAll();
     }
     
-    public synchronized Optional<ArrayList<ElevatorEvent>> getRequest(int currFloor) {
+	public synchronized Optional<ArrayList<ElevatorEvent>> getRequest(int currFloor) {
+    	while (this.upRequests.isEmpty() && this.downRequests.isEmpty()) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                return Optional.empty();
+            }
+        }
     	if (this.upRequests.size() > this.downRequests.size()) {
     		//TODO: SORT BY STARTING FLOOR (Lowest to Highest)
-        	return Optional.of(this.upRequests);
+    		ArrayList<ElevatorEvent> al = (ArrayList<ElevatorEvent>) this.upRequests.clone();
+    		this.upRequests.clear();
+        	return Optional.of(al);
     	} else if (!this.downRequests.isEmpty()) {
     		//TODO: SORT BY STARTING FLOOR (Highest to Lowest)
-    		return Optional.of(this.downRequests);
+    		ArrayList<ElevatorEvent> al = (ArrayList<ElevatorEvent>) this.downRequests.clone();
+    		this.downRequests.clear();
+        	return Optional.of(al);
     	}
     	return Optional.empty();
     }
@@ -46,15 +57,7 @@ public class Scheduler implements Runnable {
     
 	@Override
 	public void run() {
-		while (true) {
-			System.out.println("Scheduler Running");
-			try {
-				Thread.sleep(1500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-		}
+		while (true) {}
 	}
 
 }
