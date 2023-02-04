@@ -3,39 +3,30 @@ package Scheduler;
 import java.util.ArrayList;
 import java.util.Optional;
 
-
-import FloorSystem.Floor;
-
+import FloorSystem.Floor_Subsystem;
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
-import FloorSystem.FloorSubsystem;
-
 public class Scheduler implements Runnable {
 	
-
-	private Floor floors;
-	private ArrayList<String> upRequests;
-	private ArrayList<String> downRequests;
-
-	private FloorSubsystem floors;
+	private Floor_Subsystem floors;
 	private ArrayList<ElevatorEvent> upRequests;
 	private ArrayList<ElevatorEvent> downRequests;
 
-
-    public Scheduler() {
+    public Scheduler(Floor_Subsystem floor) {
+    	this.floors = floor;
     	this.upRequests = new ArrayList<>();
         this.downRequests = new ArrayList<>();
     }
     
     public synchronized void newRequest(ElevatorEvent e) {
     	// TODO: Modify to accept serialized object
-    	notifyAll();
     	if (e.getDirection() == Direction.UP) {
     		this.upRequests.add(e);
     	} else {
     		this.downRequests.add(e);
     	}
+    	notifyAll();
     }
     
     public synchronized Optional<ArrayList<ElevatorEvent>> getRequest(int currFloor) {
@@ -65,18 +56,5 @@ public class Scheduler implements Runnable {
 			}
 		}
 	}
-	
-    public static void main(String[] args) {
-    	Thread sch = new Thread(new Scheduler());
-    	sch.start();
-    	try {
-    		long i = (long) (Math.random() * 50000);
-    		System.out.println(i);
-			Thread.sleep(i);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-    	System.exit(0);
-    }
+
 }

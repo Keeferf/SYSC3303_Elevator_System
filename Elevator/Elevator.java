@@ -3,10 +3,8 @@ package Elevator;
 import java.util.ArrayList;
 import java.util.Optional;
 
-<<<<<<< HEAD
-=======
 import FloorSystem.ElevatorEvent;
->>>>>>> ffff1f5f071d9476f5d7a9c21c93bceb8befba92
+
 import Scheduler.Scheduler;
 
 
@@ -19,10 +17,11 @@ public class Elevator implements Runnable{
 	private Scheduler schedule;
 
 	
-	public Elevator(int maxFloor, int groundFloor) {
+	public Elevator(int maxFloor, int groundFloor, Scheduler sc) {
 		this.curFloor = groundFloor;
 		this.maxFloor = maxFloor;
 		this.groundFloor = groundFloor;
+		this.schedule = sc;
 	}
 	
 	/**
@@ -92,10 +91,10 @@ public class Elevator implements Runnable{
 	 */
 	private boolean elevatorActivated() throws InterruptedException {
 		Optional<ArrayList<ElevatorEvent>> obj = schedule.getRequest(curFloor);
-		ArrayList <ElevatorEvent> arr = obj.get();
+	
 		
 		if(!obj.isEmpty()) {
-			
+			ArrayList <ElevatorEvent> arr = obj.get();
 			for (int i = 0; i < arr.size(); i++) {
 	           
 				schedule.destinationReached(arr.get(i));

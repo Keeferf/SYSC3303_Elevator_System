@@ -1,19 +1,14 @@
 package FloorSystem;
 
-import Scheduler.Scheduler;
-
 /**
  * The Floor class is used for everything involved in
  * calling the elevator and accessing the current floor
  * 
  * @author Keefer Belanger 101152085
  */
-public class Floor implements Runnable{
+public class Floor{
 	
 	private int floorNum;
-	
-	private FloorButton fb;
-	private EventParser ep;
 	
 	/**
 	 * Constructor for Floor class
@@ -37,18 +32,5 @@ public class Floor implements Runnable{
 	 */
 	public void setFloorNum(int floorNum) {
 		this.floorNum = floorNum;
-	}
-	
-	/**
-	 * Prints out the request which was completed, i.e. the passenger arrived at their destination floor
-	 * @param completedRequest Passenger request which was completed
-	 */
-	public void alert(String completedRequest) {
-		System.out.println(completedRequest);
-	}
-
-	@Override
-	public void run() {
-		
 	}
 }
