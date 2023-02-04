@@ -1,5 +1,7 @@
 package FloorSystem;
 
+import Scheduler.Scheduler;
+
 /**
  * The Floor class is used for everything involved in
  * calling the elevator and accessing the current floor
@@ -10,7 +12,8 @@ public class Floor implements Runnable{
 	
 	private int floorNum;
 	
-	
+	private FloorButton fb;
+	private EventParser ep;
 	
 	/**
 	 * Constructor for Floor class
@@ -46,7 +49,6 @@ public class Floor implements Runnable{
 
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		
 	}
 }
