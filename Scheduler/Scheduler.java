@@ -4,21 +4,21 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import FloorSystem.Floor_Subsystem;
+import FloorSystem.FloorSubsystem;
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
 public class Scheduler implements Runnable {
 	
-	private Floor_Subsystem floors;
+	private FloorSubsystem floors;
 	private ArrayList<ElevatorEvent> upRequests;
 	private ArrayList<ElevatorEvent> downRequests;
 
 	/**
 	 * Scheduler constructor
-	 * @param floors The Floor_Subsystem instance executing as a Thread
+	 * @param floors The FloorSubsystem instance executing as a Thread
 	 */
-    public Scheduler(Floor_Subsystem floors) {
+    public Scheduler(FloorSubsystem floors) {
     	this.floors = floors;
     	this.upRequests = new ArrayList<>();
         this.downRequests = new ArrayList<>();
@@ -45,7 +45,7 @@ public class Scheduler implements Runnable {
      * @return Returns an List<ElevatorEvent> containing a set of elevator  
      * 		   requests going in the same direction
      */
-	@SuppressWarnings("unchecked") // Suppresses warning for casting cloned arraylists
+	@SuppressWarnings("unchecked") // Suppresses warning for casting cloned ArrayLists
 	public synchronized List<ElevatorEvent> getRequest(int currFloor) {
     	while (this.upRequests.isEmpty() && this.downRequests.isEmpty()) {
             try { // Elevator will wait until at least one of the two ArrayLists contain a request
@@ -78,5 +78,20 @@ public class Scheduler implements Runnable {
     
 	@Override
 	public void run() {} // Empty run statement, will be used when Scheduler subsystem is defined
-
+	
+	/**
+	 * Test Method for the Scheduler class
+	 * @return Returns the ArrayList of Up Events
+	 */
+	protected ArrayList<ElevatorEvent> getUpEvents() {
+		return this.upRequests;
+	}
+	
+	/**
+	 * Test Method for the Scheduler class
+	 * @return Returns the ArrayList of Down Events
+	 */
+	protected ArrayList<ElevatorEvent> getDownEvents() {
+		return this.downRequests;
+	}
 }
