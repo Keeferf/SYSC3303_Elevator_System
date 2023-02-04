@@ -3,6 +3,10 @@ package Elevator;
 import java.util.ArrayList;
 import java.util.Optional;
 
+<<<<<<< HEAD
+=======
+import FloorSystem.ElevatorEvent;
+>>>>>>> ffff1f5f071d9476f5d7a9c21c93bceb8befba92
 import Scheduler.Scheduler;
 
 
@@ -87,8 +91,8 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException 
 	 */
 	private boolean elevatorActivated() throws InterruptedException {
-		Optional<ArrayList<String>> obj = schedule.getRequest(curFloor);
-		ArrayList <String> arr = obj.get();
+		Optional<ArrayList<ElevatorEvent>> obj = schedule.getRequest(curFloor);
+		ArrayList <ElevatorEvent> arr = obj.get();
 		
 		if(!obj.isEmpty()) {
 			

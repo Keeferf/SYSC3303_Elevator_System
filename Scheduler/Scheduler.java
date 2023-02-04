@@ -3,30 +3,42 @@ package Scheduler;
 import java.util.ArrayList;
 import java.util.Optional;
 
+
 import FloorSystem.Floor;
+
+import FloorSystem.Direction;
+import FloorSystem.ElevatorEvent;
+
 import FloorSystem.FloorSubsystem;
 
 public class Scheduler implements Runnable {
 	
+
 	private Floor floors;
 	private ArrayList<String> upRequests;
 	private ArrayList<String> downRequests;
 
+	private FloorSubsystem floors;
+	private ArrayList<ElevatorEvent> upRequests;
+	private ArrayList<ElevatorEvent> downRequests;
+
+
     public Scheduler() {
-    	this.upRequests = new ArrayList<String>();
-        this.downRequests = new ArrayList<String>();
+    	this.upRequests = new ArrayList<>();
+        this.downRequests = new ArrayList<>();
     }
     
-    public synchronized void newRequest(String req) {
+    public synchronized void newRequest(ElevatorEvent e) {
     	// TODO: Modify to accept serialized object
-    	if (req.contains("up")) {
-    		this.upRequests.add(req);
+    	notifyAll();
+    	if (e.getDirection() == Direction.UP) {
+    		this.upRequests.add(e);
     	} else {
-    		this.downRequests.add(req);
+    		this.downRequests.add(e);
     	}
     }
     
-    public synchronized Optional<ArrayList<String>> getRequest(int currFloor) {
+    public synchronized Optional<ArrayList<ElevatorEvent>> getRequest(int currFloor) {
     	if (this.upRequests.size() > this.downRequests.size()) {
     		//TODO: SORT BY STARTING FLOOR (Lowest to Highest)
         	return Optional.of(this.upRequests);
@@ -37,7 +49,7 @@ public class Scheduler implements Runnable {
     	return Optional.empty();
     }
     
-    public synchronized void destinationReached(String completedRequest) {
+    public synchronized void destinationReached(ElevatorEvent completedRequest) {
     	floors.alert(completedRequest);
     }
     
