@@ -16,7 +16,7 @@ import static java.lang.Integer.parseInt;
 public class EventParser {
     private BufferedReader reader;
 
-    private final String filename = "./ElevatorSystem/src/FloorSystem/Events.txt";
+    private final String filename = "./FloorSystem/Events.txt";
 
 
     public EventParser() throws FileNotFoundException {
