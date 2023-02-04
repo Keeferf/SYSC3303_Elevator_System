@@ -10,7 +10,7 @@
 * Keefer Belanger : 101152085
 
 ## Naming of Files
-Camelcase no spaces/understores.\
+Camelcase no spaces/underscores.\
 Must accurately describe the goal of the file/class.
 
 ## Setup Instructions
