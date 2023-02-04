@@ -16,7 +16,7 @@ Must accurately describe the goal of the file/class.
 ## Setup Instructions
 1. Unzip the Elevator System project onto your local machine.\
 2. Open the unzipped folder in eclipse\
-3. Navigate to "FloorSystem/Floor_Subsystem.java\
+3. Navigate to "FloorSystem/FloorSubsystem.java\
 4. From there, you will find the main method at the bottom of the class.\
 5. Press run and the program will execute
 
