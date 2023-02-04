@@ -28,11 +28,10 @@ public class Floor_Subsystem implements Runnable{
 			for(ElevatorEvent e: ee) {
 				numRequests++;
 				sc.newRequest(e);
+				
 			}
 		}
-		catch(Throwable e) {
-		}
-		while(true) {}
+		catch(Throwable e) {}
 	}
 	
 	public void setScheduler(Scheduler sc) {

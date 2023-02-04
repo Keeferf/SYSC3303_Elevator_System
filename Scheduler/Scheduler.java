@@ -1,7 +1,8 @@
 package Scheduler;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
 
 import FloorSystem.Floor_Subsystem;
 import FloorSystem.Direction;
@@ -13,51 +14,69 @@ public class Scheduler implements Runnable {
 	private ArrayList<ElevatorEvent> upRequests;
 	private ArrayList<ElevatorEvent> downRequests;
 
-    public Scheduler(Floor_Subsystem floor) {
-    	this.floors = floor;
+	/**
+	 * Scheduler constructor
+	 * @param floors The Floor_Subsystem instance executing as a Thread
+	 */
+    public Scheduler(Floor_Subsystem floors) {
+    	this.floors = floors;
     	this.upRequests = new ArrayList<>();
         this.downRequests = new ArrayList<>();
     }
     
-    public synchronized void newRequest(ElevatorEvent e) {
+    /**
+     * Method used by Floor Subsystem to pass new elevator requests to scheduler
+     * @param elevatorEvent Event signifying a passenger pressed an elevator 
+     * 						request button
+     */
+    public synchronized void newRequest(ElevatorEvent elevatorEvent) {
     	// TODO: Modify to accept serialized object
-    	if (e.getDirection() == Direction.UP) {
-    		this.upRequests.add(e);
+    	if (elevatorEvent.getDirection() == Direction.UP) {
+    		this.upRequests.add(elevatorEvent);
     	} else {
-    		this.downRequests.add(e);
+    		this.downRequests.add(elevatorEvent);
     	}
     	notifyAll();
     }
     
-	public synchronized Optional<ArrayList<ElevatorEvent>> getRequest(int currFloor) {
+    /**
+     * getRequest method is used by the Elevator Thread to get list of next  
+     * elevator requests to process.
+     * @return Returns an List<ElevatorEvent> containing a set of elevator  
+     * 		   requests going in the same direction
+     */
+	@SuppressWarnings("unchecked") // Suppresses warning for casting cloned arraylists
+	public synchronized List<ElevatorEvent> getRequest(int currFloor) {
     	while (this.upRequests.isEmpty() && this.downRequests.isEmpty()) {
-            try {
+            try { // Elevator will wait until at least one of the two ArrayLists contain a request
                 wait();
             } catch (InterruptedException e) {
-                return Optional.empty();
+                return new ArrayList<ElevatorEvent>();
             }
         }
-    	if (this.upRequests.size() > this.downRequests.size()) {
-    		//TODO: SORT BY STARTING FLOOR (Lowest to Highest)
-    		ArrayList<ElevatorEvent> al = (ArrayList<ElevatorEvent>) this.upRequests.clone();
-    		this.upRequests.clear();
-        	return Optional.of(al);
-    	} else if (!this.downRequests.isEmpty()) {
-    		//TODO: SORT BY STARTING FLOOR (Highest to Lowest)
-    		ArrayList<ElevatorEvent> al = (ArrayList<ElevatorEvent>) this.downRequests.clone();
-    		this.downRequests.clear();
-        	return Optional.of(al);
+    	
+    	ArrayList<ElevatorEvent> orderedList = (ArrayList<ElevatorEvent>) this.upRequests.clone();
+    	Collections.sort(orderedList); // Sorts the List in ascending order by current floor
+    	
+    	ArrayList<ElevatorEvent> reverseOrderedList = (ArrayList<ElevatorEvent>) this.downRequests.clone();
+		Collections.sort(reverseOrderedList); // Sorts the List in ascending order by current floor
+		Collections.reverse(reverseOrderedList); // Reverses the sorted list
+    	
+    	if (this.upRequests.size() > 0) { // If there are more up requests than down requests return the up requests
+    		if (currFloor <= (reverseOrderedList.get(0).getCurrFloor() - orderedList.get(0).getCurrFloor())/2 || this.downRequests.isEmpty()) {
+    			this.upRequests.clear(); // Clones then clears the list of up requests
+    			return orderedList;
+    		}
     	}
-    	return Optional.empty();
+    	this.downRequests.clear(); // Clones then clears the list of down requests
+		return reverseOrderedList;
     }
     
     public synchronized void destinationReached(ElevatorEvent completedRequest) {
-    	floors.alert(completedRequest);
+    	floors.alert(completedRequest); // Passes completed request event back to the Floor Subsystem
     }
     
 	@Override
-	public void run() {
-		while (true) {}
-	}
+	public void run() {} // Empty run statement, will be used when Scheduler subsystem is defined
 
 }

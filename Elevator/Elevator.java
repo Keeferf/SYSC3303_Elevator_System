@@ -1,8 +1,8 @@
 package Elevator;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.List;
 
+import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
 import Scheduler.Scheduler;
@@ -90,24 +90,22 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException 
 	 */
 	private boolean elevatorActivated() throws InterruptedException {
-		Optional<ArrayList<ElevatorEvent>> obj = schedule.getRequest(curFloor);
-		
-		if(!obj.isEmpty()) {
-			ArrayList <ElevatorEvent> arr = obj.get();
-			for (int i = 0; i < arr.size(); i++) {
-	           System.out.println(arr.get(i).getDirection());
-				schedule.destinationReached(arr.get(i));
-				Thread.sleep(1000);
-				}
-			
-			return true;
-		}
-		
-		else {
-			
+		List<ElevatorEvent> arr = schedule.getRequest(this.curFloor);
+		if (arr.size() == 0) {
 			return false;
 		}
 		
+		for (int i = 0; i < arr.size(); i++) {
+            System.out.println(arr.get(i).getDirection());
+            if (arr.get(i).equals(Direction.UP)) {
+            	this.curFloor = Math.max(this.curFloor, arr.get(i).getFloorToGo());
+            } else {
+            	this.curFloor = Math.min(this.curFloor, arr.get(i).getFloorToGo());
+            }
+			schedule.destinationReached(arr.get(i));
+			Thread.sleep(1000);
+		}
+		return true;
 	}
 	
 	/**
