@@ -12,7 +12,7 @@ import FloorSystem.FloorSubsystem;
  * Test Class for the Scheduler class
  * @author Colin Mandeville 101140289
  */
-class TestScheduler {
+class testScheduler {
 	@Test
 	void testAddUpEvents() {
 		FloorSubsystem f = new FloorSubsystem(5);
