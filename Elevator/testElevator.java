@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import org.junit.jupiter.api.Test;
 
 
-class ElevatorTest{
+class testElevator{
 
 	@Test
 	void testUP() {
