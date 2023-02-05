@@ -7,8 +7,6 @@ import FloorSystem.ElevatorEvent;
 
 import Scheduler.Scheduler;
 
-import Scheduler.Scheduler;
-
 
 public class Elevator implements Runnable{
 	
