@@ -27,6 +27,7 @@ public class FloorSubsystem implements Runnable{
 			ee = ep.getEvents();
 			for(ElevatorEvent e: ee) {
 				numRequests++;
+				System.out.println("Sending Request: " + e.toString());
 				sc.newRequest(e);
 			}
 		}
@@ -42,7 +43,7 @@ public class FloorSubsystem implements Runnable{
 	 * @param completedRequest Passenger request which was completed
 	 */
 	public void alert(ElevatorEvent completedRequest) {
-		System.out.println("Processed Request: " + completedRequest.toString());
+		System.out.println("Recieved Reponse for Request: " + completedRequest.toString());
 		numRequests--;
 		if(numRequests == 0){
 			System.exit(0);

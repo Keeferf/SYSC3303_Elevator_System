@@ -96,13 +96,15 @@ public class Elevator implements Runnable{
 		}
 		
 		for (int i = 0; i < arr.size(); i++) {
-            if (arr.get(i).equals(Direction.UP)) {
+            if (arr.get(i).getDirection().equals(Direction.UP)) {
+            	System.out.println("Recieved Batch of Up Requests");
             	this.curFloor = Math.max(this.curFloor, arr.get(i).getFloorToGo());
             } else {
+            	System.out.println("Recieved Batch of Down Requests");
             	this.curFloor = Math.min(this.curFloor, arr.get(i).getFloorToGo());
             }
 			schedule.destinationReached(arr.get(i));
-			Thread.sleep(1000);
+			Thread.sleep(500);
 		}
 		return true;
 	}

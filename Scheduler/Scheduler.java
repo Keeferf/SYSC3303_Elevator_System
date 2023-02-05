@@ -32,8 +32,10 @@ public class Scheduler implements Runnable {
     public synchronized void newRequest(ElevatorEvent elevatorEvent) {
     	// TODO: Modify to accept serialized object
     	if (elevatorEvent.getDirection() == Direction.UP) {
+    		System.out.println("Scheduler Recieved Up Request");
     		this.upRequests.add(elevatorEvent);
     	} else {
+    		System.out.println("Scheduler Recieved Down Request");
     		this.downRequests.add(elevatorEvent);
     	}
     	notifyAll();
@@ -62,14 +64,17 @@ public class Scheduler implements Runnable {
 		Collections.sort(reverseOrderedList); // Sorts the List in ascending order by current floor
 		Collections.reverse(reverseOrderedList); // Reverses the sorted list
     	
+		
     	if (this.upRequests.size() > 0) { // If there are more up requests than down requests return the up requests
-    		if (currFloor <= (reverseOrderedList.get(0).getCurrFloor() - orderedList.get(0).getCurrFloor())/2 || this.downRequests.isEmpty()) {
+    		if (reverseOrderedList.size() == 0 || (currFloor <= (reverseOrderedList.get(0).getCurrFloor() - orderedList.get(0).getCurrFloor())/2 || this.downRequests.isEmpty())) {
     			this.upRequests.clear(); // Clones then clears the list of up requests
+    			System.out.println("Passing Batch of Up Requests");
     			return orderedList;
     		}
     	}
     	this.downRequests.clear(); // Clones then clears the list of down requests
-		return reverseOrderedList;
+    	System.out.println("Passing Batch of Down Requests");
+    	return reverseOrderedList;
     }
     
     public synchronized void destinationReached(ElevatorEvent completedRequest) {
