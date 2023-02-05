@@ -3,3 +3,8 @@
 /FloorButton.class
 /FloorSubsystem.class
 /Direction.class
+/testFloorButton.class
+/ElevatorEvent.class
+/EventParser.class
+/testEventParser.class
+/Floor_Subsystem.class
