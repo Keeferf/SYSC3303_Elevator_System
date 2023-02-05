@@ -52,7 +52,6 @@ public class testEventParser {
             System.out.println(e.getMessage());
             fail();
         }
-        if(events == null) {fail(); return;}
 
         //If test file changes, change this section as well
         assertEquals("14:05:15.0", events.get(0).getTimestamp(),"Timestamp Test");

@@ -96,7 +96,6 @@ public class Elevator implements Runnable{
 		}
 		
 		for (int i = 0; i < arr.size(); i++) {
-            System.out.println(arr.get(i).getDirection());
             if (arr.get(i).equals(Direction.UP)) {
             	this.curFloor = Math.max(this.curFloor, arr.get(i).getFloorToGo());
             } else {
