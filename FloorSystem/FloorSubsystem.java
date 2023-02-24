@@ -30,6 +30,7 @@ public class FloorSubsystem implements Runnable{
 				System.out.println("Sending Request: " + e.toString());
 				sc.newRequest(e);
 			}
+			sc.endRequests();
 		}
 		catch(Throwable e) {}
 	}
@@ -44,10 +45,10 @@ public class FloorSubsystem implements Runnable{
 	 */
 	public void alert(ElevatorEvent completedRequest) {
 		System.out.println("Recieved Reponse for Request: " + completedRequest.toString());
-		numRequests--;
-		if(numRequests == 0){
-			System.exit(0);
-		}
+//		numRequests--;
+//		if(numRequests == 0){
+//			System.exit(0);
+//		}
 	}
 	
 	public static void main(String[] args) {
