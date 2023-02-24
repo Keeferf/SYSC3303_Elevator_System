@@ -1,13 +1,11 @@
 package Scheduler;
 
-public class exit implements schedulerState {
+public class Exit implements SchedulerState {
 	
-	@Override
 	public void executeState() {
 		this.checkStateChange();
 	}
 
-	@Override
 	public void checkStateChange() {
 		System.exit(0);
 	}

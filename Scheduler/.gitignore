@@ -16,3 +16,8 @@
 /validateEvents.class
 /exit.class
 /returnResponse.class
+/Exit.class
+/idle.class
+/ReturnResponse.class
+/SendEvents.class
+/ValidateEvents.class

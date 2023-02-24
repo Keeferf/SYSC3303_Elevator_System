@@ -15,7 +15,7 @@ public class Scheduler implements Runnable {
 	private ArrayList<ElevatorEvent> upRequests;
 	private ArrayList<ElevatorEvent> downRequests;
 	private ArrayList<ElevatorEvent> returnResponses;
-	private schedulerState state;
+	private SchedulerState state;
 	private boolean lastRequestPassed;
 
 	/**
@@ -70,7 +70,7 @@ public class Scheduler implements Runnable {
      * @return Returns an Optional<ElevatorEvent> containing an elevator request
      */
 	public synchronized Optional<ElevatorEvent> getRequest(int currFloor) {
-		while ((this.upRequests.isEmpty() && this.downRequests.isEmpty()) || !this.state.getClass().equals(sendEvents.class)) {
+		while ((this.upRequests.isEmpty() && this.downRequests.isEmpty()) || !this.state.getClass().equals(SendEvents.class)) {
             try { // Elevator will wait until at least one of the two ArrayLists contain a request
                 this.state.checkStateChange();
             	wait();
@@ -152,12 +152,12 @@ public class Scheduler implements Runnable {
 		return this.returnResponses.size();
 	}
 
-	public void setState(schedulerState state) {
+	public void setState(SchedulerState state) {
 		this.state = state;
 		this.state.executeState();
 	}
 
-	public schedulerState getState() {
+	public SchedulerState getState() {
 		return this.state;
 	}
 }
