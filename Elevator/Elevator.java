@@ -1,5 +1,6 @@
 package Elevator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import FloorSystem.Direction;
@@ -15,6 +16,11 @@ public class Elevator implements Runnable{
 	private int curFloor;
 	private int floorToGo;
 	private Scheduler schedule;
+	
+	private ArrayList<ElevatorLamp> lamps;
+	private ArrayList<ElevatorButton> buttons;
+	private ElevatorDoor door;
+	private ElevatorMotor motor;
 
 	
 	public Elevator(int maxFloor, int groundFloor, Scheduler sc) {
@@ -22,6 +28,18 @@ public class Elevator implements Runnable{
 		this.maxFloor = maxFloor;
 		this.groundFloor = groundFloor;
 		this.schedule = sc;
+		
+		//Initialise the components
+		lamps = new ArrayList<>();
+		buttons = new ArrayList<>();
+		
+		door = new ElevatorDoor();
+		motor = new ElevatorMotor();
+		
+		for(int i = groundFloor;i <= maxFloor;i++) {
+			lamps.add(new ElevatorLamp(i));
+			buttons.add(new ElevatorButton(i));
+		}
 	}
 	
 	/**
@@ -33,15 +51,24 @@ public class Elevator implements Runnable{
 		
 		if (curFloor == floorToGo) {
 			System.out.print("Doors Open");
+			door.open();
 			Thread.sleep(1318);
+			
+			arrivedAtFloor(curFloor);
 		}
 		else{
 			System.out.print("Doors Closed");
+			door.close();
 			Thread.sleep(1318);
 			while(curFloor != floorToGo) {
 				curFloor++;
+				motor.activateUp();
 			}
+			motor.disableMotor();
 			System.out.print("Doors Open");
+			door.open();
+			
+			arrivedAtFloor(curFloor);
 		}
 	}
 	
@@ -54,15 +81,20 @@ public class Elevator implements Runnable{
 		
 		if (curFloor == floorToGo) {
 			System.out.print("Doors Open");
+			door.open();
 			Thread.sleep(1318);
 		}
 		else{
 			System.out.print("Doors Closed");
+			door.close();
 			Thread.sleep(1318);
 			while(curFloor != floorToGo) {
+				motor.activateDown();
 				curFloor--;
 			}
+			motor.disableMotor();
 			System.out.print("Doors Open");
+			door.open();
 		}
 	}
 	
@@ -72,6 +104,10 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException
 	 */
 	public void pressButton() throws InterruptedException {
+		
+		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorToGo) l.toggle(true);}
+		for(ElevatorButton b: buttons) {if(b.getFloorNum() == floorToGo) b.toggle(true);}
+		
 		if (floorToGo < curFloor) {
 			down();
 		}
@@ -164,6 +200,14 @@ public class Elevator implements Runnable{
 		this.floorToGo = newFloorNum;
 		return true;
 		
+	}
+	
+	///////////////////////////
+	//Component Utility
+	///////////////////////////
+	private void arrivedAtFloor(int floorNum) {
+		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorNum) l.toggle(false);}
+		for(ElevatorButton b: buttons) {if(b.getFloorNum() == floorNum) b.toggle(false);}
 	}
 	
 	/**
