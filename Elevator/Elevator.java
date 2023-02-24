@@ -2,6 +2,7 @@ package Elevator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
@@ -126,22 +127,21 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException 
 	 */
 	private boolean elevatorActivated() throws InterruptedException {
-		List<ElevatorEvent> arr = schedule.getRequest(this.curFloor);
-		if (arr.size() == 0) {
+		Optional<ElevatorEvent> opt = schedule.getRequest(this.curFloor);
+		if (opt.isEmpty()) {
 			return false;
 		}
+		ElevatorEvent req = opt.get();
 		
-		for (int i = 0; i < arr.size(); i++) {
-            if (arr.get(i).getDirection().equals(Direction.UP)) {
-            	System.out.println("Recieved Batch of Up Requests");
-            	this.curFloor = Math.max(this.curFloor, arr.get(i).getFloorToGo());
-            } else {
-            	System.out.println("Recieved Batch of Down Requests");
-            	this.curFloor = Math.min(this.curFloor, arr.get(i).getFloorToGo());
-            }
-			schedule.destinationReached(arr.get(i));
-			Thread.sleep(500);
-		}
+        if (req.getDirection().equals(Direction.UP)) {
+        	System.out.println("Recieved Up Request: " + req.toString());
+        	this.curFloor = Math.max(this.curFloor, req.getFloorToGo());
+        } else {
+        	System.out.println("Recieved Down Request: " + req.toString());
+        	this.curFloor = Math.min(this.curFloor, req.getFloorToGo());
+        }
+		schedule.destinationReached(req);
+		Thread.sleep(500);
 		return true;
 	}
 	
