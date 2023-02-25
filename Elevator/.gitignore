@@ -1,1 +1,13 @@
 /Elevator.class
+/ElevatorTest.class
+/testElevator.class
+/ElevatorLamp.class
+/ElevatorButton.class
+/Motor.class
+/Door.class
+/ArrivalSensor.class
+/ElevatorComponent.class
+/ElevatorDoor.class
+/testElevatorComponents.class
+/ElevatorMotor.class
+/ElevatorMotor$Status.class
