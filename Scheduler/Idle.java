@@ -25,9 +25,15 @@ public class Idle implements SchedulerState {
 		if (s.getIncomingQueueLength() > 0) {
 			System.out.println("Idle -> ValidateEvents");
 			s.setState(new ValidateEvents(s));
+		} else if (s.getUpQueueLength() > 0 || s.getDownQueueLength() > 0) {
+			System.out.println("Idle -> SendEvents");
+			s.setState(new SendEvents(s));
 		} else if (s.getResponseQueueLength() > 0) {
 			System.out.println("Idle -> ReturnResponse");
 			s.setState(new ReturnResponse(s));
+		} else if (s.isEnd()) {
+			System.out.println("Idle -> Exit");
+			s.setState(new Exit());
 		}
 	}
 

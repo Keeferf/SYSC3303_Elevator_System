@@ -16,11 +16,12 @@ public class SendEvents implements SchedulerState {
 			e.printStackTrace();
 		}
 		this.s.notifyAll();
+		this.checkStateChange();
 	}
 
 	@Override
 	public void checkStateChange() {
-		if (s.getResponseQueueLength() == 0) {
+		if (s.getResponseQueueLength() == 0 && s.getUpQueueLength() == 0 && s.getDownQueueLength() == 0) {
 			System.out.println("SendEvents -> Idle");
 			s.setState(new Idle(s));
 		} else if (s.getUpQueueLength() == 0 && s.getDownQueueLength() == 0) {

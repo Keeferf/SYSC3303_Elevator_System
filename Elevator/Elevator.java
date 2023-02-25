@@ -141,7 +141,7 @@ public class Elevator implements Runnable{
         	this.curFloor = Math.min(this.curFloor, req.getFloorToGo());
         }
 		schedule.destinationReached(req);
-		Thread.sleep(500);
+		Thread.sleep(1000);
 		return true;
 	}
 	
