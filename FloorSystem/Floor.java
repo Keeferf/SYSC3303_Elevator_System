@@ -10,7 +10,9 @@ public class Floor{
 	
 	private int floorNum;
 	private int people;
-	private boolean upLamp, downLamp;
+	private boolean upLamp;
+	private boolean downLamp;
+	private boolean downButtonPressed, upButtonPressed;
 	
 	/**
 	 * Constructor for Floor class
@@ -21,6 +23,8 @@ public class Floor{
 		this.people = 0;
 		this.upLamp = false;
 		this.downLamp = false;
+		this.downButtonPressed = false;
+		this.upButtonPressed = false;
 	}
 	
 	/**
@@ -56,10 +60,34 @@ public class Floor{
 	}
 	
 	/**
-	 * Method for next interation
+	 * Getter to see if up lamp is true/false
 	 * @return
 	 */
-	public int numOfDoors() {
-		return 0;
+	public boolean getUpLamp() {
+		return upLamp;
+	}
+	
+	/**
+	 * Getter to see if down lamp is true/false
+	 * @return
+	 */
+	public boolean getDownLamp() {
+		return downLamp;
+	}
+	
+	/**
+	 * Setter to turn up lamp on/true
+	 * @param on
+	 */
+	public void setUpLamp(boolean on) {
+		upLamp = on;
+	}
+	
+	/**
+	 * Setter to turn down lamp on/true
+	 * @param on
+	 */
+	public void setDownLamp(boolean on) {
+		downLamp = on;
 	}
 }
