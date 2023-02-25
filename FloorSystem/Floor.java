@@ -9,6 +9,8 @@ package FloorSystem;
 public class Floor{
 	
 	private int floorNum;
+	private int people;
+	private boolean upLamp, downLamp;
 	
 	/**
 	 * Constructor for Floor class
@@ -16,6 +18,9 @@ public class Floor{
 	 */
 	public Floor(int floorNum) {
 		this.floorNum = floorNum;
+		this.people = 0;
+		this.upLamp = false;
+		this.downLamp = false;
 	}
 	
 	/**
@@ -32,5 +37,29 @@ public class Floor{
 	 */
 	public void setFloorNum(int floorNum) {
 		this.floorNum = floorNum;
+	}
+	
+	/**
+	 * Getter to get number of people on the floor
+	 * @return number of people
+	 */
+	public int getPeople() {
+		return people;
+	}
+	
+	/**
+	 * Setter to set number of people on the floor
+	 * @param people
+	 */
+	public void setPeople(int people) {
+		this.people = people;
+	}
+	
+	/**
+	 * Method for next interation
+	 * @return
+	 */
+	public int numOfDoors() {
+		return 0;
 	}
 }
