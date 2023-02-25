@@ -3,6 +3,10 @@ package FloorSystem;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * A test class for the Floor class
+ * @author Keefer Belanger 101152085
+ */
 public class FloorTest {
 
     @Test
