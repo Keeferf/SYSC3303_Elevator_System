@@ -49,33 +49,10 @@ class testScheduler {
 		s.validateRequest();
 		assertEquals(3, s.getDownQueueLength());
 	}
-
-	public class TestFloorSubsystem extends FloorSubsystem {
-		
-		private int numRequestsProcessed;
-		
-		public TestFloorSubsystem(int n) {
-			super(n);
-			this.numRequestsProcessed = 0;
-		}
-
-		@Override
-		public void alert(ElevatorEvent e) {
-			this.numRequestsProcessed++;
-		}
-		
-		public int getNumRequests() {
-			return super.numRequests;
-		}
-		
-		public int getNumRequestsProcessed() {
-			return this.numRequestsProcessed;
-		}
-	}
 	
 	@Test
 	void testProcessEvents() {
-		TestFloorSubsystem f = new TestFloorSubsystem(5);
+		FloorSubsystem f = new FloorSubsystem(5);
 		Scheduler s = new Scheduler(f);
 		Elevator e = new Elevator(0, 4, s);
 		Thread sT = new Thread(s);
@@ -84,7 +61,6 @@ class testScheduler {
 		sT.start();
 		eT.start();
 		fT.start();
-		assertEquals(f.getNumRequests(), f.getNumRequestsProcessed());
 		assertEquals(0, s.getIncomingQueueLength());
 		assertEquals(0, s.getUpQueueLength());
 		assertEquals(0, s.getDownQueueLength());

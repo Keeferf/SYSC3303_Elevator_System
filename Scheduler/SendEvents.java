@@ -10,12 +10,12 @@ public class SendEvents implements SchedulerState {
 
 	@Override
 	public void executeState() {
-		this.s.notifyAll();
 		try {
 			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		this.s.notifyAll();
 	}
 
 	@Override
@@ -26,6 +26,8 @@ public class SendEvents implements SchedulerState {
 		} else if (s.getUpQueueLength() == 0 && s.getDownQueueLength() == 0) {
 			System.out.println("SendEvents -> ReturnResponse");
 			s.setState(new ReturnResponse(s));
+		} else {
+			this.s.notifyAll();
 		}
 	}
 }

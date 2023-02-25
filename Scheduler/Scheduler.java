@@ -37,7 +37,7 @@ public class Scheduler implements Runnable {
      * @param elevatorEvent Event signifying a passenger pressed an elevator 
      * 						request button
      */
-    public synchronized void newRequest(ElevatorEvent elevatorEvent) {
+    public void newRequest(ElevatorEvent elevatorEvent) {
 		System.out.println("Scheduler Recieved Request");
     	this.incomingRequests.add(elevatorEvent);
     }
@@ -70,10 +70,10 @@ public class Scheduler implements Runnable {
      * @return Returns an Optional<ElevatorEvent> containing an elevator request
      */
 	public synchronized Optional<ElevatorEvent> getRequest(int currFloor) {
-		while ((this.upRequests.isEmpty() && this.downRequests.isEmpty()) || !this.state.getClass().equals(SendEvents.class)) {
+		while ((this.upRequests.isEmpty() && this.downRequests.isEmpty())) {
             try { // Elevator will wait until at least one of the two ArrayLists contain a request
                 this.state.checkStateChange();
-            	wait();
+            	wait(1000);
             } catch (InterruptedException e) {
             	this.state.checkStateChange();
                 return Optional.empty();
