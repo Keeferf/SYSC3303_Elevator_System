@@ -30,7 +30,7 @@ public class Elevator implements Runnable{
 		this.groundFloor = groundFloor;
 		this.schedule = sc;
 		
-		//Initialize the components
+		//Initialise the components
 		lamps = new ArrayList<>();
 		buttons = new ArrayList<>();
 		
@@ -45,6 +45,7 @@ public class Elevator implements Runnable{
 	
 	/**
 	 * Moves the Elevator up to the floor the passenger needs to go.
+	 * 
 	 * @throws InterruptedException
 	 */
 	private void up() throws InterruptedException {
@@ -114,6 +115,7 @@ public class Elevator implements Runnable{
 		else {
 			up();
 		}
+		
 	}
 	
 	
@@ -125,9 +127,7 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException 
 	 */
 	private boolean elevatorActivated() throws InterruptedException {
-		System.out.println("ELEVATOR GETTING REQUEST");
 		Optional<ElevatorEvent> opt = schedule.getRequest(this.curFloor);
-		System.out.println("ELEVATOR RUNNING");
 		if (opt.isEmpty()) {
 			return false;
 		}
@@ -142,7 +142,6 @@ public class Elevator implements Runnable{
         }
 		schedule.destinationReached(req);
 		Thread.sleep(500);
-		System.out.println("ELEVATOR OFF");
 		return true;
 	}
 	

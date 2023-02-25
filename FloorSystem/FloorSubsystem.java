@@ -7,8 +7,8 @@ import Scheduler.Scheduler;
 
 public class FloorSubsystem implements Runnable{
 	
-	protected ArrayList<ElevatorEvent> ee;
-	protected Scheduler sc;
+	private ArrayList<ElevatorEvent> ee;
+	private Scheduler sc;
 	private ArrayList<Floor> floors;
 	
 	public FloorSubsystem(int n) {
@@ -28,18 +28,18 @@ public class FloorSubsystem implements Runnable{
 				sc.newRequest(e);
 				Thread.sleep(100);
 			}
-//			Thread.sleep(20000);
-//			for(ElevatorEvent e: ee) {
-//				System.out.println("Sending Request: " + e.toString());
-//				sc.newRequest(e);
-//				Thread.sleep(100);
-//			}
-//			Thread.sleep(20000);
-//			for(ElevatorEvent e: ee) {
-//				System.out.println("Sending Request: " + e.toString());
-//				sc.newRequest(e);
-//				Thread.sleep(100);
-//			}
+			Thread.sleep(20000);
+			for(ElevatorEvent e: ee) {
+				System.out.println("Sending Request: " + e.toString());
+				sc.newRequest(e);
+				Thread.sleep(100);
+			}
+			Thread.sleep(20000);
+			for(ElevatorEvent e: ee) {
+				System.out.println("Sending Request: " + e.toString());
+				sc.newRequest(e);
+				Thread.sleep(100);
+			}
 			sc.endRequests();
 		}
 		catch(Throwable e) {}

@@ -105,7 +105,7 @@ public class Scheduler implements Runnable {
 		return this.lastRequestPassed;
 	}
 	
-	public void destinationReached(ElevatorEvent completedRequest) {
+	public synchronized void destinationReached(ElevatorEvent completedRequest) {
     	this.returnResponses.add(completedRequest);
     }
 	
