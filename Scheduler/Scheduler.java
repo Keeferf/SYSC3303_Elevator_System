@@ -87,28 +87,43 @@ public class Scheduler implements Runnable {
 				System.out.println("Passing Down Request");
 				return Optional.of(this.downRequests.remove(0));
 			}
-		} else if (this.downRequests.isEmpty()) { // If there are more up requests than down requests return the up requests
+		} else if (this.downRequests.isEmpty()) { // If there are down requests and no up requests return a down request
 			System.out.println("Passing Up Request");
 			return Optional.of(this.upRequests.remove(0));
-    	} else if (this.upRequests.isEmpty()) {
+    	} else if (this.upRequests.isEmpty()) { // If there are up requests and no down requests return a down request
     		System.out.println("Passing Down Request");
     		return Optional.of(this.downRequests.remove(0));
     	}
     	return Optional.empty();
     }
     
+	/**
+	 * When called it signifies that the final request has been sent, this is only for the sake of testing, in real execution, 
+	 * the system will remain active until interrupted by the controller of the system.
+	 */
 	public void endRequests() {
 		this.lastRequestPassed = true;
 	}
 	
+	/**
+	 * Getter method to determine if the final request has been received by the Scheduler
+	 * @return Returns a boolean, true = last request has been sent, false = still expecting more requests
+	 */
 	public boolean isEnd() {
 		return this.lastRequestPassed;
 	}
 	
+	/**
+	 * Method to pass completed requests from the elevator to the scheduler
+	 * @param completedRequest The request completed by the elevator
+	 */
 	public synchronized void destinationReached(ElevatorEvent completedRequest) {
     	this.returnResponses.add(completedRequest);
     }
 	
+	/**
+	 * Method to return responses to the floor subsystem if there are responses to return
+	 */
     public synchronized void returnResponse() {
     	if (this.returnResponses.isEmpty()) {
     		this.state.checkStateChange();
@@ -117,6 +132,9 @@ public class Scheduler implements Runnable {
     	}
     }
     
+    /**
+     * Run method for the Scheduler thread, it executes the initial Idle state of the Scheduler
+     */
 	@Override
 	public void run() {
 		this.state.executeState();
@@ -152,11 +170,19 @@ public class Scheduler implements Runnable {
 		return this.returnResponses.size();
 	}
 
+	/**
+	 * State setter method that starts the next state
+	 * @param state The next state of the Scheduler
+	 */
 	public void setState(SchedulerState state) {
 		this.state = state;
 		this.state.executeState();
 	}
 
+	/**
+	 * Getter method for the State of the Scheduler
+	 * @return Returns the current state object
+	 */
 	public SchedulerState getState() {
 		return this.state;
 	}

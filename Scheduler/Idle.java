@@ -1,5 +1,9 @@
 package Scheduler;
 
+/**
+ * Idle state for the cheduler, which occurs when there are not requests to process, but more requests will be sent
+ * @author Colin Mandeville
+ */
 public class Idle implements SchedulerState {
 	
 	private Scheduler s;
@@ -8,6 +12,9 @@ public class Idle implements SchedulerState {
 		this.s = s;
 	}
 
+	/**
+	 * Execute state, sleep, and then check if the state changes, repeatedly
+	 */
 	@Override
 	public void executeState() {
 		while(s.getState() == this) {
@@ -20,6 +27,9 @@ public class Idle implements SchedulerState {
 		}
 	}
 
+	/**
+	 * Check state, may transfer to any state depending on circumstance
+	 */
 	@Override
 	public void checkStateChange() {
 		if (s.getIncomingQueueLength() > 0) {

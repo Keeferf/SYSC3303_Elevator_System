@@ -20,6 +20,9 @@ public class FloorSubsystem implements Runnable{
 		this.numReqsProcessed = 0;
 	}
 	
+	/**
+	 * Run method for the Floor Subsystem Thread
+	 */
 	@Override
 	public void run() {
 		try {
@@ -67,6 +70,10 @@ public class FloorSubsystem implements Runnable{
 		catch(Throwable e) {}
 	}
 	
+	/**
+	 * Setter method for the Scheduler of the Floor Subsystem.
+	 * @param sc
+	 */
 	public void setScheduler(Scheduler sc) {
 		this.sc = sc;
 	}

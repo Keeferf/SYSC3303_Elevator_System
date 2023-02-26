@@ -1,5 +1,9 @@
 package Scheduler;
 
+/**
+ * Scheduler State to validate requests which are incoming to the Scheduler
+ * @author Colin Mandeville
+ */
 public class ValidateEvents implements SchedulerState {
 	private Scheduler s;
 	
