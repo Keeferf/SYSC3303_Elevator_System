@@ -1,5 +1,7 @@
 package Elevator;
 
+import FloorSystem.Direction;
+
 public class AcceleratingState implements ElevatorState{
 	
 	private Elevator elevator;
@@ -12,7 +14,7 @@ public class AcceleratingState implements ElevatorState{
 	public void runState() {
 		while(elevator.getState() == this) {
 			try {
-				this.elevator.up();
+				this.elevator.pressButton();
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
@@ -25,14 +27,14 @@ public class AcceleratingState implements ElevatorState{
 
 	@Override
 	public void checkState() {
-		if(elevator.getCurFloor() != elevator.getFloorToGo()) {
-			System.out.println("Accelerate -> DoorClosed");
+		
+		if(elevator.getCurFloor() == elevator.getFloorToGo()) {
 			
-			elevator.setState(new DoorClosedState(elevator));
-		}else {
-			System.out.println("Accelerate -> DoorOpen");
-			elevator.setState(new DoorOpenState(elevator));
+			System.out.println("Accelerate -> Decelerate");
+			elevator.setState(new DeceleratingState(elevator));
+			
 		}
+
 		
 	}
 

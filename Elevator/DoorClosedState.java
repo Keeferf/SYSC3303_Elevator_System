@@ -26,17 +26,9 @@ public class DoorClosedState implements ElevatorState{
 	public void checkState() {
 
 			if(elevator.getCurFloor() == elevator.getFloorToGo()) {
-				System.out.println("DoorClosed -> Exit");
-				elevator.setState(new ExitState());
-			}else if (elevator.getCurFloor() < elevator.getFloorToGo()) {
-				System.out.println("DoorClosed -> Accelerate");
-				elevator.setState(new AcceleratingState(elevator));
-			}else if (elevator.getCurFloor() > elevator.getFloorToGo()) {
-				System.out.println("DoorClosed -> Decelerate");
-				elevator.setState(new DeceleratingState(elevator));
+				System.out.println("DoorClosed -> Idle");
+				elevator.setState(new IdleState(elevator));
 			}
-			
-		
 		
 	}
 

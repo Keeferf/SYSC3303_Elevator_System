@@ -1,5 +1,7 @@
 package Elevator;
 
+import FloorSystem.Direction;
+
 public class DoorOpenState implements ElevatorState{
 
 	private Elevator elevator;

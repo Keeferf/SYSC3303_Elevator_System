@@ -11,7 +11,7 @@ public class IdleState implements ElevatorState{
 	public void runState() {
 		while(elevator.getState() == this) {
 			try {
-				Thread.sleep(1000);
+				elevator.elevatorActivated();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -23,9 +23,17 @@ public class IdleState implements ElevatorState{
 
 	@Override
 	public void checkState() {
-		System.out.println("Idle -> DoorClosed");
-		elevator.setState(new DoorClosedState(elevator));
 		
+		if (elevator.getCurFloor() == elevator.getRequest()){
+		System.out.println("Idle -> DoorOpen");
+		elevator.setState(new DoorOpenState(elevator));
+		}else if (elevator.getCurFloor() != elevator.getFloorToGo()) {
+			System.out.println("Idle -> Accelerate");
+			elevator.setState(new AcceleratingState(elevator));
+		}else if (elevator.getCurFloor() != elevator.getRequest()) {
+			System.out.println("Idle -> Accelerate");
+			elevator.setState(new AcceleratingState(elevator));
+		}
 	}
 
 }

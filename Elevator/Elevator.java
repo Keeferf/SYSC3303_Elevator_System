@@ -23,6 +23,8 @@ public class Elevator implements Runnable{
 	private ArrayList<ElevatorButton> buttons;
 	private ElevatorDoor door;
 	private ElevatorMotor motor;
+	private ElevatorEvent req ;
+	
 
 	
 	public Elevator(int maxFloor, int groundFloor, Scheduler sc) {
@@ -50,7 +52,7 @@ public class Elevator implements Runnable{
 	 * 
 	 * @throws InterruptedException
 	 */
-	public void up() throws InterruptedException {
+	private void up() throws InterruptedException {
 		
 		if (curFloor == floorToGo) {
 			//System.out.print("Doors Open");
@@ -65,7 +67,8 @@ public class Elevator implements Runnable{
 			door.close();
 			//this.state.checkState();
 			Thread.sleep(1318);
-			while(curFloor != floorToGo) {
+			int temp = (this.getFloorToGo()) - 1;
+			while(curFloor != this.getFloorToGo()) {
 				curFloor++;
 				motor.activateUp();
 			}
@@ -75,7 +78,7 @@ public class Elevator implements Runnable{
 			//this.state.checkState();
 			arrivedAtFloor(curFloor);
 		}
-		this.state.checkState();
+		//this.state.checkState();
 	}
 	
 	/**
@@ -96,7 +99,8 @@ public class Elevator implements Runnable{
 			door.close();
 			//this.state.checkState();
 			Thread.sleep(1318);
-			while(curFloor != floorToGo) {
+			//int temp = (this.getFloorToGo()) + 1;
+			while(curFloor != this.floorToGo) {
 				motor.activateDown();
 				curFloor--;
 			}
@@ -105,7 +109,7 @@ public class Elevator implements Runnable{
 			door.open();
 			//this.state.checkState();
 		}
-		this.state.checkState();
+		//this.state.checkState();
 	}
 	
 	/**
@@ -122,7 +126,7 @@ public class Elevator implements Runnable{
 			down();
 			//this.state.checkState();
 		}
-		else {
+		else if (curFloor < floorToGo){
 			up();
 			//this.state.checkState();
 		}
@@ -142,16 +146,16 @@ public class Elevator implements Runnable{
 		if (opt.isEmpty()) {
 			return false;
 		}
-		ElevatorEvent req = opt.get();
+		this.req = opt.get();
 		
-        if (req.getDirection().equals(Direction.UP)) {
-        	System.out.println("Recieved Up Request: " + req.toString());
-        	this.curFloor = Math.max(this.curFloor, req.getFloorToGo());
+        if (this.req.getDirection().equals(Direction.UP)) {
+        	System.out.println("Recieved Up Request: " + this.req.toString());
+        	this.curFloor = Math.max(this.curFloor, this.req.getFloorToGo());
         } else {
-        	System.out.println("Recieved Down Request: " + req.toString());
-        	this.curFloor = Math.min(this.curFloor, req.getFloorToGo());
+        	System.out.println("Recieved Down Request: " + this.req.toString());
+        	this.curFloor = Math.min(this.curFloor, this.req.getFloorToGo());
         }
-		schedule.destinationReached(req);
+		schedule.destinationReached(this.req);
 		Thread.sleep(1000);
 		return true;
 	}
@@ -230,6 +234,24 @@ public class Elevator implements Runnable{
 	 public ElevatorState getState() {
 		   return this.state;
 	   }
+	 
+	 /**
+	  * Returns the current floor of the passenger.
+	  * 
+	  * @return req.getCurrFloor()
+	  */
+	 public int getRequest() {
+		   return this.req.getCurrFloor();
+	   }
+	 
+	 /**
+	  * Returns the full request of the passenger.
+	  * 
+	  * @return req
+	  */
+	 public ElevatorEvent getFullRequest() {
+		   return this.req;
+	   }
 	
 	///////////////////////////
 	//Component Utility
@@ -244,14 +266,7 @@ public class Elevator implements Runnable{
 	 */
 	@Override
 	public void run() {
-		while (true) {
-			try {
-				elevatorActivated();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-		}
+		this.state.runState();
 	}
 }
 
