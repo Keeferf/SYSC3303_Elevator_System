@@ -1,9 +1,16 @@
 package Elevator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+
+import FloorSystem.Direction;
+import FloorSystem.ElevatorEvent;
+import FloorSystem.FloorSubsystem;
+import Scheduler.Scheduler;
 
 
 class testElevator{
@@ -65,6 +72,26 @@ class testElevator{
 		Elevator elevator = new Elevator(10,0, null);
 		elevator.setFloorToGo(7);
 		assertEquals(7,elevator.getFloorToGo());
+	}
+	@Test
+	void testElevatorEvent() {
+		FloorSubsystem f = new FloorSubsystem(11);
+		ElevatorEvent event = new ElevatorEvent(this, "14:05:15", Direction.UP, 7, 5);
+		Scheduler s = new Scheduler(f);
+		s.newRequest(event);
+		Elevator elevator = new Elevator(10, 0, s);
+
+		Thread sT = new Thread(s);
+		Thread eT = new Thread(elevator);
+		
+		
+		sT.start();
+		
+		IdleState i = new IdleState(elevator);
+		
+		eT.start();
+			
+		assertNotEquals(i, elevator.getState());
 	}
 	
 
