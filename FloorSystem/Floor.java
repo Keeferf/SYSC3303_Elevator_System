@@ -1,5 +1,7 @@
 package FloorSystem;
 
+import java.util.Random;
+
 /**
  * The Floor class is used for everything involved in
  * calling the elevator and accessing the current floor
@@ -14,6 +16,10 @@ public class Floor{
 	private boolean downLamp;
 	private boolean downButtonPressed, upButtonPressed;
 	
+	private Random rand;
+	
+	private boolean isOn;
+	
 	/**
 	 * Constructor for Floor class
 	 * @param floorNum
@@ -21,10 +27,10 @@ public class Floor{
 	public Floor(int floorNum) {
 		this.floorNum = floorNum;
 		this.people = 0;
-		this.upLamp = false;
-		this.downLamp = false;
+		this.isOn = false;
 		this.downButtonPressed = false;
 		this.upButtonPressed = false;
+		this.rand = new Random();
 	}
 	
 	/**
@@ -53,10 +59,9 @@ public class Floor{
 	
 	/**
 	 * Setter to set number of people on the floor
-	 * @param people
 	 */
-	public void setPeople(int people) {
-		this.people = people;
+	public int setPeople() {
+		return rand.nextInt(6);
 	}
 	
 	/**
@@ -76,18 +81,17 @@ public class Floor{
 	}
 	
 	/**
-	 * Setter to turn up lamp on/true
-	 * @param on
+	 * Method to check if the up/down lamp is on
+	 * @return a boolean
 	 */
-	public void setUpLamp(boolean on) {
-		upLamp = on;
+	public boolean isOn() {
+		return isOn;
 	}
 	
 	/**
-	 * Setter to turn down lamp on/true
-	 * @param on
+	 * Method to toggle the lamp light on/off
 	 */
-	public void setDownLamp(boolean on) {
-		downLamp = on;
+	public void toggle() {
+		isOn = !isOn;
 	}
 }

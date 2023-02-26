@@ -3,6 +3,8 @@ package FloorSystem;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.BeforeEach;
+
 /**
  * A test class for the Floor class
  * @author Keefer Belanger 101152085
@@ -30,9 +32,9 @@ public class FloorTest {
 
     @Test
     void testSetPeople() {
-        Floor floor = new Floor(5);
-        floor.setPeople(3);
-        assertEquals(3, floor.getPeople());
+        Floor floor = new Floor(1);
+        int people = floor.setPeople();
+        assertTrue(people >= 0 && people <= 5, "The number of people should be between 0 and 5.");
     }
 
     @Test
