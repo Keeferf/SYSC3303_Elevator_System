@@ -1,5 +1,9 @@
 package Scheduler;
 
+/**
+ * Scheduler State for sending events from the Scheduler to the Elevator
+ * @author Colin Mandeville
+ */
 public class SendEvents implements SchedulerState {
 	
 	private Scheduler s;

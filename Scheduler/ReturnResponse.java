@@ -1,5 +1,9 @@
 package Scheduler;
 
+/**
+ * Scheduler State where it returns the responses of the Elevator to the Floor Subsystem
+ * @author Colin Mandeville
+ */
 public class ReturnResponse implements SchedulerState {
 	
 	private Scheduler s;
