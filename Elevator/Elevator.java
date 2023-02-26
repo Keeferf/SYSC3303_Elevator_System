@@ -17,6 +17,7 @@ public class Elevator implements Runnable{
 	private int curFloor;
 	private int floorToGo;
 	private Scheduler schedule;
+	private ElevatorState state;
 	
 	private ArrayList<ElevatorLamp> lamps;
 	private ArrayList<ElevatorButton> buttons;
@@ -29,6 +30,7 @@ public class Elevator implements Runnable{
 		this.maxFloor = maxFloor;
 		this.groundFloor = groundFloor;
 		this.schedule = sc;
+		this.state = new IdleState(this);
 		
 		//Initialise the components
 		lamps = new ArrayList<>();
@@ -48,29 +50,32 @@ public class Elevator implements Runnable{
 	 * 
 	 * @throws InterruptedException
 	 */
-	private void up() throws InterruptedException {
+	public void up() throws InterruptedException {
 		
 		if (curFloor == floorToGo) {
-			System.out.print("Doors Open");
+			//System.out.print("Doors Open");
 			door.open();
+			//this.state.checkState();
 			Thread.sleep(1318);
 			
 			arrivedAtFloor(curFloor);
 		}
 		else{
-			System.out.print("Doors Closed");
+			//System.out.print("Doors Closed");
 			door.close();
+			//this.state.checkState();
 			Thread.sleep(1318);
 			while(curFloor != floorToGo) {
 				curFloor++;
 				motor.activateUp();
 			}
 			motor.disableMotor();
-			System.out.print("Doors Open");
+			//System.out.print("Doors Open");
 			door.open();
-			
+			//this.state.checkState();
 			arrivedAtFloor(curFloor);
 		}
+		this.state.checkState();
 	}
 	
 	/**
@@ -78,25 +83,29 @@ public class Elevator implements Runnable{
 	 * 
 	 * @throws InterruptedException
 	 */
-	private void down() throws InterruptedException {
+	public void down() throws InterruptedException {
 		
 		if (curFloor == floorToGo) {
-			System.out.print("Doors Open");
+			//System.out.print("Doors Open");
 			door.open();
+			//this.state.checkState();
 			Thread.sleep(1318);
 		}
 		else{
-			System.out.print("Doors Closed");
+			//System.out.print("Doors Closed");
 			door.close();
+			//this.state.checkState();
 			Thread.sleep(1318);
 			while(curFloor != floorToGo) {
 				motor.activateDown();
 				curFloor--;
 			}
 			motor.disableMotor();
-			System.out.print("Doors Open");
+			//System.out.print("Doors Open");
 			door.open();
+			//this.state.checkState();
 		}
+		this.state.checkState();
 	}
 	
 	/**
@@ -111,9 +120,11 @@ public class Elevator implements Runnable{
 		
 		if (floorToGo < curFloor) {
 			down();
+			//this.state.checkState();
 		}
 		else {
 			up();
+			//this.state.checkState();
 		}
 		
 	}
@@ -126,7 +137,7 @@ public class Elevator implements Runnable{
 	 * @return true or false If the request array is null or not
 	 * @throws InterruptedException 
 	 */
-	private boolean elevatorActivated() throws InterruptedException {
+	public boolean elevatorActivated() throws InterruptedException {
 		Optional<ElevatorEvent> opt = schedule.getRequest(this.curFloor);
 		if (opt.isEmpty()) {
 			return false;
@@ -201,6 +212,24 @@ public class Elevator implements Runnable{
 		return true;
 		
 	}
+	
+	/**
+	 * Sets the state of the Elevator.
+	 * 
+	 */
+	 public void setState(ElevatorState state) {
+			this.state = state;
+			this.state.runState();
+		}
+	 
+	 /**
+	  * Returns the Elevator state.
+	  * 
+	  * @return state
+	  */
+	 public ElevatorState getState() {
+		   return this.state;
+	   }
 	
 	///////////////////////////
 	//Component Utility

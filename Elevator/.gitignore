@@ -11,3 +11,10 @@
 /testElevatorComponents.class
 /ElevatorMotor.class
 /ElevatorMotor$Status.class
+/ElevatorState.class
+/IdleState.class
+/AcceleratingState.class
+/DeceleratingState.class
+/DoorOpenState.class
+/DoorClosedState.class
+/ExitState.class
