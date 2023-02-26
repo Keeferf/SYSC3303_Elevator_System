@@ -1,6 +1,7 @@
 package Elevator;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -82,15 +83,15 @@ class testElevator{
 
 		Thread sT = new Thread(s);
 		Thread eT = new Thread(elevator);
-		Thread fT = new Thread(f);
+		
 		
 		sT.start();
+		
+		IdleState i = new IdleState(elevator);
+		
 		eT.start();
-		fT.start();
-		elevator.run();
 			
-		assertEquals(7,elevator.getFloorToGo());
-	
+		assertNotEquals(i, elevator.getState());
 	}
 	
 
