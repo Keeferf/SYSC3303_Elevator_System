@@ -16,7 +16,7 @@ Must accurately describe the goal of the file/class.
 ## Setup Instructions
 1. Unzip the Elevator System project onto your local machine.\
 2. Open the unzipped folder in eclipse\
-3. Navigate to "FloorSystem/FloorSubsystem.java\
+3. Navigate to "Simulation.java"\
 4. From there, you will find the main method at the bottom of the class.\
 5. Press run and the program will execute
 
@@ -42,7 +42,7 @@ Documentation
 
 Colin Mandeville - 101140289
 Scheduler State Machine(State pattern)
-UML Diagrams, State diagram
+UML Diagrams, Scheduler State diagram
 Documentation
 
 Keefer Belanger - 101152085
@@ -52,5 +52,5 @@ Documentation
 
 Joshua Noronha - 101194076
 Elevator State machine
-UML Diagrams, State diagram
+UML Diagrams, Elevator State diagram
 Documentation
