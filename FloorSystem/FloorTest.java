@@ -44,23 +44,25 @@ public class FloorTest {
     }
 
     @Test
-    void testSetUpLamp() {
-        Floor floor = new Floor(5);
-        floor.setUpLamp(true);
-        assertTrue(floor.getUpLamp());
-    }
+	public void testGetDownLamp() {
+		Floor floor = new Floor(0);
+		assertFalse(floor.getDownLamp());
+	}
 
-    @Test
-    void testGetDownLamp() {
-        Floor floor = new Floor(5);
-        assertFalse(floor.getDownLamp());
-    }
+	@Test
+	public void testIsOn() {
+		Floor floor = new Floor(0);
+		assertFalse(floor.isOn());
+	}
 
-    @Test
-    void testSetDownLamp() {
-        Floor floor = new Floor(5);
-        floor.setDownLamp(true);
-        assertTrue(floor.getDownLamp());
-    }
+	@Test
+	public void testToggle() {
+		Floor floor = new Floor(0);
+		assertFalse(floor.isOn());
+		floor.toggle();
+		assertTrue(floor.isOn());
+		floor.toggle();
+		assertFalse(floor.isOn());
+	}
 }
 
