@@ -1,14 +1,27 @@
 package FloorSystem;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.EventObject;
+import java.util.Objects;
 
-public class ElevatorEvent extends EventObject implements Comparable<ElevatorEvent> {
+import UDP.RequestStatus;
+
+public class ElevatorEvent extends EventObject implements Comparable<ElevatorEvent>, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 	private final String timestamp;
     private final Direction direction;
     private final int floorToGo;
     private final int currFloor;
+    
+    private RequestStatus requestStatus;
 
     public ElevatorEvent(Object source, String timestamp, Direction direction, int floorToGo, int currFloor) {
         super(source);
@@ -16,6 +29,10 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
         this.direction = direction;
         this.floorToGo = floorToGo;
         this.currFloor = currFloor;
+        
+        //New elevator events always start off at "NEW" status
+        
+        requestStatus = RequestStatus.NEW;
     }
 
     //Getters
@@ -44,4 +61,57 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
 	public int compareTo(ElevatorEvent e) {
 		return this.currFloor - e.currFloor;
 	}
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+    	return super.clone();
+    }
+    
+    public RequestStatus getRequestStatus() {
+    	return requestStatus;
+    }
+    
+    public void setRequestStatus(RequestStatus rs) {
+    	requestStatus = rs;
+    }
+    
+    /**
+     * Serialization methods provided by SerializationUtils
+     * 
+     * https://github.com/apache/commons-lang/blob/master/src/main/java/org/apache/commons/lang3/SerializationUtils.java
+     */
+    public static byte[] serialize(final Serializable obj) {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
+        serialize(obj, baos);
+        return baos.toByteArray();
+    }
+    
+    @SuppressWarnings("resource") // outputStream is managed by the caller
+    public static void serialize(final Serializable obj, final OutputStream outputStream) {
+        Objects.requireNonNull(outputStream, "outputStream");
+        try (ObjectOutputStream out = new ObjectOutputStream(outputStream)) {
+            out.writeObject(obj);
+        } catch (final IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+    public static <T> T deserialize(final byte[] objectData) {
+        Objects.requireNonNull(objectData, "objectData");
+        return deserialize(new ByteArrayInputStream(objectData));
+    }
+    
+    @SuppressWarnings("resource") // inputStream is managed by the caller
+    public static <T> T deserialize(final InputStream inputStream) {
+        Objects.requireNonNull(inputStream, "inputStream");
+        try (ObjectInputStream in = new ObjectInputStream(inputStream)) {
+            @SuppressWarnings("unchecked")
+            final T obj = (T) in.readObject();
+            return obj;
+        } catch (final ClassNotFoundException | IOException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    
 }
