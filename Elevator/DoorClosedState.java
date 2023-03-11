@@ -1,5 +1,8 @@
 package Elevator;
 
+/**
+ * Door close state class to handle the doors of the elevator states
+ */
 public class DoorClosedState implements ElevatorState{
 
 	private Elevator elevator;
@@ -7,7 +10,10 @@ public class DoorClosedState implements ElevatorState{
 	public DoorClosedState(Elevator elevator) {
 		this.elevator = elevator;
 	}
-	
+
+	/**
+	 * A method to run the elevator state(close doors)
+	 */
 	@Override
 	public void runState() {
 		while (this.elevator.getState().getClass() == DoorClosedState.class) {
@@ -20,6 +26,9 @@ public class DoorClosedState implements ElevatorState{
 		}
 	}
 
+	/**
+	 * A method to check the state and activate the door close state
+	 */
 	@Override
 	public void checkState() {
 		if(elevator.getCurrFloor() == this.elevator.getRequest().getFloorToGo()) {

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import Elevator.Elevator;
 import Scheduler.Scheduler;
 
+/**
+ * The floor subsystem class handles the implementation of the floors
+ */
 public class FloorSubsystem implements Runnable{
 	
 	private ArrayList<ElevatorEvent> ee;

@@ -3,14 +3,24 @@ package Elevator;
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
+/**
+ * Acceleration state class to handle the accelertion of the elevator states
+ */
 public class AcceleratingState implements ElevatorState{
 	
 	private Elevator elevator;
 	
+	/**
+	 * Constructor for the acceleration state class
+	 * @param elevator
+	 */
 	public AcceleratingState(Elevator elevator) {
 		this.elevator = elevator;
 	}
 
+	/**
+	 * A method to run the elevator state(acceleration)
+	 */
 	@Override
 	public void runState() {
 		while(elevator.getState() == this) {
@@ -25,6 +35,9 @@ public class AcceleratingState implements ElevatorState{
 		
 	}
 
+	/**
+	 * A method to check the state and activate the acceleration state
+	 */
 	@Override
 	public void checkState() {
 		ElevatorEvent req = elevator.getRequest();

@@ -11,6 +11,9 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Test class for the Event Parser Class
+ */
 public class testEventParser {
 
     private EventParser parser;

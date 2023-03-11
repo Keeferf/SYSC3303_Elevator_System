@@ -5,7 +5,9 @@ import java.util.Optional;
 import FloorSystem.ElevatorEvent;
 import Scheduler.Scheduler;
 
-
+/**
+ * Elevator class to handle all the elevator components
+ */
 public class Elevator implements Runnable{
 	
 	private static final int maxFloor = 22;
@@ -24,6 +26,10 @@ public class Elevator implements Runnable{
 	
 	private static int idCounter = 1;
 	
+	/**
+	 * Constructor for the elevator class
+	 * @param sc: Scheduler
+	 */
 	public Elevator(Scheduler sc) {
 		this.id = Elevator.idCounter;
 		idCounter++;
