@@ -14,13 +14,17 @@ public class SendEvents implements SchedulerState {
 
 	@Override
 	public void executeState() {
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+
+		while(s.getState() == this) {	
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			//send events here
+			s.sendEvents();
+			this.checkStateChange();
 		}
-		this.s.notifyAll();
-		this.checkStateChange();
 	}
 
 	@Override
@@ -32,7 +36,7 @@ public class SendEvents implements SchedulerState {
 			System.out.println("Scheduler: SendEvents -> ReturnResponse\n");
 			s.setState(new ReturnResponse(s));
 		} else {
-			this.s.notifyAll();
+			
 		}
 	}
 }

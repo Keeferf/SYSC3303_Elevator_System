@@ -6,7 +6,11 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
-import Elevator.ElevatorMotor.Status;
+import Elevator.Components.ElevatorButton;
+import Elevator.Components.ElevatorDoor;
+import Elevator.Components.ElevatorLamp;
+import Elevator.Components.ElevatorMotor;
+import Elevator.Components.ElevatorMotor.Status;
 import junit.framework.TestCase;
 
 /**

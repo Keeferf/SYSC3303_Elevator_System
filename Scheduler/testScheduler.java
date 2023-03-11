@@ -2,8 +2,6 @@ package Scheduler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 
 import Elevator.Elevator;
@@ -18,7 +16,7 @@ import FloorSystem.FloorSubsystem;
 class testScheduler {
 	@Test
 	void testAddUpEvents() {
-		Scheduler s = new Scheduler(new FloorSubsystem(5));
+		Scheduler s = new Scheduler();
 		s.newRequest(new ElevatorEvent(this, "14:05:15", Direction.UP, 0, 2));
 		assertEquals(1, s.getIncomingQueueLength());
 		s.validateRequest();
@@ -35,7 +33,7 @@ class testScheduler {
 	
 	@Test
 	void testAddDownEvents() {
-		Scheduler s = new Scheduler(new FloorSubsystem(5));
+		Scheduler s = new Scheduler();
 		s.newRequest(new ElevatorEvent(this, "14:05:15", Direction.DOWN, 4, 2));
 		assertEquals(1, s.getIncomingQueueLength());
 		s.validateRequest();
@@ -52,9 +50,9 @@ class testScheduler {
 	
 	@Test
 	void testProcessEvents() {
-		FloorSubsystem f = new FloorSubsystem(5);
-		Scheduler s = new Scheduler(f);
-		Elevator e = new Elevator(s);
+		FloorSubsystem f = new FloorSubsystem();
+		Scheduler s = new Scheduler();
+		Elevator e = new Elevator();
 		Thread sT = new Thread(s);
 		Thread eT = new Thread(e);
 		Thread fT = new Thread(f);

@@ -1,19 +1,27 @@
 package Elevator;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Optional;
+import Elevator.Components.ElevatorButton;
+import Elevator.Components.ElevatorDoor;
+import Elevator.Components.ElevatorLamp;
+import Elevator.Components.ElevatorMotor;
 import FloorSystem.ElevatorEvent;
-import Scheduler.Scheduler;
+import Util.Comms.Config;
+import Util.Comms.RequestStatus;
+import Util.Comms.UDPBuilder;
 
 
 public class Elevator implements Runnable{
 	
-	private static final int maxFloor = 22;
-	private static final int groundFloor = 0;
+	private static final int maxFloor = Config.getMaxFloor();
+	private static final int groundFloor = Config.getMinFloor();
 	private final int id;
 	private int currFloor;
 	private int floorToGo;
-	private final Scheduler schedule;
 	private ElevatorState state;
 	
 	private final ArrayList<ElevatorLamp> lamps;
@@ -22,14 +30,19 @@ public class Elevator implements Runnable{
 	private final ElevatorMotor motor;
 	private ElevatorEvent req;
 	
-	private static int idCounter = 1;
+	private DatagramSocket socket;
 	
-	public Elevator(Scheduler sc) {
-		this.id = Elevator.idCounter;
-		idCounter++;
+	private static int idCounter = 0;
+
+	
+	public Elevator()  {
 		this.currFloor = groundFloor;
-		this.schedule = sc;
+	
+		this.id = Elevator.idCounter;
+		System.out.println("Elevator " + id + " created.");
+		idCounter++;
 		this.state = new IdleState(this);
+	
 		
 		//Initialize the components
 		lamps = new ArrayList<>();
@@ -51,13 +64,12 @@ public class Elevator implements Runnable{
 	 */
 	private void up() throws InterruptedException {
 		if (currFloor == floorToGo) {
-			motor.activateDown();
+			motor.activateUp();
 			currFloor++;
 			motor.disableMotor();
 			door.open();
-		}
-		else{
-			motor.activateDown();
+		}else{
+			motor.activateUp();
 			currFloor++;
 			motor.disableMotor();
 			door.open();
@@ -74,12 +86,10 @@ public class Elevator implements Runnable{
 			motor.activateDown();
 			currFloor--;
 			motor.disableMotor();
-			door.open();
-		} else{
+		}else{
 			motor.activateDown();
 			currFloor--;
 			motor.disableMotor();
-			door.open();
 		}
 	}
 	
@@ -108,16 +118,44 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException 
 	 */
 	public void elevatorActivated() throws InterruptedException {
-		Optional<ElevatorEvent> opt = schedule.getRequest(this.currFloor, this.id);
-		if (opt.isPresent()) {
-			this.req = opt.get();
-			System.out.println("Elevator " + this.id + " Received Request: " + this.req.toString());
-			
-			System.out.println("Elevator " + this.id + " at floor " + this.currFloor + "\n");
-			
-			this.state.checkState();
-			this.state.runState();
+		//Retrieve UDP requests
+		ElevatorEvent requestEvent = new ElevatorEvent(this);
+		System.out.println("Elevator " + id + " sent request for work");
+		try {
+			socket.send(UDPBuilder.newMessage(requestEvent, Config.getSchedulerip(), Config.getSchedulerport()));
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
 		}
+		
+		
+		//Might make a separate thread just for listening to requests for the future
+		
+		//Get the response back with data
+		byte[] pack = new byte[Config.getMaxMessageSize()];
+		DatagramPacket packet = new DatagramPacket(pack,pack.length);
+		try {
+			socket.receive(packet);
+		} catch (IOException e) {
+			System.out.println("Failed to acquire packet!");
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
+		//Get payload of response
+		ElevatorEvent e = UDPBuilder.getPayload(packet);
+		
+		req = e;
+		
+		System.out.println("Elevator " + this.id + " Received Request: " + this.req.toString());
+		
+		System.out.println("Elevator " + this.id + " at floor " + this.currFloor + "\n");
+		
+		
+		Thread.sleep(1000);
+		
+		this.state.checkState();
+		this.state.runState();
 	}
 	
 	/**
@@ -181,22 +219,37 @@ public class Elevator implements Runnable{
 		return this.id;
 	}
 	
-	///////////////////////////
-	//Component Utility
-	///////////////////////////
-	public void arrivedAtFloor(int floorNum) {
+	/**
+	 * For when a car has arrived at a floor
+	 * @param floorNum Floor Number arrived at
+	 */
+	protected void arrivedAtFloor(int floorNum) {
 		System.out.println("Elevator " + this.id + " arrived at " + this.currFloor + "\n");
 		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorNum) l.setState(false);}
 		for(ElevatorButton b: buttons) {if(b.getFloorNum() == floorNum) b.toggle(false);}
-	}
-	
-	/**
-	 * Method to send a request response to the scheduler
-	 */
-	public void requestComplete() {
-		System.out.println("Elevator " + this.id + ": Completed Request");
-		this.schedule.destinationReached(this.req, this.id);
-		this.req = null;
+		
+		ElevatorEvent e = req;
+		e.setRequestStatus(RequestStatus.FULFILLED);
+		
+		try {
+			socket.send(UDPBuilder.newMessage(e, Config.getSchedulerip(), Config.getSchedulerport()));
+			byte[] pack = new byte[Config.getMaxMessageSize()];
+			DatagramPacket packet = new DatagramPacket(pack,pack.length);
+			
+			socket.receive(packet);
+			if(UDPBuilder.getPayload(packet).getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
+				System.out.println("Scheduler Acknowledged the fulfilled request: " + e + " by elevator: " + id);
+			}
+		} catch (IOException e1) {
+			System.out.println("Failed to send fulfilled message: " + e.toString());
+			e1.printStackTrace();
+		}
+		
+		try {
+			elevatorActivated();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	/**
@@ -204,6 +257,12 @@ public class Elevator implements Runnable{
 	 */
 	@Override
 	public void run() {
+		try {
+			this.socket = new DatagramSocket(Config.getElevatorport(this.id));
+		} catch (SocketException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		this.state.runState();
 	}
 }
