@@ -26,14 +26,12 @@ public class Scheduler implements Runnable {
 	
 
 	private DatagramSocket socket;
-	private DatagramPacket packet;
 
 	/**
 	 * Scheduler constructor
 	 * @param floors The FloorSubsystem instance executing as a Thread
-	 * @throws SocketException 
 	 */
-    public Scheduler(FloorSubsystem floors) {
+    public Scheduler() {
     	this.floors = floors;
     	this.incomingRequests = new ArrayList<>();
     	this.upRequests = new ArrayList<>();
@@ -41,12 +39,6 @@ public class Scheduler implements Runnable {
         this.returnResponses = new ArrayList<>();
         this.state = new Idle(this);
         this.lastRequestPassed = false;
-        try {
-			this.socket = new DatagramSocket();
-		} catch (SocketException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
     }
     
     /**
@@ -123,26 +115,36 @@ public class Scheduler implements Runnable {
 		// Receives Packet from FloorSubSystem
 		
 		byte[] pack = new byte[Config.getMaxMessageSize()];
-		this.packet = new DatagramPacket(pack,pack.length);
+		DatagramPacket packet = new DatagramPacket(pack,pack.length);
+		
+		//Gets packet from floor subsystem or elevator
 		socket.receive(packet);
 		
-		ElevatorEvent elevator = UDPBuilder.getPayload(packet);
-		
-		// Send acknowledgement to FloorSubSystem
-		
-		socket.send(UDPBuilder.acknowledge(elevator, Config.getFloorsubsystemip(), this.packet.getPort()));
+		ElevatorEvent e = UDPBuilder.getPayload(packet);
+
+		System.out.println("Received Packet: " + e.toString());
+			
+		// Send acknowledgement to sender that is has been received
+		socket.send(UDPBuilder.acknowledge(e, packet.getAddress().toString(), packet.getPort()));
+		System.out.println("Acknowledgment sent back");
 		
 		// Receives Packet from Elevator
+		//Extract payload from the packet
 		
-		pack = new byte[Config.getMaxMessageSize()];
-		this.packet = new DatagramPacket(pack,pack.length);
-		socket.receive(packet);
 		
-		elevator = UDPBuilder.getPayload(packet);
+		//Logic for acknowledge/fullfilled requests received
 		
-		// Send acknowledgement to Elevator
-		
-		socket.send(UDPBuilder.acknowledge(elevator, Config.getElevatorip(), this.packet.getPort()));
+		switch(e.getRequestStatus()) {
+		case NEW :
+			//Adds it to the state machine
+			newRequest(e);	
+		case FULFILLED :
+			//Add it to responses to send back
+			returnResponses.add(e);
+		default:
+			//Invalid response
+			System.out.println("Invalid Request Data Received: " + e.getRequestStatus().toString());
+		}
 		
 		
 	}
@@ -180,7 +182,14 @@ public class Scheduler implements Runnable {
     	if (this.returnResponses.isEmpty()) {
     		this.state.checkStateChange();
     	} else {
-    		floors.alert(this.returnResponses.remove(0)); // Passes completed request event back to the Floor Subsystem
+    		//floors.alert(this.returnResponses.remove(0)); // Passes completed request event back to the Floor Subsystem //Depracated section
+    		
+    		//Responses should already have fulfilled status, so checking is redundant
+    		try {
+				socket.send(UDPBuilder.newMessage(returnResponses.remove(0), Config.getFloorsubsystemip(), Config.getFloorsubsystemport()));
+			} catch (IOException e) {
+				System.out.println("Failed to return response");
+			}
     	}
     }
     
@@ -189,13 +198,14 @@ public class Scheduler implements Runnable {
      */
 	@Override
 	public void run() {
-		this.state.executeState();
 		try {
-			this.receiveAndSend();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			this.socket = new DatagramSocket(Config.getSchedulerport());
+		} catch (SocketException e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
+		this.state.executeState();
+		
 	} 
 	
 	/**

@@ -9,7 +9,7 @@ public class SimulateScheduler {
 
 	public static void main(String[] args) {
 		
-			Scheduler scheduler = new Scheduler(new FloorSubsystem(5));
+			Scheduler scheduler = new Scheduler();
 			Thread thread = new Thread(scheduler, "Scheduler");
 			thread.start();
 

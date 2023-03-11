@@ -17,7 +17,7 @@ class testElevator{
 
 	@Test
 	void testUP() {
-		Elevator elevator = new Elevator(10,0, null);
+		Elevator elevator = new Elevator();
 		elevator.setFloorToGo(5);
 		try {
 			elevator.pressButton();
@@ -30,7 +30,7 @@ class testElevator{
 	
 	@Test
 	void testDown()  {
-		Elevator elevator = new Elevator(10,0, null);
+		Elevator elevator = new Elevator();
 		elevator.setFloorToGo(10);
 		try {
 			elevator.pressButton();
@@ -50,36 +50,36 @@ class testElevator{
 	
 	@Test
 	void testSetCurFloor(){
-		Elevator elevator = new Elevator(10,0, null);
+		Elevator elevator = new Elevator();
 		elevator.setCurFloor(4);
 		assertEquals(4,elevator.getCurFloor());
 	}
 	
 	@Test
 	void testGetGroundFloor() {
-		Elevator elevator = new Elevator(10,6, null);
+		Elevator elevator = new Elevator();
 		assertEquals(6,elevator.getGroundFloor());
 	}
 	
 	@Test
 	void testGetMaxFloor() {
-		Elevator elevator = new Elevator(10,0, null);
+		Elevator elevator = new Elevator();
 		assertEquals(10,elevator.getMaxFloor());
 	}
 	
 	@Test
 	void testSetFloorToGo() {
-		Elevator elevator = new Elevator(10,0, null);
+		Elevator elevator = new Elevator();
 		elevator.setFloorToGo(7);
 		assertEquals(7,elevator.getFloorToGo());
 	}
 	@Test
 	void testElevatorEvent() {
-		FloorSubsystem f = new FloorSubsystem(11);
+		FloorSubsystem f = new FloorSubsystem();
 		ElevatorEvent event = new ElevatorEvent(this, "14:05:15", Direction.UP, 7, 5);
-		Scheduler s = new Scheduler(f);
+		Scheduler s = new Scheduler();
 		s.newRequest(event);
-		Elevator elevator = new Elevator(10, 0, s);
+		Elevator elevator = new Elevator();
 
 		Thread sT = new Thread(s);
 		Thread eT = new Thread(elevator);

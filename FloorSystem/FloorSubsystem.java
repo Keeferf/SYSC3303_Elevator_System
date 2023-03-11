@@ -22,15 +22,14 @@ public class FloorSubsystem implements Runnable, Timeable{
 	private int numReqsProcessed;
 	private DatagramSocket socket;
 	
-	public FloorSubsystem(int n) {
-		try {
-			this.socket = new DatagramSocket(Config.getSchedulerport());
-		} catch (SocketException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
+	public FloorSubsystem() {
+		//Max and min floors
+		int n = Config.getMaxFloor();
+		int i = Config.getMinFloor();
+		
+		//Generates floors min-max
 		this.floors = new ArrayList<Floor>();
-		for(int i = 0; i < n; i++) {
+		for(i = 0; i < n; i++) {
 			this.floors.add(new Floor(i));
 		}
 		this.numReqsProcessed = 0;
@@ -44,6 +43,15 @@ public class FloorSubsystem implements Runnable, Timeable{
 	 */
 	@Override
 	public void run() {
+		//Creation of socket
+		try {
+			this.socket = new DatagramSocket(Config.getFloorsubsystemport());
+		} catch (SocketException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		//loading of events from parser
 		try {
 			EventParser ep = new EventParser();
 			ee = ep.getEvents();
@@ -110,6 +118,9 @@ public class FloorSubsystem implements Runnable, Timeable{
 		this.numReqsProcessed++;
 	}
 
+	/**
+	 * From Timeable Interface. Called when a timer has finished its sleep time
+	 */
 	@Override
 	public void timerFinished(Object payload) {
 		//Check for if is elevatorEvent

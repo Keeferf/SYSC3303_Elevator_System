@@ -41,18 +41,11 @@ public class Elevator implements Runnable{
 	
 
 	
-	public Elevator(int maxFloor, int groundFloor, Scheduler sc)  {
-		this.curFloor = groundFloor;
-		this.maxFloor = maxFloor;
-		this.groundFloor = groundFloor;
-		this.schedule = sc;
+	public Elevator()  {
+		this.curFloor = Config.getMinFloor();
+		this.maxFloor = Config.getMaxFloor();
+		this.groundFloor = curFloor;
 		this.state = new IdleState(this);
-		try {
-			this.socket = new DatagramSocket(Config.getSchedulerport());
-		} catch (SocketException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
 	
 		
 		//Initialise the components
@@ -310,6 +303,12 @@ public class Elevator implements Runnable{
 	 */
 	@Override
 	public void run() {
+		try {
+			this.socket = new DatagramSocket(Config.getElevatorport());
+		} catch (SocketException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		this.state.runState();
 		try {
 			this.readAndWrite();

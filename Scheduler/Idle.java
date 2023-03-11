@@ -1,5 +1,7 @@
 package Scheduler;
 
+import java.io.IOException;
+
 /**
  * Idle state for the cheduler, which occurs when there are not requests to process, but more requests will be sent
  * @author Colin Mandeville
@@ -17,10 +19,11 @@ public class Idle implements SchedulerState {
 	 */
 	@Override
 	public void executeState() {
-		while(s.getState() == this) {
+		while(s.getState() == this) {	//Might not work***
 			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
+				this.s.receiveAndSend();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			this.checkStateChange();

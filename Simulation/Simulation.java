@@ -9,13 +9,13 @@ import Scheduler.Scheduler;
  */
 public class Simulation {
 	public static void main(String[] args) {
-		FloorSubsystem f = new FloorSubsystem(3);
-		Scheduler s = new Scheduler(f);
+		FloorSubsystem f = new FloorSubsystem();
+		Scheduler s = new Scheduler();
 		
 		f.setScheduler(s);
 		
     	Thread sch = new Thread(s);
-    	Thread el = new Thread(new Elevator(2, 0, s));
+    	Thread el = new Thread(new Elevator());
     	Thread fl = new Thread(f);
 
     	sch.start();
