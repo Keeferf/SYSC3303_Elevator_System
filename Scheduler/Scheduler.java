@@ -1,10 +1,16 @@
 package Scheduler;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 
 import FloorSystem.FloorSubsystem;
+import UDP.Config;
+import UDP.UDPBuilder;
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
@@ -17,12 +23,17 @@ public class Scheduler implements Runnable {
 	private ArrayList<ElevatorEvent> returnResponses;
 	private SchedulerState state;
 	private boolean lastRequestPassed;
+	
+
+	private DatagramSocket socket;
+	private DatagramPacket packet;
 
 	/**
 	 * Scheduler constructor
 	 * @param floors The FloorSubsystem instance executing as a Thread
+	 * @throws SocketException 
 	 */
-    public Scheduler(FloorSubsystem floors) {
+    public Scheduler(FloorSubsystem floors) throws SocketException {
     	this.floors = floors;
     	this.incomingRequests = new ArrayList<>();
     	this.upRequests = new ArrayList<>();
@@ -30,6 +41,7 @@ public class Scheduler implements Runnable {
         this.returnResponses = new ArrayList<>();
         this.state = new Idle(this);
         this.lastRequestPassed = false;
+        this.socket = new DatagramSocket();
     }
     
     /**
@@ -96,6 +108,41 @@ public class Scheduler implements Runnable {
     	}
     	return Optional.empty();
     }
+	
+	/**
+	 * Sends and receives messages to the Elevator and the FloorSubsystem 
+	 * @throws IOException
+	 */
+	public void receiveAndSend() throws IOException {
+		
+		// Receives Packet from FloorSubSystem
+		
+		byte[] pack = new byte[Config.getMaxMessageSize()];
+		this.packet = new DatagramPacket(pack,pack.length);
+		socket.receive(packet);
+		
+		ElevatorEvent elevator = UDPBuilder.getPayload(packet);
+		
+		// Send acknowledgement to FloorSubSystem
+		
+		socket.send(UDPBuilder.acknowledge(elevator, Config.getFloorsubsystemip(), this.packet.getPort()));
+		
+		// Receives Packet from Elevator
+		
+		pack = new byte[Config.getMaxMessageSize()];
+		this.packet = new DatagramPacket(pack,pack.length);
+		socket.receive(packet);
+		
+		elevator = UDPBuilder.getPayload(packet);
+		
+		// Send acknowledgement to Elevator
+		
+		socket.send(UDPBuilder.acknowledge(elevator, Config.getElevatorip(), this.packet.getPort()));
+		
+		
+	}
+	
+	
     
 	/**
 	 * When called it signifies that the final request has been sent, this is only for the sake of testing, in real execution, 
@@ -138,6 +185,12 @@ public class Scheduler implements Runnable {
 	@Override
 	public void run() {
 		this.state.executeState();
+		try {
+			this.receiveAndSend();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	} 
 	
 	/**

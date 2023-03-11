@@ -1,5 +1,9 @@
 package Elevator;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -8,6 +12,9 @@ import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
 import Scheduler.Scheduler;
+import UDP.Config;
+import UDP.RequestStatus;
+import UDP.UDPBuilder;
 
 
 public class Elevator implements Runnable{
@@ -25,14 +32,19 @@ public class Elevator implements Runnable{
 	private ElevatorMotor motor;
 	private ElevatorEvent req ;
 	
+	private DatagramSocket socket;
+	private DatagramPacket packet;
+	
 
 	
-	public Elevator(int maxFloor, int groundFloor, Scheduler sc) {
+	public Elevator(int maxFloor, int groundFloor, Scheduler sc) throws SocketException {
 		this.curFloor = groundFloor;
 		this.maxFloor = maxFloor;
 		this.groundFloor = groundFloor;
 		this.schedule = sc;
 		this.state = new IdleState(this);
+		this.socket = new DatagramSocket(Config.getSchedulerport());
+	
 		
 		//Initialise the components
 		lamps = new ArrayList<>();
@@ -159,6 +171,29 @@ public class Elevator implements Runnable{
 		Thread.sleep(1000);
 		return true;
 	}
+	/**
+	 * Sends and receives messages from the Scheduler 
+	 * @throws IOException
+	 */
+	public void readAndWrite() throws IOException {
+		
+		// send message to the Scheduler
+		this.socket.send(UDPBuilder.newMessage(req, Config.getSchedulerip(), Config.getSchedulerport()));
+		
+		// receive message from the Scheduler
+		byte[] pack = new byte[Config.getMaxMessageSize()];
+		this.packet = new DatagramPacket(pack,pack.length);
+		socket.receive(packet);
+		
+		ElevatorEvent elevator = UDPBuilder.getPayload(packet);
+		
+		if(!elevator.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
+            System.out.println("Error");
+            System.exit(1);
+        }
+		
+		
+	}
 	
 	/**
 	 * Returns the Current floor that the Elevator is on.
@@ -267,6 +302,12 @@ public class Elevator implements Runnable{
 	@Override
 	public void run() {
 		this.state.runState();
+		try {
+			this.readAndWrite();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
 
