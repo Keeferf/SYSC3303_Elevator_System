@@ -105,26 +105,41 @@ public class Scheduler implements Runnable {
 		
 		//Logic for acknowledge/fullfilled/New requests received
 		if(e.getRequestStatus().equals(RequestStatus.NEW)) {
+			
 			// Send acknowledgement to sender that is has been received
 			socket.send(UDPBuilder.acknowledge(e, packet.getAddress().getHostAddress(), packet.getPort()));
 			System.out.println("New received. Acknowledgment sent back");	
 			//Adds it to the state machine
 			newRequest(e);
 			Config.printLine();
+			
 		} else if(e.getRequestStatus().equals(RequestStatus.FULFILLED)) {
+			
 			// Send acknowledgement to sender that is has been received
 			socket.send(UDPBuilder.acknowledge(e, packet.getAddress().getHostAddress(), packet.getPort()));
 			System.out.println("Fulfilled Received. Acknowledgment sent back");	
 			//Add it to responses to send back
 			returnResponses.add(e);
 			Config.printLine();
+			
 		} else if(e.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
+			
 			System.out.println("Acknowledgment received for: " + e.toString());
 			Config.printLine();
+			
+		} else if(e.getRequestStatus().equals(RequestStatus.REQUEST)) {
+			
+			//Adds the packet to the queue for when an event needs to be sent
+			System.out.println("Added to work queue: " + e.toString());
+			workPorts.add(packet.getPort());
+			Config.printLine();
+			
 		} else {
+			
 			//Invalid response
 			System.out.println("Invalid Request Data Received: " + e.getRequestStatus().toString());
 			Config.printLine();
+			
 		}
 	}
 	
@@ -146,19 +161,6 @@ public class Scheduler implements Runnable {
 	public boolean isEnd() {
 		return this.lastRequestPassed && (this.numRequests == this.numResponses);
 	}
-	
-	/**
-	 * Method to pass completed requests from the elevator to the scheduler
-	 * @param completedRequest The request completed by the elevator
-	 */
-	public void destinationReached(ElevatorEvent completedRequest, int id) {
-		System.out.println("Scheduler: Received Response\n");
-		System.out.print(this.numResponses);
-		this.numResponses++;
-		System.out.println(" " + this.numResponses + "\n");
-		this.throughput.put(id, this.throughput.getOrDefault(id, 0) + 1);
-    	this.returnResponses.add(completedRequest);
-    }
 	
 	/**
 	 * Method to return responses to the floor subsystem if there are responses to return
@@ -236,7 +238,9 @@ public class Scheduler implements Runnable {
 	 * @author Nicholas Rose - 101181935
 	 */
 	public synchronized void sendEvents() {
+		System.out.println("Got to send events method");
 		if(!validRequests.isEmpty() && !workPorts.isEmpty()) {
+			System.out.println("Made it inside conditiona");
 			ElevatorEvent e = this.validRequests.remove(0);
 			int port = this.workPorts.remove(0);
 			try {
@@ -246,6 +250,13 @@ public class Scheduler implements Runnable {
 				System.out.println("Failed to send Message" + e.toString());
 			}
 			Config.printLine();
+		} else {
+			try {
+				receiveAndSend(); //See if there is something to accept (work perchance?)
+			} catch (IOException e) {
+				//Do nothing
+			}
+			
 		}
 	}
 	

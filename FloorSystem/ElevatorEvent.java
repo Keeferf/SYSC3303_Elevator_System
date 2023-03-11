@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.EventObject;
 import java.util.Objects;
 
+import Elevator.Elevator;
 import Util.Comms.RequestStatus;
 
 public class ElevatorEvent extends EventObject implements Comparable<ElevatorEvent>, Serializable, Cloneable {
@@ -39,7 +40,18 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
         requestStatus = RequestStatus.NEW;
     }
     
-    /**
+    public ElevatorEvent(Object source) {
+    	super(source);
+    	this.timestamp = "";
+		this.direction = null;
+		this.floorToGo = 0;
+		this.currFloor = 0;
+		
+		requestStatus = RequestStatus.REQUEST;
+		
+	}
+
+	/**
      * Converts the given string timestamp from events.txt into a value of seconds
      * @param timestamp
      * @return
@@ -73,6 +85,9 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
     
     @Override
     public String toString() {
+    	if(direction == null) {
+    		return "REQUEST";
+    	}
     	return timestamp + ";" + currFloor + ";" + direction.toString() + ";" + floorToGo;
     }
 

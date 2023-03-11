@@ -39,6 +39,7 @@ public class Elevator implements Runnable{
 		this.currFloor = groundFloor;
 	
 		this.id = Elevator.idCounter;
+		System.out.println("Elevator " + id + " created.");
 		idCounter++;
 		this.state = new IdleState(this);
 	
@@ -118,8 +119,19 @@ public class Elevator implements Runnable{
 	 */
 	public void elevatorActivated() throws InterruptedException {
 		//Retrieve UDP requests
+		ElevatorEvent requestEvent = new ElevatorEvent(this);
+		System.out.println("Elevator " + id + " sent request for work");
+		try {
+			socket.send(UDPBuilder.newMessage(requestEvent, Config.getSchedulerip(), Config.getSchedulerport()));
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+		
 		
 		//Might make a separate thread just for listening to requests for the future
+		
+		//Get the response back with data
 		byte[] pack = new byte[Config.getMaxMessageSize()];
 		DatagramPacket packet = new DatagramPacket(pack,pack.length);
 		try {
@@ -130,23 +142,16 @@ public class Elevator implements Runnable{
 			throw new RuntimeException(e);
 		}
 		
-		//Check if payload is valid
+		//Get payload of response
 		ElevatorEvent e = UDPBuilder.getPayload(packet);
+		
+		req = e;
 		
 		System.out.println("Elevator " + this.id + " Received Request: " + this.req.toString());
 		
 		System.out.println("Elevator " + this.id + " at floor " + this.currFloor + "\n");
 		
-		req = e;
 		
-        //Send an acknowledge reply back to scheduler
-        try {
-			socket.send(UDPBuilder.acknowledge(e, Config.getSchedulerip(), Config.getSchedulerport()));
-		} catch (IOException e1) {
-			System.out.println("Failed to send Packet!");
-			e1.printStackTrace();
-			return;
-		}
 		Thread.sleep(1000);
 		
 		this.state.checkState();
@@ -235,7 +240,7 @@ public class Elevator implements Runnable{
 			socket.receive(packet);
 			
 			if(UDPBuilder.getPayload(packet).getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
-				System.out.println("Scheduler Acknowledged the fulfilled request: " + e);
+				System.out.println("Scheduler Acknowledged the fulfilled request: " + e + " by elevator: " + id);
 			}
 		} catch (IOException e1) {
 			System.out.println("Failed to send fulfilled message: " + e.toString());
