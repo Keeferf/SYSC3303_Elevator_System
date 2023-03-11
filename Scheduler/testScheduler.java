@@ -2,8 +2,6 @@ package Scheduler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Optional;
-
 import org.junit.jupiter.api.Test;
 
 import Elevator.Elevator;
@@ -22,15 +20,15 @@ class testScheduler {
 		s.newRequest(new ElevatorEvent(this, "14:05:15", Direction.UP, 0, 2));
 		assertEquals(1, s.getIncomingQueueLength());
 		s.validateRequest();
-		assertEquals(1, s.getUpQueueLength());
+		assertEquals(1, s.getValidQueueLength());
 		s.newRequest(new ElevatorEvent(this, "18:38:21", Direction.UP, 1, 2));
 		assertEquals(1, s.getIncomingQueueLength());
 		s.validateRequest();
-		assertEquals(2, s.getUpQueueLength());
+		assertEquals(2, s.getValidQueueLength());
 		s.newRequest(new ElevatorEvent(this, "20:01:34", Direction.UP, 1, 3));
 		assertEquals(1, s.getIncomingQueueLength());
 		s.validateRequest();
-		assertEquals(3, s.getUpQueueLength());
+		assertEquals(3, s.getValidQueueLength());
 	}
 	
 	@Test
@@ -39,15 +37,15 @@ class testScheduler {
 		s.newRequest(new ElevatorEvent(this, "14:05:15", Direction.DOWN, 4, 2));
 		assertEquals(1, s.getIncomingQueueLength());
 		s.validateRequest();
-		assertEquals(1, s.getDownQueueLength());
+		assertEquals(1, s.getValidQueueLength());
 		s.newRequest(new ElevatorEvent(this, "18:38:21", Direction.DOWN, 3, 0));
 		assertEquals(1, s.getIncomingQueueLength());
 		s.validateRequest();
-		assertEquals(2, s.getDownQueueLength());
+		assertEquals(2, s.getValidQueueLength());
 		s.newRequest(new ElevatorEvent(this, "20:01:34", Direction.DOWN, 2, 1));
 		assertEquals(1, s.getIncomingQueueLength());
 		s.validateRequest();
-		assertEquals(3, s.getDownQueueLength());
+		assertEquals(3, s.getValidQueueLength());
 	}
 	
 	@Test
@@ -62,9 +60,9 @@ class testScheduler {
 		eT.start();
 		fT.start();
 		assertEquals(0, s.getIncomingQueueLength());
-		assertEquals(0, s.getUpQueueLength());
-		assertEquals(0, s.getDownQueueLength());
-		assertEquals(0, s.getUpQueueLength());
+		assertEquals(0, s.getValidQueueLength());
+		assertEquals(0, s.getValidQueueLength());
+		assertEquals(0, s.getValidQueueLength());
 		assertEquals(0, s.getResponseQueueLength());
 	}
 }

@@ -20,12 +20,12 @@ class testElevator{
 		Elevator elevator = new Elevator();
 		elevator.setFloorToGo(5);
 		try {
-			elevator.pressButton();
+			elevator.moveElevator();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			fail();
 		}
-		assertEquals(5,elevator.getCurFloor());
+		assertEquals(5,elevator.getCurrFloor());
 	}
 	
 	@Test
@@ -33,38 +33,19 @@ class testElevator{
 		Elevator elevator = new Elevator();
 		elevator.setFloorToGo(10);
 		try {
-			elevator.pressButton();
+			elevator.moveElevator();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			fail();
 		}
 		elevator.setFloorToGo(2);
 		try {
-			elevator.pressButton();
+			elevator.moveElevator();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			fail();
 		}
-		assertEquals(2,elevator.getCurFloor());
-	}
-	
-	@Test
-	void testSetCurFloor(){
-		Elevator elevator = new Elevator();
-		elevator.setCurFloor(4);
-		assertEquals(4,elevator.getCurFloor());
-	}
-	
-	@Test
-	void testGetGroundFloor() {
-		Elevator elevator = new Elevator();
-		assertEquals(6,elevator.getGroundFloor());
-	}
-	
-	@Test
-	void testGetMaxFloor() {
-		Elevator elevator = new Elevator();
-		assertEquals(10,elevator.getMaxFloor());
+		assertEquals(2,elevator.getCurrFloor());
 	}
 	
 	@Test
@@ -75,8 +56,7 @@ class testElevator{
 	}
 	@Test
 	void testElevatorEvent() {
-		FloorSubsystem f = new FloorSubsystem();
-		ElevatorEvent event = new ElevatorEvent(this, "14:05:15", Direction.UP, 7, 5);
+		ElevatorEvent event = new ElevatorEvent(this, "00:00:10", Direction.UP, 7, 5);
 		Scheduler s = new Scheduler();
 		s.newRequest(event);
 		Elevator elevator = new Elevator();

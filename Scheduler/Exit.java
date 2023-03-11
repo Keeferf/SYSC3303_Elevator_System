@@ -6,6 +6,12 @@ package Scheduler;
  */
 public class Exit implements SchedulerState {
 	
+	private Scheduler s;
+	
+	public Exit(Scheduler s) {
+		this.s = s;
+	}
+	
 	/**
 	 * Method to execute the exit state
 	 */
@@ -17,6 +23,7 @@ public class Exit implements SchedulerState {
 	 * Method to move to the next state, by exiting the exiting the system.
 	 */
 	public void checkStateChange() {
+		this.s.printThroughput();
 		System.exit(0);
 	}
 }

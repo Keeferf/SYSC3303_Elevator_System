@@ -12,7 +12,7 @@ public class Config {
 	
 	private static final int FloorSubsystemPort = 5040;
 	private static final int SchedulerPort = 5041;
-	private static final int ElevatorPort = 5043;
+	private static final int[] ElevatorPort = {5043, 5044, 5045, 5046};
 	
 	private static final int MAXMESSAGESIZE = 1000;
 	
@@ -36,8 +36,8 @@ public class Config {
 	public static int getSchedulerport() {
 		return SchedulerPort;
 	}
-	public static int getElevatorport() {
-		return ElevatorPort;
+	public static int getElevatorport(int id) {
+		return ElevatorPort[id];
 	}
 	public static int getMaxMessageSize() {
 		return MAXMESSAGESIZE;

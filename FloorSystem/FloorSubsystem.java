@@ -5,9 +5,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
-
-import Elevator.Elevator;
-import Scheduler.Scheduler;
 import Util.Comms.Config;
 import Util.Comms.RequestStatus;
 import Util.Comms.UDPBuilder;
@@ -17,9 +14,7 @@ import Util.Timer.TimerN;
 public class FloorSubsystem implements Runnable, Timeable{
 	
 	private ArrayList<ElevatorEvent> ee;
-	private Scheduler sc;
 	private ArrayList<Floor> floors;
-	private int numReqsProcessed;
 	private DatagramSocket socket;
 	
 	public FloorSubsystem() {
@@ -32,7 +27,6 @@ public class FloorSubsystem implements Runnable, Timeable{
 		for(i = 0; i < n; i++) {
 			this.floors.add(new Floor(i));
 		}
-		this.numReqsProcessed = 0;
 	}
 	
 	/**
@@ -113,24 +107,14 @@ public class FloorSubsystem implements Runnable, Timeable{
 		}
 	
 	}
-	
-	/**
-	 * Setter method for the Scheduler of the Floor Subsystem.
-	 * @param sc
-	 */
-	public void setScheduler(Scheduler sc) {
-		this.sc = sc;
-	}
-	
 	/**
 	 * Prints out the request which was completed, i.e. the passenger arrived at their destination floor
 	 * @param completedRequest Passenger request which was completed
 	 * 
 	 * @deprecated
 	 */
-	public void alert(ElevatorEvent completedRequest) {
-		System.out.println("Recieved Reponse for Request: " + completedRequest.toString());
-		this.numReqsProcessed++;
+	public synchronized void alert(ElevatorEvent completedRequest) {
+		System.out.println("Floor Subsystem: Received Response for Request: " + completedRequest.toString() + "\n");
 	}
 
 	/**

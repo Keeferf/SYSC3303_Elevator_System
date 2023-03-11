@@ -25,11 +25,11 @@ public class ValidateEvents implements SchedulerState {
 
 	@Override
 	public void checkStateChange() {
-		if (s.getUpQueueLength() == 0 && s.getDownQueueLength() == 0) {
-			System.out.println("ValidateEvents -> Idle");
+		if (s.getValidQueueLength() == 0) {
+			System.out.println("Scheduler: ValidateEvents -> Idle\n");
 			s.setState(new Idle(s));
 		} else if (s.getIncomingQueueLength() == 0) {
-			System.out.println("ValidateEvents -> SendEvents");
+			System.out.println("Scheduler: ValidateEvents -> SendEvents\n");
 			s.setState(new SendEvents(s));
 		}
 	}

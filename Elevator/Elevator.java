@@ -5,17 +5,11 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import Elevator.Components.ElevatorButton;
 import Elevator.Components.ElevatorDoor;
 import Elevator.Components.ElevatorLamp;
 import Elevator.Components.ElevatorMotor;
-import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
-
-import Scheduler.Scheduler;
 import Util.Comms.Config;
 import Util.Comms.RequestStatus;
 import Util.Comms.UDPBuilder;
@@ -23,31 +17,33 @@ import Util.Comms.UDPBuilder;
 
 public class Elevator implements Runnable{
 	
-	private int maxFloor;
-	private int groundFloor;
-	private int curFloor;
+	private static final int maxFloor = Config.getMinFloor();
+	private static final int groundFloor = Config.getMaxFloor();
+	private final int id;
+	private int currFloor;
 	private int floorToGo;
-	private Scheduler schedule;
 	private ElevatorState state;
 	
-	private ArrayList<ElevatorLamp> lamps;
-	private ArrayList<ElevatorButton> buttons;
-	private ElevatorDoor door;
-	private ElevatorMotor motor;
-	private ElevatorEvent req ;
+	private final ArrayList<ElevatorLamp> lamps;
+	private final ArrayList<ElevatorButton> buttons;
+	private final ElevatorDoor door;
+	private final ElevatorMotor motor;
+	private ElevatorEvent req;
 	
 	private DatagramSocket socket;
 	
+	private static int idCounter = 0;
 
 	
 	public Elevator()  {
-		this.curFloor = Config.getMinFloor();
-		this.maxFloor = Config.getMaxFloor();
-		this.groundFloor = curFloor;
+		this.currFloor = groundFloor;
+	
+		this.id = Elevator.idCounter;
+		idCounter++;
 		this.state = new IdleState(this);
 	
 		
-		//Initialise the components
+		//Initialize the components
 		lamps = new ArrayList<>();
 		buttons = new ArrayList<>();
 		
@@ -66,32 +62,17 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException
 	 */
 	private void up() throws InterruptedException {
-		
-		if (curFloor == floorToGo) {
-			//System.out.print("Doors Open");
-			door.open();
-			//this.state.checkState();
-			Thread.sleep(1318);
-			
-			arrivedAtFloor(curFloor);
-		}
-		else{
-			//System.out.print("Doors Closed");
-			door.close();
-			//this.state.checkState();
-			Thread.sleep(1318);
-			int temp = (this.getFloorToGo()) - 1;
-			while(curFloor != this.getFloorToGo()) {
-				curFloor++;
-				motor.activateUp();
-			}
+		if (currFloor == floorToGo) {
+			motor.activateUp();
+			currFloor++;
 			motor.disableMotor();
-			//System.out.print("Doors Open");
 			door.open();
-			//this.state.checkState();
-			arrivedAtFloor(curFloor);
+		}else{
+			motor.activateUp();
+			currFloor++;
+			motor.disableMotor();
+			door.open();
 		}
-		//this.state.checkState();
 	}
 	
 	/**
@@ -100,31 +81,15 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException
 	 */
 	public void down() throws InterruptedException {
-		
-		if (curFloor == floorToGo) {
-			//System.out.print("Doors Open");
-			door.open();
-			//this.state.checkState();
-			Thread.sleep(1318);
-			arrivedAtFloor(curFloor);
-		}
-		else{
-			//System.out.print("Doors Closed");
-			door.close();
-			//this.state.checkState();
-			Thread.sleep(1318);
-			//int temp = (this.getFloorToGo()) + 1;
-			while(curFloor != this.floorToGo) {
-				motor.activateDown();
-				curFloor--;
-			}
+		if (currFloor == floorToGo) {
+			motor.activateDown();
+			currFloor--;
 			motor.disableMotor();
-			//System.out.print("Doors Open");
-			door.open();
-			//this.state.checkState();
-			arrivedAtFloor(curFloor);
+		}else{
+			motor.activateDown();
+			currFloor--;
+			motor.disableMotor();
 		}
-		//this.state.checkState();
 	}
 	
 	/**
@@ -132,20 +97,15 @@ public class Elevator implements Runnable{
 	 * 
 	 * @throws InterruptedException
 	 */
-	public void pressButton() throws InterruptedException {
-		
-		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorToGo) l.toggle(true);}
+	public void moveElevator() throws InterruptedException {
+		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorToGo) l.setState(true);}
 		for(ElevatorButton b: buttons) {if(b.getFloorNum() == floorToGo) b.toggle(true);}
 		
-		if (floorToGo < curFloor) {
+		if (floorToGo < currFloor) {
 			down();
-			//this.state.checkState();
-		}
-		else if (curFloor < floorToGo){
+		} else if (floorToGo > currFloor){
 			up();
-			//this.state.checkState();
 		}
-		
 	}
 	
 	
@@ -156,7 +116,7 @@ public class Elevator implements Runnable{
 	 * @return true or false If the request array is null or not
 	 * @throws InterruptedException 
 	 */
-	public boolean elevatorActivated() throws InterruptedException {
+	public void elevatorActivated() throws InterruptedException {
 		//Retrieve UDP requests
 		
 		//Might make a separate thread just for listening to requests for the future
@@ -173,15 +133,11 @@ public class Elevator implements Runnable{
 		//Check if payload is valid
 		ElevatorEvent e = UDPBuilder.getPayload(packet);
 		
-		req = e;
+		System.out.println("Elevator " + this.id + " Received Request: " + this.req.toString());
 		
-        if (e.getDirection().equals(Direction.UP)) {
-        	System.out.println("Recieved Up Request: " + e.toString());
-        	this.curFloor = Math.max(this.curFloor, e.getFloorToGo());
-        } else {
-        	System.out.println("Recieved Down Request: " + e.toString());
-        	this.curFloor = Math.min(this.curFloor, e.getFloorToGo());
-        }
+		System.out.println("Elevator " + this.id + " at floor " + this.currFloor + "\n");
+		
+		req = e;
 		
         //Send an acknowledge reply back to scheduler
         try {
@@ -189,47 +145,21 @@ public class Elevator implements Runnable{
 		} catch (IOException e1) {
 			System.out.println("Failed to send Packet!");
 			e1.printStackTrace();
-			return false;
+			return;
 		}
 		Thread.sleep(1000);
-		return true;
+		
+		this.state.checkState();
+		this.state.runState();
 	}
 	
 	/**
 	 * Returns the Current floor that the Elevator is on.
 	 * 
-	 * @return curFloor
+	 * @return currFloor
 	 */
-	public int getCurFloor() {
-		return curFloor;
-	}
-	
-	/**
-	 * Returns true if the current floor of the Elevator is set.
-	 * 
-	 * @return true
-	 */
-	public boolean setCurFloor(int newCurFloor) {
-		this.curFloor = newCurFloor;
-		return true;
-		
-	}
-	/**
-	 * Returns the ground floor of the Elevator.
-	 * 
-	 * @return groundFloor
-	 */
-	public int getGroundFloor() {
-		return groundFloor;
-	}
-	
-	/**
-	 * Returns the maximum floor of the Elevator.
-	 * 
-	 * @return maxFloor
-	 */
-	public int getMaxFloor() {
-		return maxFloor;
+	public int getCurrFloor() {
+		return currFloor;
 	}
 	
 	/**
@@ -246,54 +176,51 @@ public class Elevator implements Runnable{
 	 * 
 	 * @return true
 	 */
-	public boolean setFloorToGo(int newFloorNum) {
+	public void setFloorToGo(int newFloorNum) {
 		this.floorToGo = newFloorNum;
-		return true;
-		
 	}
 	
 	/**
 	 * Sets the state of the Elevator.
-	 * 
 	 */
-	 public void setState(ElevatorState state) {
-			this.state = state;
-			this.state.runState();
-		}
+	public void setState(ElevatorState state) {
+		this.state = state;
+		this.state.runState();
+	}
 	 
-	 /**
-	  * Returns the Elevator state.
-	  * 
-	  * @return state
-	  */
-	 public ElevatorState getState() {
-		   return this.state;
-	   }
+	/**
+	 * Returns the Elevator state.
+	 * 
+	 * @return state
+	 */
+	public ElevatorState getState() {
+		return this.state;
+	}
+
+	/**
+	 * Returns the full request of the passenger.
+	 * 
+	 * @return req
+	 */
+	public ElevatorEvent getRequest() {
+		 return this.req;
+	}
 	 
-	 /**
-	  * Returns the current floor of the passenger.
-	  * 
-	  * @return req.getCurrFloor()
-	  */
-	 public int getRequest() {
-		   return this.req.getCurrFloor();
-	   }
-	 
-	 /**
-	  * Returns the full request of the passenger.
-	  * 
-	  * @return req
-	  */
-	 public ElevatorEvent getFullRequest() {
-		   return this.req;
-	   }
+	/**
+	 * Getter method for the elevator id
+	 * @return Returns the ID of the elevator instance
+	 */
+	public int getID() {
+		return this.id;
+	}
 	
 	/**
 	 * For when a car has arrived at a floor
 	 * @param floorNum
 	 */
-	private void arrivedAtFloor(int floorNum) {
-		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorNum) l.toggle(false);}
+	protected void arrivedAtFloor(int floorNum) {
+		System.out.println("Elevator " + this.id + " arrived at " + this.currFloor + "\n");
+		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorNum) l.setState(false);}
 		for(ElevatorButton b: buttons) {if(b.getFloorNum() == floorNum) b.toggle(false);}
 		
 		ElevatorEvent e = req;
@@ -322,7 +249,7 @@ public class Elevator implements Runnable{
 	@Override
 	public void run() {
 		try {
-			this.socket = new DatagramSocket(Config.getElevatorport());
+			this.socket = new DatagramSocket(Config.getElevatorport(this.id));
 		} catch (SocketException e) {
 			e.printStackTrace();
 			System.exit(1);

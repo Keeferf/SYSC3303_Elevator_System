@@ -98,7 +98,7 @@ class testElevatorComponents extends TestCase{
 		for(ElevatorLamp l: lamps) {
 			if(l.getFloorNum() == floor) {
 				assertFalse("Lamp is not on yet.", l.getState());
-				l.toggle(true);
+				l.setState(true);
 				assertTrue("Lamp is on.", l.getState());
 				
 				assertEquals("Checking floor num",5,l.getFloorNum());
