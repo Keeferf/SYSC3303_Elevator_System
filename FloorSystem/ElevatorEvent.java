@@ -11,9 +11,11 @@ import java.io.Serializable;
 import java.util.EventObject;
 import java.util.Objects;
 
-import Elevator.Elevator;
 import Util.Comms.RequestStatus;
 
+/**
+ * Elevator event handles the input of events
+ */
 public class ElevatorEvent extends EventObject implements Comparable<ElevatorEvent>, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
@@ -26,6 +28,14 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
     
     private RequestStatus requestStatus;
 
+    /**
+     * Constructor for the elevator event class
+     * @param source: Object
+     * @param timestamp: String
+     * @param direction: Direction
+     * @param floorToGo: Int
+     * @param currFloor: Int
+     */
     public ElevatorEvent(Object source, String timestamp, Direction direction, int floorToGo, int currFloor) {
         super(source);
         this.timestamp = timestamp;
@@ -66,23 +76,41 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
     	return secs;
     }
 
-    //Getters
+    /**
+     * Getter for the timestampe of events
+     * @return timestamp: String
+     */
     public String getTimestamp() {
         return timestamp;
     }
     
+    /**
+     * Getter for the direction of events
+     * @return direction
+     */
     public Direction getDirection() {
         return direction;
     }
 
+    /**
+     * Getter for the destination floor
+     * @return floorToGo: Int
+     */
     public int getFloorToGo() {
         return floorToGo;
     }
 
+    /**
+     * Getter for the current floor
+     * @return currFloor: Int
+     */
     public int getCurrFloor() {
         return currFloor;
     }
     
+    /**
+     * A method to convert events to a string
+     */
     @Override
     public String toString() {
     	if(direction == null) {
@@ -91,6 +119,9 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
     	return timestamp + ";" + currFloor + ";" + direction.toString() + ";" + floorToGo;
     }
 
+    /**
+     * A method to comapre the current floor with the event floor
+     */
     @Override
 	public int compareTo(ElevatorEvent e) {
 		return this.currFloor - e.currFloor;

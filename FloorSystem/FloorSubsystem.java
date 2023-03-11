@@ -11,6 +11,9 @@ import Util.Comms.UDPBuilder;
 import Util.Timer.Timeable;
 import Util.Timer.TimerN;
 
+/**
+ * The floor subsystem class handles the implementation of the floors
+ */
 public class FloorSubsystem implements Runnable, Timeable{
 	
 	private ArrayList<ElevatorEvent> ee;

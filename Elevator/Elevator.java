@@ -14,7 +14,9 @@ import Util.Comms.Config;
 import Util.Comms.RequestStatus;
 import Util.Comms.UDPBuilder;
 
-
+/**
+ * Elevator class to handle all the elevator components
+ */
 public class Elevator implements Runnable{
 	
 	private static final int maxFloor = Config.getMaxFloor();
@@ -34,7 +36,10 @@ public class Elevator implements Runnable{
 	
 	private static int idCounter = 0;
 
-	
+	/**
+	 * Constructor for the elevator class
+	 * @param sc: Scheduler
+	 */
 	public Elevator()  {
 		this.currFloor = groundFloor;
 	

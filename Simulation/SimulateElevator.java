@@ -2,6 +2,9 @@ package Simulation;
 
 import Elevator.Elevator;
 
+/**
+ * The simulate elevator handles the creation and exucution of threads
+ */
 public class SimulateElevator {
 	public static void main(String[] args) {
 		Elevator elevator1 = new Elevator();

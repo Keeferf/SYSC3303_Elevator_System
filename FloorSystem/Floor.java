@@ -1,12 +1,6 @@
 package FloorSystem;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.util.Optional;
 import java.util.Random;
-
-
-
 
 /**
  * The Floor class is used for everything involved in
@@ -20,13 +14,9 @@ public class Floor{
 	private int people;
 	private boolean upLamp;
 	private boolean downLamp;
-	private boolean downButtonPressed, upButtonPressed;
-	
 	private Random rand;
 	
 	private boolean isOn;
-	
-
 	
 	/**
 	 * Constructor for Floor class
@@ -36,8 +26,6 @@ public class Floor{
 		this.floorNum = floorNum;
 		this.people = 0;
 		this.isOn = false;
-		this.downButtonPressed = false;
-		this.upButtonPressed = false;
 		this.rand = new Random();
 	}
 	

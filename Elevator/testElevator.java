@@ -9,10 +9,11 @@ import org.junit.jupiter.api.Test;
 
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
-import FloorSystem.FloorSubsystem;
 import Scheduler.Scheduler;
 
-
+/**
+ * Test class for the elevator class
+ */
 class testElevator{
 
 	@Test

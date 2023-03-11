@@ -3,8 +3,6 @@ package FloorSystem;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
-
 /**
  * A test class for the Floor class
  * @author Keefer Belanger 101152085
