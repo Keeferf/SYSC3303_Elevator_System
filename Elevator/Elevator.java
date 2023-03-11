@@ -8,13 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import Elevator.Components.ElevatorButton;
+import Elevator.Components.ElevatorDoor;
+import Elevator.Components.ElevatorLamp;
+import Elevator.Components.ElevatorMotor;
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
 import Scheduler.Scheduler;
-import UDP.Config;
-import UDP.RequestStatus;
-import UDP.UDPBuilder;
+import Util.Comms.Config;
+import Util.Comms.RequestStatus;
+import Util.Comms.UDPBuilder;
 
 
 public class Elevator implements Runnable{
@@ -37,13 +41,18 @@ public class Elevator implements Runnable{
 	
 
 	
-	public Elevator(int maxFloor, int groundFloor, Scheduler sc) throws SocketException {
+	public Elevator(int maxFloor, int groundFloor, Scheduler sc)  {
 		this.curFloor = groundFloor;
 		this.maxFloor = maxFloor;
 		this.groundFloor = groundFloor;
 		this.schedule = sc;
 		this.state = new IdleState(this);
-		this.socket = new DatagramSocket(Config.getSchedulerport());
+		try {
+			this.socket = new DatagramSocket(Config.getSchedulerport());
+		} catch (SocketException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	
 		
 		//Initialise the components

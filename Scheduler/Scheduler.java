@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.Optional;
 
 import FloorSystem.FloorSubsystem;
-import UDP.Config;
-import UDP.UDPBuilder;
+import Util.Comms.Config;
+import Util.Comms.UDPBuilder;
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
@@ -33,7 +33,7 @@ public class Scheduler implements Runnable {
 	 * @param floors The FloorSubsystem instance executing as a Thread
 	 * @throws SocketException 
 	 */
-    public Scheduler(FloorSubsystem floors) throws SocketException {
+    public Scheduler(FloorSubsystem floors) {
     	this.floors = floors;
     	this.incomingRequests = new ArrayList<>();
     	this.upRequests = new ArrayList<>();
@@ -41,7 +41,12 @@ public class Scheduler implements Runnable {
         this.returnResponses = new ArrayList<>();
         this.state = new Idle(this);
         this.lastRequestPassed = false;
-        this.socket = new DatagramSocket();
+        try {
+			this.socket = new DatagramSocket();
+		} catch (SocketException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
     }
     
     /**

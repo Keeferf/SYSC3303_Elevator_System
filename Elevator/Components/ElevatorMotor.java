@@ -1,4 +1,4 @@
-package Elevator;
+package Elevator.Components;
 
 public class ElevatorMotor {
 	

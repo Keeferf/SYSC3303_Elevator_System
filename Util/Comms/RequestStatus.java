@@ -1,4 +1,4 @@
-package UDP;
+package Util.Comms;
 
 /**
  * An enum for tracking the status of an Elevator Event

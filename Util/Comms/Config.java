@@ -1,4 +1,4 @@
-package UDP;
+package Util.Comms;
 
 /**
  * A configuration class for all of the values that could change throughout the program.

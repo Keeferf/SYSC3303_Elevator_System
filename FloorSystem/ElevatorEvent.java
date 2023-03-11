@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.EventObject;
 import java.util.Objects;
 
-import UDP.RequestStatus;
+import Util.Comms.RequestStatus;
 
 public class ElevatorEvent extends EventObject implements Comparable<ElevatorEvent>, Serializable, Cloneable {
 
@@ -20,6 +20,8 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
     private final Direction direction;
     private final int floorToGo;
     private final int currFloor;
+    
+    private int seconds;
     
     private RequestStatus requestStatus;
 
@@ -30,9 +32,26 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
         this.floorToGo = floorToGo;
         this.currFloor = currFloor;
         
+        seconds = convertToSeconds(timestamp);
+        
         //New elevator events always start off at "NEW" status
         
         requestStatus = RequestStatus.NEW;
+    }
+    
+    /**
+     * Converts the given string timestamp from events.txt into a value of seconds
+     * @param timestamp
+     * @return
+     */
+    private int convertToSeconds(String timestamp) {
+    	int secs = 0;
+    	String[] vals = timestamp.split(":");
+    	secs += (Integer.parseInt(vals[0]) * 60 * 60 );//hours
+    	secs += (Integer.parseInt(vals[1]) * 60);//minutes
+    	secs += (Integer.parseInt(vals[2].substring(0, 2)));//seconds
+    	
+    	return secs;
     }
 
     //Getters
@@ -73,6 +92,10 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
     
     public void setRequestStatus(RequestStatus rs) {
     	requestStatus = rs;
+    }
+    
+    public int getTimeAsSeconds() {
+    	return seconds;
     }
     
     /**

@@ -1,4 +1,4 @@
-package UDP;
+package Util.Comms;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;

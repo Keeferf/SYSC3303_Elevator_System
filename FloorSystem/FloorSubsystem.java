@@ -1,5 +1,6 @@
 package FloorSystem;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -7,21 +8,27 @@ import java.util.ArrayList;
 
 import Elevator.Elevator;
 import Scheduler.Scheduler;
-import UDP.Config;
-import UDP.RequestStatus;
-import UDP.UDPBuilder;
+import Util.Comms.Config;
+import Util.Comms.RequestStatus;
+import Util.Comms.UDPBuilder;
+import Util.Timer.Timeable;
+import Util.Timer.TimerN;
 
-public class FloorSubsystem implements Runnable{
+public class FloorSubsystem implements Runnable, Timeable{
 	
 	private ArrayList<ElevatorEvent> ee;
 	private Scheduler sc;
 	private ArrayList<Floor> floors;
 	private int numReqsProcessed;
 	private DatagramSocket socket;
-	private DatagramPacket packet;
 	
-	public FloorSubsystem(int n) throws SocketException {
-		this.socket = new DatagramSocket(Config.getSchedulerport());
+	public FloorSubsystem(int n) {
+		try {
+			this.socket = new DatagramSocket(Config.getSchedulerport());
+		} catch (SocketException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		this.floors = new ArrayList<Floor>();
 		for(int i = 0; i < n; i++) {
 			this.floors.add(new Floor(i));
@@ -31,117 +38,59 @@ public class FloorSubsystem implements Runnable{
 	
 	/**
 	 * Run method for the Floor Subsystem Thread
+	 * 
+	 * Loads all events into Timers which will dispatch at x time,
+	 * then loops for responses from scheduler
 	 */
 	@Override
 	public void run() {
 		try {
 			EventParser ep = new EventParser();
 			ee = ep.getEvents();
-			System.out.println("Testing 0.1s delay between events\n");
-			int i = 0;
-			for(ElevatorEvent e: ee) {
-				System.out.println("Sending Request: " + e.toString());
-				
-				// Sending message to Scheduler
-				this.socket.send(UDPBuilder.newMessage(e, Config.getSchedulerip(), Config.getSchedulerport()));
-				//sc.newRequest(e);
-				i++;
-				
-				// Receiving message from Scheduler
-				byte[] pack = new byte[Config.getMaxMessageSize()];
-				this.packet = new DatagramPacket(pack,pack.length);
-				socket.receive(packet);
-				
-				ElevatorEvent elevator = UDPBuilder.getPayload(packet);
-				
-				if(!elevator.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
-                    System.out.println("Error");
-                    System.exit(1);
-                }
-				
-				Thread.sleep(100);
-			}
-			while (i != this.numReqsProcessed) {
-				Thread.sleep(1000);
-			}
-			System.out.println("\n\n\nTesting 1s delay between events\n");
-			for(ElevatorEvent e: ee) {
-				System.out.println("Sending Request: " + e.toString());
-
-				// Sending message to Scheduler
-				this.socket.send(UDPBuilder.newMessage(e, Config.getSchedulerip(), Config.getSchedulerport()));
-				//sc.newRequest(e);
-				i++;
-				
-				// Receiving message from Scheduler
-				byte[] pack = new byte[Config.getMaxMessageSize()];
-				this.packet = new DatagramPacket(pack,pack.length);
-				socket.receive(packet);
-				
-				ElevatorEvent elevator = UDPBuilder.getPayload(packet);
-				
-				if(!elevator.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
-                    System.out.println("Error");
-                    System.exit(1);
-                }
-				
-				Thread.sleep(1000);
-			}
-			while (i != this.numReqsProcessed) {
-				Thread.sleep(1000);
-			}
-			System.out.println("\n\n\nTesting 0.5s delay between events\n");
-			for(ElevatorEvent e: ee) {
-				System.out.println("Sending Request: " + e.toString());
-
-				// Sending message to Scheduler
-				this.socket.send(UDPBuilder.newMessage(e, Config.getSchedulerip(), Config.getSchedulerport()));
-				//sc.newRequest(e);
-				i++;
-				
-				// Receiving message from Scheduler
-				byte[] pack = new byte[Config.getMaxMessageSize()];
-				this.packet = new DatagramPacket(pack,pack.length);
-				socket.receive(packet);
-				
-				ElevatorEvent elevator = UDPBuilder.getPayload(packet);
-				
-				if(!elevator.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
-                    System.out.println("Error");
-                    System.exit(1);
-                }
-				
-				Thread.sleep(500);
-			}
-			while (i != this.numReqsProcessed) {
-				Thread.sleep(1000);
-			}
-			System.out.println("\n\n\nTesting 3s delay between events\n");
-			for(ElevatorEvent e: ee) {
-				System.out.println("Sending Request: " + e.toString());
-
-				// Sending message to Scheduler
-				this.socket.send(UDPBuilder.newMessage(e, Config.getSchedulerip(), Config.getSchedulerport()));
-				//sc.newRequest(e);
-				i++;
-				
-				// Receiving message from Scheduler
-				byte[] pack = new byte[Config.getMaxMessageSize()];
-				this.packet = new DatagramPacket(pack,pack.length);
-				socket.receive(packet);
-				
-				ElevatorEvent elevator = UDPBuilder.getPayload(packet);
-				
-				if(!elevator.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
-                    System.out.println("Error");
-                    System.exit(1);
-                }
-				
-				Thread.sleep(3000);
-			}
-			//sc.endRequests();
+		} catch (Throwable e) {
+			//Exit system
+			e.printStackTrace();
+			System.exit(1);
 		}
-		catch(Throwable e) {}
+			
+		for(ElevatorEvent e: ee) {
+			//Dispatch a new event that will send at x seconds, calling Timeable method below
+			TimerN.startTimer(e.getTimeAsSeconds(),  e, this);
+		}
+			
+		//Loop to receive acknowledgements/fulfilled from system
+		while(true) {
+			byte[] d = new byte[Config.getMaxMessageSize()];
+			DatagramPacket p = new DatagramPacket(d,d.length);
+			try {
+				socket.receive(p);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				continue;
+			}
+			
+			//Extract payload from the packet
+			ElevatorEvent e;
+			if(!(UDPBuilder.getPayload(p) instanceof ElevatorEvent)) {
+				System.out.println("Bad Data");
+				continue;
+			} else {
+				e = (ElevatorEvent) UDPBuilder.getPayload(p);
+			}
+			
+			//Logic for acknowledge/fullfilled requests received
+			
+			switch(e.getRequestStatus()) {
+			case ACKNOWLEDGED :
+				System.out.println("Scheduler Acknowledged Event: " + e.toString());
+			case FULFILLED :
+				System.out.println("Elevator Fulfilled Event: " + e.toString());
+			default:
+				System.out.println("Invalid Request Data Received: " + e.getRequestStatus().toString());
+				continue;
+			}
+		}
+	
 	}
 	
 	/**
@@ -159,5 +108,31 @@ public class FloorSubsystem implements Runnable{
 	public void alert(ElevatorEvent completedRequest) {
 		System.out.println("Recieved Reponse for Request: " + completedRequest.toString());
 		this.numReqsProcessed++;
+	}
+
+	@Override
+	public void timerFinished(Object payload) {
+		//Check for if is elevatorEvent
+		ElevatorEvent e;
+		if(!(payload instanceof ElevatorEvent)) {
+			System.out.println("Error: ElevatorEvent expected");
+			return;
+		} else {
+			e = (ElevatorEvent) payload;
+		}
+		
+		
+		//When the timer finishes, send via UDP to the scheduler
+		
+		try {
+			socket.send(UDPBuilder.newMessage(e, Config.getSchedulerip(), Config.getSchedulerport()));
+			
+			System.out.println("Message sent to scheduler: " + e.toString());
+			
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		
 	}
 }
