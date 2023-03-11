@@ -2,7 +2,6 @@ package FloorSystem;
 
 import java.util.ArrayList;
 
-import Elevator.Elevator;
 import Scheduler.Scheduler;
 
 /**

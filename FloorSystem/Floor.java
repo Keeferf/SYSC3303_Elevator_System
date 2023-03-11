@@ -14,8 +14,6 @@ public class Floor{
 	private int people;
 	private boolean upLamp;
 	private boolean downLamp;
-	private boolean downButtonPressed, upButtonPressed;
-	
 	private Random rand;
 	
 	private boolean isOn;
@@ -28,8 +26,6 @@ public class Floor{
 		this.floorNum = floorNum;
 		this.people = 0;
 		this.isOn = false;
-		this.downButtonPressed = false;
-		this.upButtonPressed = false;
 		this.rand = new Random();
 	}
 	
