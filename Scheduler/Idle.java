@@ -1,7 +1,7 @@
 package Scheduler;
 
 /**
- * Idle state for the cheduler, which occurs when there are not requests to process, but more requests will be sent
+ * Idle state for the scheduler, which occurs when there are not requests to process, but more requests will be sent
  * @author Colin Mandeville
  */
 public class Idle implements SchedulerState {
@@ -33,17 +33,17 @@ public class Idle implements SchedulerState {
 	@Override
 	public void checkStateChange() {
 		if (s.getIncomingQueueLength() > 0) {
-			System.out.println("Idle -> ValidateEvents");
+			System.out.println("Scheduler: Idle -> ValidateEvents\n");
 			s.setState(new ValidateEvents(s));
-		} else if (s.getUpQueueLength() > 0 || s.getDownQueueLength() > 0) {
-			System.out.println("Idle -> SendEvents");
+		} else if (s.getValidQueueLength() > 00) {
+			System.out.println("Scheduler: Idle -> SendEvents\n");
 			s.setState(new SendEvents(s));
 		} else if (s.getResponseQueueLength() > 0) {
-			System.out.println("Idle -> ReturnResponse");
+			System.out.println("Scheduler: Idle -> ReturnResponse\n");
 			s.setState(new ReturnResponse(s));
 		} else if (s.isEnd()) {
-			System.out.println("Idle -> Exit");
-			s.setState(new Exit());
+			System.out.println("Scheduler: Idle -> Exit\n");
+			s.setState(new Exit(this.s));
 		}
 	}
 

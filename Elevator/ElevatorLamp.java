@@ -15,7 +15,7 @@ public class ElevatorLamp {
 		this.floorNum = floorNum;
 	}
 	
-	public void toggle(boolean t) {
+	public void setState(boolean t) {
 		isOn = t;
 	}
 	
