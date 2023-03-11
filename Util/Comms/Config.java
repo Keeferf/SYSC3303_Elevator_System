@@ -16,7 +16,7 @@ public class Config {
 	
 	private static final int MAXMESSAGESIZE = 1000;
 	
-	private static final int MAXFLOOR = 5;
+	private static final int MAXFLOOR = 22;
 	private static final int MINFLOOR = 0;
 	
 	//Getters

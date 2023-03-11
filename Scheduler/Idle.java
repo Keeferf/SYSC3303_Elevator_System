@@ -19,14 +19,16 @@ public class Idle implements SchedulerState {
 	 */
 	@Override
 	public void executeState() {
-		while(s.getState() == this) {	
-			try {
-				this.s.receiveAndSend();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		while(s.getState() == this) {
 			this.checkStateChange();
+			if (this.s.getState() == this) {
+				try {
+					this.s.receiveAndSend();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 

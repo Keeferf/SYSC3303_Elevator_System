@@ -17,8 +17,8 @@ import Util.Comms.UDPBuilder;
 
 public class Elevator implements Runnable{
 	
-	private static final int maxFloor = Config.getMinFloor();
-	private static final int groundFloor = Config.getMaxFloor();
+	private static final int maxFloor = Config.getMaxFloor();
+	private static final int groundFloor = Config.getMinFloor();
 	private final int id;
 	private int currFloor;
 	private int floorToGo;
@@ -221,7 +221,7 @@ public class Elevator implements Runnable{
 	
 	/**
 	 * For when a car has arrived at a floor
-	 * @param floorNum
+	 * @param floorNum Floor Number arrived at
 	 */
 	protected void arrivedAtFloor(int floorNum) {
 		System.out.println("Elevator " + this.id + " arrived at " + this.currFloor + "\n");
@@ -233,17 +233,21 @@ public class Elevator implements Runnable{
 		
 		try {
 			socket.send(UDPBuilder.newMessage(e, Config.getSchedulerip(), Config.getSchedulerport()));
-			
 			byte[] pack = new byte[Config.getMaxMessageSize()];
 			DatagramPacket packet = new DatagramPacket(pack,pack.length);
 			
 			socket.receive(packet);
-			
 			if(UDPBuilder.getPayload(packet).getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
 				System.out.println("Scheduler Acknowledged the fulfilled request: " + e + " by elevator: " + id);
 			}
 		} catch (IOException e1) {
 			System.out.println("Failed to send fulfilled message: " + e.toString());
+			e1.printStackTrace();
+		}
+		
+		try {
+			elevatorActivated();
+		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
 	}

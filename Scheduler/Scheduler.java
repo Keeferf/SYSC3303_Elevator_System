@@ -105,7 +105,6 @@ public class Scheduler implements Runnable {
 		
 		//Logic for acknowledge/fullfilled/New requests received
 		if(e.getRequestStatus().equals(RequestStatus.NEW)) {
-			
 			// Send acknowledgement to sender that is has been received
 			socket.send(UDPBuilder.acknowledge(e, packet.getAddress().getHostAddress(), packet.getPort()));
 			System.out.println("New received. Acknowledgment sent back");	
@@ -238,14 +237,12 @@ public class Scheduler implements Runnable {
 	 * @author Nicholas Rose - 101181935
 	 */
 	public synchronized void sendEvents() {
-		System.out.println("Got to send events method");
 		if(!validRequests.isEmpty() && !workPorts.isEmpty()) {
-			System.out.println("Made it inside conditiona");
 			ElevatorEvent e = this.validRequests.remove(0);
 			int port = this.workPorts.remove(0);
 			try {
-					socket.send(UDPBuilder.newMessage(e, Config.getElevatorip(), port));
-					System.out.println("Sent Message to Elevator at port " + port + ": " + e.toString());
+				socket.send(UDPBuilder.newMessage(e, Config.getElevatorip(), port));
+				System.out.println("Sent Message to Elevator at port " + port + ": " + e.toString());
 			} catch (IOException e1) {
 				System.out.println("Failed to send Message" + e.toString());
 			}
@@ -256,7 +253,6 @@ public class Scheduler implements Runnable {
 			} catch (IOException e) {
 				//Do nothing
 			}
-			
 		}
 	}
 	
