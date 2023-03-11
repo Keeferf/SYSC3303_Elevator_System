@@ -15,6 +15,8 @@ public class Scheduler implements Runnable {
 	private SchedulerState state;
 	private boolean lastRequestPassed;
 	private HashMap<Integer, Integer> throughput;
+	private int numRequests;
+	private int numResponses;
 
 	/**
 	 * Scheduler constructor
@@ -28,6 +30,8 @@ public class Scheduler implements Runnable {
         this.state = new Idle(this);
         this.lastRequestPassed = false;
         this.throughput = new HashMap<Integer, Integer>();
+        this.numRequests = 0;
+        this.numResponses = 0;
     }
     
     /**
@@ -38,6 +42,7 @@ public class Scheduler implements Runnable {
     public void newRequest(ElevatorEvent elevatorEvent) {
 		System.out.println("Scheduler Recieved Request\n");
     	this.incomingRequests.add(elevatorEvent);
+    	this.numRequests++;
     }
     
     /**
@@ -67,11 +72,6 @@ public class Scheduler implements Runnable {
                 return Optional.empty();
             }
         }
-		if (this.throughput.keySet().contains(id)) {
-			this.throughput.put(id, this.throughput.get(id) + 1);
-		} else {
-			this.throughput.put(id, 1);
-		}
 		this.state.checkStateChange();
 		return Optional.of(this.validRequests.remove(0));
     }
@@ -81,7 +81,7 @@ public class Scheduler implements Runnable {
 	 * the system will remain active until interrupted by the controller of the system.
 	 */
 	public void endRequests() {
-		System.out.println("Scheduler: LAST REQUEST HAS BEEN PASSED\n");
+		System.out.println("Scheduler: LAST RESPONSE HAS BEEN RECEIVED\n");
 		this.lastRequestPassed = true;
 	}
 	
@@ -90,15 +90,19 @@ public class Scheduler implements Runnable {
 	 * @return Returns a boolean, true = last request has been sent, false = still expecting more requests
 	 */
 	public boolean isEnd() {
-		return this.lastRequestPassed;
+		return this.lastRequestPassed && (this.numRequests == this.numResponses);
 	}
 	
 	/**
 	 * Method to pass completed requests from the elevator to the scheduler
 	 * @param completedRequest The request completed by the elevator
 	 */
-	public synchronized void destinationReached(ElevatorEvent completedRequest) {
+	public void destinationReached(ElevatorEvent completedRequest, int id) {
 		System.out.println("Scheduler: Received Response\n");
+		System.out.print(this.numResponses);
+		this.numResponses++;
+		System.out.println(" " + this.numResponses + "\n");
+		this.throughput.put(id, this.throughput.getOrDefault(id, 0) + 1);
     	this.returnResponses.add(completedRequest);
     }
 	
@@ -158,5 +162,11 @@ public class Scheduler implements Runnable {
 	 */
 	public SchedulerState getState() {
 		return this.state;
+	}
+	
+	public void printThroughput() {
+		for(int i : this.throughput.keySet()) {
+			System.out.println("Elevator " + i + " processed " + this.throughput.get(i) + " requests");
+		}
 	}
 }

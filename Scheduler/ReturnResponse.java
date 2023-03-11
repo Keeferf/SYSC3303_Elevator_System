@@ -27,9 +27,9 @@ public class ReturnResponse implements SchedulerState {
 	
 	@Override
 	public void checkStateChange() {
-		if (s.isEnd() && this.s.getIncomingQueueLength() == 0 && this.s.getValidQueueLength() == 0 && this.s.getResponseQueueLength() == 0) {
+		if (s.isEnd()) {
 			System.out.println("Scheduler: ReturnResponse -> Exit\n");
-			s.setState(new Exit());
+			s.setState(new Exit(this.s));
 		} else if (this.s.getResponseQueueLength() == 0) {
 			System.out.println("Scheduler: ReturnResponse -> Idle\n");
 			s.setState(new Idle(s));

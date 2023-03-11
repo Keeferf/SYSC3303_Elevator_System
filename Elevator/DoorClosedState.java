@@ -10,7 +10,7 @@ public class DoorClosedState implements ElevatorState{
 	
 	@Override
 	public void runState() {
-		while(elevator.getState() == this) {
+		while (this.elevator.getState().getClass() == DoorClosedState.class) {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
@@ -22,7 +22,7 @@ public class DoorClosedState implements ElevatorState{
 
 	@Override
 	public void checkState() {
-		if(elevator.getCurFloor() == this.elevator.getRequest().getFloorToGo()) {
+		if(elevator.getCurrFloor() == this.elevator.getRequest().getFloorToGo()) {
 			System.out.println("Elevator " + this.elevator.getID() + ": Dropped off passenger, Door Closed -> Idle\n");
 			elevator.setState(new IdleState(elevator));
 		} else {

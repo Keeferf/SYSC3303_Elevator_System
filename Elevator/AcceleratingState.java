@@ -30,18 +30,18 @@ public class AcceleratingState implements ElevatorState{
 		ElevatorEvent req = elevator.getRequest();
 		if (req.getFloorToGo() == this.elevator.getFloorToGo()) {
 			if (req.getDirection() == Direction.UP) {
-				if(elevator.getCurFloor() >= elevator.getFloorToGo() - 1) {
+				if(elevator.getCurrFloor() >= elevator.getFloorToGo() - 1) {
 					System.out.println("Elevator " + this.elevator.getID() + ": Accelerate -> Decelerate\n");
 					elevator.setState(new DeceleratingState(elevator));
 				}
 			} else {
-				if(elevator.getCurFloor() == elevator.getFloorToGo() + 1) {
+				if(elevator.getCurrFloor() == elevator.getFloorToGo() + 1) {
 					System.out.println("Elevator " + this.elevator.getID() + ": Accelerate -> Decelerate\n");
 					elevator.setState(new DeceleratingState(elevator));
 				}
 			}
 		} else {
-			if(elevator.getCurFloor() >= elevator.getFloorToGo() - 1 || elevator.getCurFloor() >= elevator.getFloorToGo() + 1) {
+			if(elevator.getCurrFloor() >= elevator.getFloorToGo() - 1 || elevator.getCurrFloor() >= elevator.getFloorToGo() + 1) {
 				System.out.println("Elevator " + this.elevator.getID() + ": Accelerate -> Decelerate\n");
 				elevator.setState(new DeceleratingState(elevator));
 			}

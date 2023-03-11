@@ -29,7 +29,7 @@ public class FloorSubsystem implements Runnable{
 			for(ElevatorEvent e: ee) {
 				System.out.println("Sending Request: " + e.toString() + "\n");
 				sc.newRequest(e);
-				Thread.sleep(5000);
+				Thread.sleep(3000);
 			}
 			sc.endRequests();
 		}

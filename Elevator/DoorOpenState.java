@@ -9,17 +9,13 @@ public class DoorOpenState implements ElevatorState{
 	}
 	@Override
 	public void runState() {
-		while(elevator.getState() == this) {
-			try {
-				this.elevator.arrivedAtFloor(this.elevator.getCurFloor());
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			this.checkState();
+		try {
+			this.elevator.arrivedAtFloor(this.elevator.getCurrFloor());
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		
+		this.checkState();		
 	}
 
 	@Override

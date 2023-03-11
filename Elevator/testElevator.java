@@ -25,7 +25,7 @@ class testElevator{
 			e.printStackTrace();
 			fail();
 		}
-		assertEquals(5,elevator.getCurFloor());
+		assertEquals(5,elevator.getCurrFloor());
 	}
 	
 	@Test
@@ -45,7 +45,7 @@ class testElevator{
 			e.printStackTrace();
 			fail();
 		}
-		assertEquals(2,elevator.getCurFloor());
+		assertEquals(2,elevator.getCurrFloor());
 	}
 
 	@Test

@@ -43,7 +43,7 @@ public class Idle implements SchedulerState {
 			s.setState(new ReturnResponse(s));
 		} else if (s.isEnd()) {
 			System.out.println("Scheduler: Idle -> Exit\n");
-			s.setState(new Exit());
+			s.setState(new Exit(this.s));
 		}
 	}
 

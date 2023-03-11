@@ -125,7 +125,7 @@ public class Elevator implements Runnable{
 	 * 
 	 * @return currFloor
 	 */
-	public int getCurFloor() {
+	public int getCurrFloor() {
 		return currFloor;
 	}
 	
@@ -188,7 +188,15 @@ public class Elevator implements Runnable{
 		System.out.println("Elevator " + this.id + " arrived at " + this.currFloor + "\n");
 		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorNum) l.setState(false);}
 		for(ElevatorButton b: buttons) {if(b.getFloorNum() == floorNum) b.toggle(false);}
-		this.schedule.destinationReached(this.req);
+	}
+	
+	/**
+	 * Method to send a request response to the scheduler
+	 */
+	public void requestComplete() {
+		System.out.println("Elevator " + this.id + ": Completed Request");
+		this.schedule.destinationReached(this.req, this.id);
+		this.req = null;
 	}
 	
 	/**
