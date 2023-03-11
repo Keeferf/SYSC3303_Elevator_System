@@ -14,11 +14,17 @@ public class Simulation {
 		f.setScheduler(s);
 		
     	Thread sch = new Thread(s);
-    	Thread el = new Thread(new Elevator(2, 0, s));
+    	Thread el = new Thread(new Elevator(s));
+    	Thread e2 = new Thread(new Elevator(s));
+    	Thread e3 = new Thread(new Elevator(s));
+    	Thread e4 = new Thread(new Elevator(s));
     	Thread fl = new Thread(f);
 
     	sch.start();
     	el.start();
+    	e2.start();
+    	e3.start();
+    	e4.start();
     	fl.start();
     }
 }

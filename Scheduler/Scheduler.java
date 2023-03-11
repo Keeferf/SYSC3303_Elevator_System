@@ -1,22 +1,20 @@
 package Scheduler;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Optional;
-
 import FloorSystem.FloorSubsystem;
-import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
 public class Scheduler implements Runnable {
 	
 	private FloorSubsystem floors;
 	private ArrayList<ElevatorEvent> incomingRequests;
-	private ArrayList<ElevatorEvent> upRequests;
-	private ArrayList<ElevatorEvent> downRequests;
+	private ArrayList<ElevatorEvent> validRequests;
 	private ArrayList<ElevatorEvent> returnResponses;
 	private SchedulerState state;
 	private boolean lastRequestPassed;
+	private HashMap<Integer, Integer> throughput;
 
 	/**
 	 * Scheduler constructor
@@ -25,11 +23,11 @@ public class Scheduler implements Runnable {
     public Scheduler(FloorSubsystem floors) {
     	this.floors = floors;
     	this.incomingRequests = new ArrayList<>();
-    	this.upRequests = new ArrayList<>();
-        this.downRequests = new ArrayList<>();
+        this.validRequests = new ArrayList<>();
         this.returnResponses = new ArrayList<>();
         this.state = new Idle(this);
         this.lastRequestPassed = false;
+        this.throughput = new HashMap<Integer, Integer>();
     }
     
     /**
@@ -38,7 +36,7 @@ public class Scheduler implements Runnable {
      * 						request button
      */
     public void newRequest(ElevatorEvent elevatorEvent) {
-		System.out.println("Scheduler Recieved Request");
+		System.out.println("Scheduler Recieved Request\n");
     	this.incomingRequests.add(elevatorEvent);
     }
     
@@ -48,20 +46,10 @@ public class Scheduler implements Runnable {
     protected synchronized void validateRequest() {
     	if (!this.incomingRequests.isEmpty()) {
     		ElevatorEvent e = this.incomingRequests.remove(0);
-    		if (e.getDirection() == Direction.UP) {
-        		System.out.println("Scheduler Validated Up Request");
-        		this.upRequests.add(e);
-        		Collections.sort(this.upRequests); // Sorts the List in ascending order by current floor
-        		this.state.checkStateChange();
-    		} else {
-        		System.out.println("Scheduler Validated Down Request");
-        		this.downRequests.add(e);
-        		Collections.sort(this.downRequests); // Sorts the List in ascending order by current floor
-        		Collections.reverse(this.downRequests); // Reverses the sorted list
-        		this.state.checkStateChange();
-    		}
-    		this.notifyAll();
+    		System.out.println("Scheduler Validated Request\n");
+    		this.validRequests.add(e);
     	}
+    	this.state.checkStateChange();
     }
     
     /**
@@ -69,8 +57,8 @@ public class Scheduler implements Runnable {
      * elevator request to process.
      * @return Returns an Optional<ElevatorEvent> containing an elevator request
      */
-	public synchronized Optional<ElevatorEvent> getRequest(int currFloor) {
-		while ((this.upRequests.isEmpty() && this.downRequests.isEmpty())) {
+	public synchronized Optional<ElevatorEvent> getRequest(int currFloor, int id) {
+		while ((this.validRequests.isEmpty())) {
             try { // Elevator will wait until at least one of the two ArrayLists contain a request
                 this.state.checkStateChange();
             	wait(1000);
@@ -79,22 +67,13 @@ public class Scheduler implements Runnable {
                 return Optional.empty();
             }
         }
-		if (!this.upRequests.isEmpty() && !this.downRequests.isEmpty()) {
-			if ((this.downRequests.get(0).getCurrFloor() - currFloor) > (currFloor - this.upRequests.get(0).getCurrFloor())) {
-				System.out.println("Passing Up Request");
-				return Optional.of(this.upRequests.remove(0));
-			} else {
-				System.out.println("Passing Down Request");
-				return Optional.of(this.downRequests.remove(0));
-			}
-		} else if (this.downRequests.isEmpty()) { // If there are down requests and no up requests return a down request
-			System.out.println("Passing Up Request");
-			return Optional.of(this.upRequests.remove(0));
-    	} else if (this.upRequests.isEmpty()) { // If there are up requests and no down requests return a down request
-    		System.out.println("Passing Down Request");
-    		return Optional.of(this.downRequests.remove(0));
-    	}
-    	return Optional.empty();
+		if (this.throughput.keySet().contains(id)) {
+			this.throughput.put(id, this.throughput.get(id) + 1);
+		} else {
+			this.throughput.put(id, 1);
+		}
+		this.state.checkStateChange();
+		return Optional.of(this.validRequests.remove(0));
     }
     
 	/**
@@ -102,6 +81,7 @@ public class Scheduler implements Runnable {
 	 * the system will remain active until interrupted by the controller of the system.
 	 */
 	public void endRequests() {
+		System.out.println("Scheduler: LAST REQUEST HAS BEEN PASSED\n");
 		this.lastRequestPassed = true;
 	}
 	
@@ -118,6 +98,7 @@ public class Scheduler implements Runnable {
 	 * @param completedRequest The request completed by the elevator
 	 */
 	public synchronized void destinationReached(ElevatorEvent completedRequest) {
+		System.out.println("Scheduler: Received Response\n");
     	this.returnResponses.add(completedRequest);
     }
 	
@@ -142,18 +123,10 @@ public class Scheduler implements Runnable {
 	
 	/**
 	 * Test Method for the Scheduler class
-	 * @return Returns the length of the ArrayList of Up Events
+	 * @return Returns the length of the ArrayList of Validated Events
 	 */
-	protected int getUpQueueLength() {
-		return this.upRequests.size();
-	}
-	
-	/**
-	 * Test Method for the Scheduler class
-	 * @return Returns the length of the ArrayList of Down Events
-	 */
-	protected int getDownQueueLength() {
-		return this.downRequests.size();
+	protected int getValidQueueLength() {
+		return this.validRequests.size();
 	}
 	
 	/**
