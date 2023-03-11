@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import FloorSystem.FloorSubsystem;
 import Util.Comms.Config;
+import Util.Comms.RequestStatus;
 import Util.Comms.UDPBuilder;
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
@@ -47,7 +48,7 @@ public class Scheduler implements Runnable {
      * 						request button
      */
     public void newRequest(ElevatorEvent elevatorEvent) {
-		System.out.println("Scheduler Recieved Request");
+		System.out.println("Scheduler Received Request");
     	this.incomingRequests.add(elevatorEvent);
     }
     
@@ -120,33 +121,35 @@ public class Scheduler implements Runnable {
 		//Gets packet from floor subsystem or elevator
 		socket.receive(packet);
 		
+		Config.printLine();
+		
 		ElevatorEvent e = UDPBuilder.getPayload(packet);
 
 		System.out.println("Received Packet: " + e.toString());
-			
-		// Send acknowledgement to sender that is has been received
-		socket.send(UDPBuilder.acknowledge(e, packet.getAddress().toString(), packet.getPort()));
-		System.out.println("Acknowledgment sent back");
 		
-		// Receives Packet from Elevator
-		//Extract payload from the packet
-		
-		
-		//Logic for acknowledge/fullfilled requests received
-		
-		switch(e.getRequestStatus()) {
-		case NEW :
+		//Logic for acknowledge/fullfilled/New requests received
+		if(e.getRequestStatus().equals(RequestStatus.NEW)) {
+			// Send acknowledgement to sender that is has been received
+			socket.send(UDPBuilder.acknowledge(e, packet.getAddress().getHostAddress(), packet.getPort()));
+			System.out.println("New received. Acknowledgment sent back");	
 			//Adds it to the state machine
-			newRequest(e);	
-		case FULFILLED :
+			newRequest(e);
+			Config.printLine();
+		} else if(e.getRequestStatus().equals(RequestStatus.FULFILLED)) {
+			// Send acknowledgement to sender that is has been received
+			socket.send(UDPBuilder.acknowledge(e, packet.getAddress().getHostAddress(), packet.getPort()));
+			System.out.println("Fulfilled Received. Acknowledgment sent back");	
 			//Add it to responses to send back
 			returnResponses.add(e);
-		default:
+			Config.printLine();
+		} else if(e.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
+			System.out.println("Acknowledgment received for: " + e.toString());
+			Config.printLine();
+		} else {
 			//Invalid response
 			System.out.println("Invalid Request Data Received: " + e.getRequestStatus().toString());
+			Config.printLine();
 		}
-		
-		
 	}
 	
 	
@@ -253,5 +256,45 @@ public class Scheduler implements Runnable {
 	 */
 	public SchedulerState getState() {
 		return this.state;
+	}
+
+	/**
+	 * Sends the events currently in each of the up and down queues to the elevators via UDP
+	 * @author Nicholas Rose - 101181935
+	 */
+	public synchronized void sendEvents() {
+		if(!downRequests.isEmpty()) {
+			for(ElevatorEvent e: downRequests) {
+				
+				try {
+						socket.send(UDPBuilder.newMessage(e, Config.getElevatorip(), Config.getElevatorport()));
+					
+						System.out.println("Sent Message to Elevator: " + e.toString());
+				} catch (IOException e1) {
+					System.out.println("Failed to send Message" + e.toString());
+				}
+				Config.printLine();
+			}
+			downRequests = new ArrayList<>();
+		}
+		
+		if(!upRequests.isEmpty()) {
+			for(ElevatorEvent e: upRequests) {
+				
+				try {
+	
+					socket.send(UDPBuilder.newMessage(e, Config.getElevatorip(), Config.getElevatorport()));
+					
+					System.out.println("Sent Message to Elevator: " + e.toString());
+				} catch (IOException e1) {
+					System.out.println("Failed to send Message" + e.toString());
+				}
+				Config.printLine();
+			}
+			upRequests = new ArrayList<>();
+		}
+		
+
+		
 	}
 }

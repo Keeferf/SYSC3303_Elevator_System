@@ -48,6 +48,9 @@ public class Config {
 	public static int getMinFloor() {
 		return MINFLOOR;
 	}
+	public static void printLine() {
+		System.out.println("-----------------");
+	}
 	
 	
 }

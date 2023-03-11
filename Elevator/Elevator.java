@@ -37,7 +37,6 @@ public class Elevator implements Runnable{
 	private ElevatorEvent req ;
 	
 	private DatagramSocket socket;
-	private DatagramPacket packet;
 	
 
 	
@@ -107,6 +106,7 @@ public class Elevator implements Runnable{
 			door.open();
 			//this.state.checkState();
 			Thread.sleep(1318);
+			arrivedAtFloor(curFloor);
 		}
 		else{
 			//System.out.print("Doors Closed");
@@ -122,6 +122,7 @@ public class Elevator implements Runnable{
 			//System.out.print("Doors Open");
 			door.open();
 			//this.state.checkState();
+			arrivedAtFloor(curFloor);
 		}
 		//this.state.checkState();
 	}
@@ -156,45 +157,42 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException 
 	 */
 	public boolean elevatorActivated() throws InterruptedException {
-		Optional<ElevatorEvent> opt = schedule.getRequest(this.curFloor);
-		if (opt.isEmpty()) {
+		//Retrieve UDP requests
+		
+		//Might make a separate thread just for listening to requests for the future
+		byte[] pack = new byte[Config.getMaxMessageSize()];
+		DatagramPacket packet = new DatagramPacket(pack,pack.length);
+		try {
+			socket.receive(packet);
+		} catch (IOException e) {
+			System.out.println("Failed to acquire packet!");
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		
+		//Check if payload is valid
+		ElevatorEvent e = UDPBuilder.getPayload(packet);
+		
+		req = e;
+		
+        if (e.getDirection().equals(Direction.UP)) {
+        	System.out.println("Recieved Up Request: " + e.toString());
+        	this.curFloor = Math.max(this.curFloor, e.getFloorToGo());
+        } else {
+        	System.out.println("Recieved Down Request: " + e.toString());
+        	this.curFloor = Math.min(this.curFloor, e.getFloorToGo());
+        }
+		
+        //Send an acknowledge reply back to scheduler
+        try {
+			socket.send(UDPBuilder.acknowledge(e, Config.getSchedulerip(), Config.getSchedulerport()));
+		} catch (IOException e1) {
+			System.out.println("Failed to send Packet!");
+			e1.printStackTrace();
 			return false;
 		}
-		this.req = opt.get();
-		
-        if (this.req.getDirection().equals(Direction.UP)) {
-        	System.out.println("Recieved Up Request: " + this.req.toString());
-        	this.curFloor = Math.max(this.curFloor, this.req.getFloorToGo());
-        } else {
-        	System.out.println("Recieved Down Request: " + this.req.toString());
-        	this.curFloor = Math.min(this.curFloor, this.req.getFloorToGo());
-        }
-		schedule.destinationReached(this.req);
 		Thread.sleep(1000);
 		return true;
-	}
-	/**
-	 * Sends and receives messages from the Scheduler 
-	 * @throws IOException
-	 */
-	public void readAndWrite() throws IOException {
-		
-		// send message to the Scheduler
-		this.socket.send(UDPBuilder.newMessage(req, Config.getSchedulerip(), Config.getSchedulerport()));
-		
-		// receive message from the Scheduler
-		byte[] pack = new byte[Config.getMaxMessageSize()];
-		this.packet = new DatagramPacket(pack,pack.length);
-		socket.receive(packet);
-		
-		ElevatorEvent elevator = UDPBuilder.getPayload(packet);
-		
-		if(!elevator.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
-            System.out.println("Error");
-            System.exit(1);
-        }
-		
-		
 	}
 	
 	/**
@@ -290,12 +288,32 @@ public class Elevator implements Runnable{
 		   return this.req;
 	   }
 	
-	///////////////////////////
-	//Component Utility
-	///////////////////////////
+	/**
+	 * For when a car has arrived at a floor
+	 * @param floorNum
+	 */
 	private void arrivedAtFloor(int floorNum) {
 		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorNum) l.toggle(false);}
 		for(ElevatorButton b: buttons) {if(b.getFloorNum() == floorNum) b.toggle(false);}
+		
+		ElevatorEvent e = req;
+		e.setRequestStatus(RequestStatus.FULFILLED);
+		
+		try {
+			socket.send(UDPBuilder.newMessage(e, Config.getSchedulerip(), Config.getSchedulerport()));
+			
+			byte[] pack = new byte[Config.getMaxMessageSize()];
+			DatagramPacket packet = new DatagramPacket(pack,pack.length);
+			
+			socket.receive(packet);
+			
+			if(UDPBuilder.getPayload(packet).getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
+				System.out.println("Scheduler Acknowledged the fulfilled request: " + e);
+			}
+		} catch (IOException e1) {
+			System.out.println("Failed to send fulfilled message: " + e.toString());
+			e1.printStackTrace();
+		}
 	}
 	
 	/**
@@ -310,12 +328,6 @@ public class Elevator implements Runnable{
 			System.exit(1);
 		}
 		this.state.runState();
-		try {
-			this.readAndWrite();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }
 

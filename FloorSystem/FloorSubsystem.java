@@ -44,12 +44,15 @@ public class FloorSubsystem implements Runnable, Timeable{
 	@Override
 	public void run() {
 		//Creation of socket
+		Config.printLine();
+		System.out.println("Starting up...");
 		try {
 			this.socket = new DatagramSocket(Config.getFloorsubsystemport());
 		} catch (SocketException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
+		System.out.println("Socket Created.");
 		
 		//loading of events from parser
 		try {
@@ -60,14 +63,19 @@ public class FloorSubsystem implements Runnable, Timeable{
 			e.printStackTrace();
 			System.exit(1);
 		}
+		System.out.println("Events loaded from \"Events.txt\"");
 			
 		for(ElevatorEvent e: ee) {
 			//Dispatch a new event that will send at x seconds, calling Timeable method below
 			TimerN.startTimer(e.getTimeAsSeconds(),  e, this);
 		}
-			
+		System.out.println("Events loaded into timed execution objects");
+		System.out.println("Startup Complete!");
+		Config.printLine();
+		
 		//Loop to receive acknowledgements/fulfilled from system
 		while(true) {
+			
 			byte[] d = new byte[Config.getMaxMessageSize()];
 			DatagramPacket p = new DatagramPacket(d,d.length);
 			try {
@@ -77,10 +85,12 @@ public class FloorSubsystem implements Runnable, Timeable{
 				continue;
 			}
 			
+			
 			//Extract payload from the packet
 			ElevatorEvent e;
 			if(!(UDPBuilder.getPayload(p) instanceof ElevatorEvent)) {
 				System.out.println("Bad Data");
+				Config.printLine();
 				continue;
 			} else {
 				e = (ElevatorEvent) UDPBuilder.getPayload(p);
@@ -88,15 +98,18 @@ public class FloorSubsystem implements Runnable, Timeable{
 			
 			//Logic for acknowledge/fullfilled requests received
 			
-			switch(e.getRequestStatus()) {
-			case ACKNOWLEDGED :
+			if(e.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
 				System.out.println("Scheduler Acknowledged Event: " + e.toString());
-			case FULFILLED :
+				Config.printLine();
+			} else if(e.getRequestStatus().equals(RequestStatus.FULFILLED)) {
 				System.out.println("Elevator Fulfilled Event: " + e.toString());
-			default:
-				System.out.println("Invalid Request Data Received: " + e.getRequestStatus().toString());
+				Config.printLine();
+			} else {
+				System.out.println("Invalid Request Data Received: " + e.getRequestStatus().toString() + " " + e.toString());
+				Config.printLine();
 				continue;
 			}
+			
 		}
 	
 	}
@@ -112,6 +125,8 @@ public class FloorSubsystem implements Runnable, Timeable{
 	/**
 	 * Prints out the request which was completed, i.e. the passenger arrived at their destination floor
 	 * @param completedRequest Passenger request which was completed
+	 * 
+	 * @deprecated
 	 */
 	public void alert(ElevatorEvent completedRequest) {
 		System.out.println("Recieved Reponse for Request: " + completedRequest.toString());
@@ -124,6 +139,7 @@ public class FloorSubsystem implements Runnable, Timeable{
 	@Override
 	public void timerFinished(Object payload) {
 		//Check for if is elevatorEvent
+		
 		ElevatorEvent e;
 		if(!(payload instanceof ElevatorEvent)) {
 			System.out.println("Error: ElevatorEvent expected");
@@ -131,7 +147,7 @@ public class FloorSubsystem implements Runnable, Timeable{
 		} else {
 			e = (ElevatorEvent) payload;
 		}
-		
+		System.out.println("Timer Finished: " + e.toString());
 		
 		//When the timer finishes, send via UDP to the scheduler
 		
@@ -143,7 +159,7 @@ public class FloorSubsystem implements Runnable, Timeable{
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
+		Config.printLine();
 		
 	}
 }

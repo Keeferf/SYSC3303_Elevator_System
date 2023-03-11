@@ -19,7 +19,7 @@ public class Idle implements SchedulerState {
 	 */
 	@Override
 	public void executeState() {
-		while(s.getState() == this) {	//Might not work***
+		while(s.getState() == this) {	
 			try {
 				this.s.receiveAndSend();
 			} catch (IOException e) {
