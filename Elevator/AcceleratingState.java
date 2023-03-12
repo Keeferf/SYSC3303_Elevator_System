@@ -28,6 +28,7 @@ public class AcceleratingState implements ElevatorState{
 			if (this.elevator.getState() == this) {
 				try {
 					this.elevator.moveElevator();
+					System.out.println("Elevator " + this.elevator.getID() + " passes floor " + this.elevator.getCurrFloor());
 					Thread.sleep(1318);
 				} catch (InterruptedException e) {
 					e.printStackTrace();

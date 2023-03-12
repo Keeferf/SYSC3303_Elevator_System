@@ -19,6 +19,7 @@ public class FloorSubsystem implements Runnable, Timeable{
 	private ArrayList<ElevatorEvent> ee;
 	private ArrayList<Floor> floors;
 	private DatagramSocket socket;
+	private int reqTracker = 0;
 	
 	public FloorSubsystem() {
 		//Max and min floors
@@ -71,8 +72,7 @@ public class FloorSubsystem implements Runnable, Timeable{
 		Config.printLine();
 		
 		//Loop to receive acknowledgements/fulfilled from system
-		while(true) {
-			
+		while(this.reqTracker < this.ee.size()) {
 			byte[] d = new byte[Config.getMaxMessageSize()];
 			DatagramPacket p = new DatagramPacket(d,d.length);
 			try {
@@ -101,14 +101,14 @@ public class FloorSubsystem implements Runnable, Timeable{
 			} else if(e.getRequestStatus().equals(RequestStatus.FULFILLED)) {
 				System.out.println("Elevator Fulfilled Event: " + e.toString());
 				Config.printLine();
+				this.reqTracker++;
 			} else {
 				System.out.println("Invalid Request Data Received: " + e.getRequestStatus().toString() + " " + e.toString());
 				Config.printLine();
 				continue;
 			}
-			
 		}
-	
+		System.exit(0);
 	}
 	/**
 	 * Prints out the request which was completed, i.e. the passenger arrived at their destination floor

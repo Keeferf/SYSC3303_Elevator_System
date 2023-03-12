@@ -20,6 +20,7 @@ public class DoorOpenState implements ElevatorState{
 	 */
 	@Override
 	public void runState() {
+		System.out.println("Elevator " + this.elevator.getID() + " Arrived on floor " + this.elevator.getCurrFloor() + "\n");
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
