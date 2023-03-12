@@ -6,7 +6,11 @@ package Elevator;
 public class DeceleratingState implements ElevatorState{
 	
 	private Elevator elevator;
-	
+
+	/**
+	 * Constructor for the Decelerating state class
+	 * @param elevator
+	 */
 	public DeceleratingState(Elevator elevator) {
 		this.elevator = elevator;
 	}

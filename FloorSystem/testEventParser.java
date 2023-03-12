@@ -57,7 +57,7 @@ public class testEventParser {
         }
 
         //If test file changes, change this section as well
-        assertEquals("14:05:15.0", events.get(0).getTimestamp(),"Timestamp Test");
+        assertEquals("00:00:05.0", events.get(0).getTimestamp(),"Timestamp Test");
         assertEquals(Direction.UP, events.get(0).getDirection(), "Direction Test");
         assertEquals(2, events.get(0).getCurrFloor(),"Current Floor Test");
         assertEquals(4, events.get(0).getFloorToGo(),"Destination Floor Test");

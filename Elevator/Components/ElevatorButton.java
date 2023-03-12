@@ -1,4 +1,4 @@
-package Elevator;
+package Elevator.Components;
 
 /**
  * A class for representing the state of an elevator button

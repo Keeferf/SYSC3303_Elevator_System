@@ -1,19 +1,26 @@
 package Scheduler;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
-import FloorSystem.FloorSubsystem;
+import Util.Comms.Config;
+import Util.Comms.RequestStatus;
+import Util.Comms.UDPBuilder;
 import FloorSystem.ElevatorEvent;
 
 public class Scheduler implements Runnable {
 	
-	private FloorSubsystem floors;
 	private ArrayList<ElevatorEvent> incomingRequests;
 	private ArrayList<ElevatorEvent> validRequests;
 	private ArrayList<ElevatorEvent> returnResponses;
+	private ArrayList<Integer> workPorts;
 	private SchedulerState state;
 	private boolean lastRequestPassed;
+	private DatagramSocket socket;
 	private HashMap<Integer, Integer> throughput;
 	private int numRequests;
 	private int numResponses;
@@ -22,16 +29,16 @@ public class Scheduler implements Runnable {
 	 * Scheduler constructor
 	 * @param floors The FloorSubsystem instance executing as a Thread
 	 */
-    public Scheduler(FloorSubsystem floors) {
-    	this.floors = floors;
+    public Scheduler() {
     	this.incomingRequests = new ArrayList<>();
-        this.validRequests = new ArrayList<>();
-        this.returnResponses = new ArrayList<>();
-        this.state = new Idle(this);
-        this.lastRequestPassed = false;
-        this.throughput = new HashMap<Integer, Integer>();
-        this.numRequests = 0;
-        this.numResponses = 0;
+      this.validRequests = new ArrayList<>();
+      this.returnResponses = new ArrayList<>();
+      this.workPorts = new ArrayList<>();
+      this.state = new Idle(this);
+      this.lastRequestPassed = false;
+      this.throughput = new HashMap<Integer, Integer>();
+      this.numRequests = 0;
+      this.numResponses = 0;
     }
     
     /**
@@ -40,7 +47,7 @@ public class Scheduler implements Runnable {
      * 						request button
      */
     public void newRequest(ElevatorEvent elevatorEvent) {
-		System.out.println("Scheduler Recieved Request\n");
+		System.out.println("Scheduler Received Request");
     	this.incomingRequests.add(elevatorEvent);
     	this.numRequests++;
     }
@@ -75,7 +82,66 @@ public class Scheduler implements Runnable {
 		this.state.checkStateChange();
 		return Optional.of(this.validRequests.remove(0));
     }
-    
+	
+	/**
+	 * Sends and receives messages to the Elevator and the FloorSubsystem 
+	 * @throws IOException
+	 */
+	public void receiveAndSend() throws IOException {
+		
+		// Receives Packet from FloorSubSystem
+		
+		byte[] pack = new byte[Config.getMaxMessageSize()];
+		DatagramPacket packet = new DatagramPacket(pack,pack.length);
+		
+		//Gets packet from floor subsystem or elevator
+		socket.receive(packet);
+		
+		Config.printLine();
+		
+		ElevatorEvent e = UDPBuilder.getPayload(packet);
+
+		System.out.println("Received Packet: " + e.toString());
+		
+		//Logic for acknowledge/fullfilled/New requests received
+		if(e.getRequestStatus().equals(RequestStatus.NEW)) {
+			// Send acknowledgement to sender that is has been received
+			socket.send(UDPBuilder.acknowledge(e, packet.getAddress().getHostAddress(), packet.getPort()));
+			System.out.println("New received. Acknowledgment sent back");	
+			//Adds it to the state machine
+			newRequest(e);
+			Config.printLine();
+			
+		} else if(e.getRequestStatus().equals(RequestStatus.FULFILLED)) {
+			
+			// Send acknowledgement to sender that is has been received
+			socket.send(UDPBuilder.acknowledge(e, packet.getAddress().getHostAddress(), packet.getPort()));
+			System.out.println("Fulfilled Received. Acknowledgment sent back");	
+			//Add it to responses to send back
+			returnResponses.add(e);
+			Config.printLine();
+			
+		} else if(e.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
+			
+			System.out.println("Acknowledgment received for: " + e.toString());
+			Config.printLine();
+			
+		} else if(e.getRequestStatus().equals(RequestStatus.REQUEST)) {
+			
+			//Adds the packet to the queue for when an event needs to be sent
+			System.out.println("Added to work queue: " + e.toString());
+			workPorts.add(packet.getPort());
+			Config.printLine();
+			
+		} else {
+			
+			//Invalid response
+			System.out.println("Invalid Request Data Received: " + e.getRequestStatus().toString());
+			Config.printLine();
+			
+		}
+	}
+	
 	/**
 	 * When called it signifies that the final request has been sent, this is only for the sake of testing, in real execution, 
 	 * the system will remain active until interrupted by the controller of the system.
@@ -94,26 +160,20 @@ public class Scheduler implements Runnable {
 	}
 	
 	/**
-	 * Method to pass completed requests from the elevator to the scheduler
-	 * @param completedRequest The request completed by the elevator
-	 */
-	public void destinationReached(ElevatorEvent completedRequest, int id) {
-		System.out.println("Scheduler: Received Response\n");
-		System.out.print(this.numResponses);
-		this.numResponses++;
-		System.out.println(" " + this.numResponses + "\n");
-		this.throughput.put(id, this.throughput.getOrDefault(id, 0) + 1);
-    	this.returnResponses.add(completedRequest);
-    }
-	
-	/**
 	 * Method to return responses to the floor subsystem if there are responses to return
 	 */
     public synchronized void returnResponse() {
     	if (this.returnResponses.isEmpty()) {
     		this.state.checkStateChange();
     	} else {
-    		floors.alert(this.returnResponses.remove(0)); // Passes completed request event back to the Floor Subsystem
+    		//floors.alert(this.returnResponses.remove(0)); // Passes completed request event back to the Floor Subsystem //Depracated section
+    		
+    		//Responses should already have fulfilled status, so checking is redundant
+    		try {
+				socket.send(UDPBuilder.newMessage(returnResponses.remove(0), Config.getFloorsubsystemip(), Config.getFloorsubsystemport()));
+			} catch (IOException e) {
+				System.out.println("Failed to return response");
+			}
     	}
     }
     
@@ -122,6 +182,12 @@ public class Scheduler implements Runnable {
      */
 	@Override
 	public void run() {
+		try {
+			this.socket = new DatagramSocket(Config.getSchedulerport());
+		} catch (SocketException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 		this.state.executeState();
 	} 
 	
@@ -162,6 +228,30 @@ public class Scheduler implements Runnable {
 	 */
 	public SchedulerState getState() {
 		return this.state;
+	}
+
+	/**
+	 * Sends the events currently in each of the up and down queues to the elevators via UDP
+	 * @author Nicholas Rose - 101181935
+	 */
+	public synchronized void sendEvents() {
+		if(!validRequests.isEmpty() && !workPorts.isEmpty()) {
+			ElevatorEvent e = this.validRequests.remove(0);
+			int port = this.workPorts.remove(0);
+			try {
+				socket.send(UDPBuilder.newMessage(e, Config.getElevatorip(), port));
+				System.out.println("Sent Message to Elevator at port " + port + ": " + e.toString());
+			} catch (IOException e1) {
+				System.out.println("Failed to send Message" + e.toString());
+			}
+			Config.printLine();
+		} else {
+			try {
+				receiveAndSend(); //See if there is something to accept (work perchance?)
+			} catch (IOException e) {
+				//Do nothing
+			}
+		}
 	}
 	
 	public void printThroughput() {

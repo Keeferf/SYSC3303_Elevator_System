@@ -24,15 +24,16 @@ public class AcceleratingState implements ElevatorState{
 	@Override
 	public void runState() {
 		while(elevator.getState() == this) {
-			try {
-				this.elevator.moveElevator();
-				Thread.sleep(1318);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 			this.checkState();
+			if (this.elevator.getState() == this) {
+				try {
+					this.elevator.moveElevator();
+					Thread.sleep(1318);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-		
 	}
 
 	/**
@@ -41,21 +42,21 @@ public class AcceleratingState implements ElevatorState{
 	@Override
 	public void checkState() {
 		ElevatorEvent req = elevator.getRequest();
-		if (req.getFloorToGo() == this.elevator.getFloorToGo()) {
+		if (req.getFloorToGo() == elevator.getFloorToGo()) {
 			if (req.getDirection() == Direction.UP) {
-				if(elevator.getCurrFloor() >= elevator.getFloorToGo() - 1) {
-					System.out.println("Elevator " + this.elevator.getID() + ": Accelerate -> Decelerate\n");
+				if(elevator.getCurrFloor() == elevator.getFloorToGo() - 1) {
+					System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
 					elevator.setState(new DeceleratingState(elevator));
 				}
 			} else {
 				if(elevator.getCurrFloor() == elevator.getFloorToGo() + 1) {
-					System.out.println("Elevator " + this.elevator.getID() + ": Accelerate -> Decelerate\n");
+					System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
 					elevator.setState(new DeceleratingState(elevator));
 				}
 			}
 		} else {
-			if(elevator.getCurrFloor() >= elevator.getFloorToGo() - 1 || elevator.getCurrFloor() >= elevator.getFloorToGo() + 1) {
-				System.out.println("Elevator " + this.elevator.getID() + ": Accelerate -> Decelerate\n");
+			if(elevator.getCurrFloor() >= elevator.getFloorToGo() - 1 && elevator.getCurrFloor() <= elevator.getFloorToGo() + 1) {
+				System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
 				elevator.setState(new DeceleratingState(elevator));
 			}
 		}

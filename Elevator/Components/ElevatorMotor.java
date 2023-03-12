@@ -1,4 +1,4 @@
-package Elevator;
+package Elevator.Components;
 
 /**
  * The elevator motor class handles all the activation setting states for the elevator
@@ -62,6 +62,4 @@ public class ElevatorMotor {
 	public Status getStatus() {
 		return status;
 	}
-	
-	
 }

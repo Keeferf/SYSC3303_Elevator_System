@@ -29,6 +29,7 @@ public class Floor{
 		this.rand = new Random();
 	}
 	
+	
 	/**
 	 * Getter method for the floor number
 	 * @return the current floor number

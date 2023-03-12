@@ -6,6 +6,10 @@ package Elevator;
 public class IdleState implements ElevatorState{
 	private Elevator elevator;
 	
+	/**
+	 * Constructor for Idle state class
+	 * @param elevator
+	 */
 	public IdleState(Elevator elevator) {
 		this.elevator = elevator;
 	}
@@ -17,9 +21,6 @@ public class IdleState implements ElevatorState{
 	public void runState() {
 		while(elevator.getState() == this) {
 			try {
-				if (this.elevator.getRequest() != null && this.elevator.getCurrFloor() == this.elevator.getRequest().getFloorToGo()) {
-					this.elevator.requestComplete();
-				}
 				elevator.elevatorActivated();
 			} catch (InterruptedException e) {
 				e.printStackTrace();

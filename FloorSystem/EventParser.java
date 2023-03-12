@@ -17,7 +17,10 @@ public class EventParser {
 
     private final String filename = "./FloorSystem/Events.txt";
 
-
+    /**
+     * Constructor for Event parser class
+     * @throws FileNotFoundException
+     */
     public EventParser() throws FileNotFoundException {
         FileReader fileReader = new FileReader(new File(filename));
         reader = new BufferedReader(fileReader);
