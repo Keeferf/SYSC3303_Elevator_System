@@ -16,9 +16,12 @@ Must accurately describe the goal of the file/class.
 ## Setup Instructions
 1. Unzip the Elevator System project onto your local machine.\
 2. Open the unzipped folder in eclipse\
-3. Navigate to "Simulation.java"\
-4. From there, you will find the main method at the bottom of the class.\
-5. Press run and the program will execute
+3. Navigate to "Simulation" package\
+4. From there, you will find the three files "SimulationScheduler.java", "SimulationElevator.java", "SimulationFloorSubsystem.java".\
+5. Run the main method in those files in the following order
+    1) SimulationScheduler.java
+    2) SimulationElevator.java
+    3) SimulationFloorSubsyste.java
 
 ## Testing Instructions
 1. Unzip the Elevator System project onto your local machine.\
@@ -35,22 +38,24 @@ which are read into the program at the start. It is already in the correct locat
 ## Project Iteration 2 - Breakdown of Responsibilities
 
 Nicholas Rose - 101181935
-Additional Elevator Components(buttons, lamps, etc)
+Implement Timer
+Implement UDP Communication
 UML Diagrams
-Started work on Timer component to schedule events to be passed in from the file
 Documentation
 
 Colin Mandeville - 101140289
-Scheduler State Machine(State pattern)
-UML Diagrams, Scheduler State diagram
+Scheduler Optimization
+Fix Elevator State Machine
+Solve Merge Conflicts
+UML Diagrams, Elevator State diagram
 Documentation
 
 Keefer Belanger - 101152085
-Floor additional components
+Enable Multiple Elevators
 UML Diagrams
 Documentation
 
 Joshua Noronha - 101194076
-Elevator State machine
-UML Diagrams, Elevator State diagram
+Implement UDP Commuincations
+UML Diagrams, Sequence Diagram
 Documentation

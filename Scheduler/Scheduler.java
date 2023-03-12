@@ -31,14 +31,14 @@ public class Scheduler implements Runnable {
 	 */
     public Scheduler() {
     	this.incomingRequests = new ArrayList<>();
-      this.validRequests = new ArrayList<>();
-      this.returnResponses = new ArrayList<>();
-      this.workPorts = new ArrayList<>();
-      this.state = new Idle(this);
-      this.lastRequestPassed = false;
-      this.throughput = new HashMap<Integer, Integer>();
-      this.numRequests = 0;
-      this.numResponses = 0;
+        this.validRequests = new ArrayList<>();
+        this.returnResponses = new ArrayList<>();
+        this.workPorts = new ArrayList<>();
+        this.state = new Idle(this);
+        this.lastRequestPassed = false;
+        this.throughput = new HashMap<Integer, Integer>();
+        this.numRequests = 0;
+        this.numResponses = 0;
     }
     
     /**
@@ -142,6 +142,8 @@ public class Scheduler implements Runnable {
 		}
 	}
 	
+	
+    
 	/**
 	 * When called it signifies that the final request has been sent, this is only for the sake of testing, in real execution, 
 	 * the system will remain active until interrupted by the controller of the system.

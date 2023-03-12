@@ -34,7 +34,6 @@ public class IdleState implements ElevatorState{
 	@Override
 	public void checkState() {
 		if (elevator.getCurrFloor() == elevator.getRequest().getCurrFloor()){
-			this.elevator.setFloorToGo(this.elevator.getRequest().getFloorToGo());
 			System.out.println("Elevator " + this.elevator.getID() + " Idle -> DoorOpen\n");
 			elevator.setState(new DoorOpenState(elevator));
 		} else {
