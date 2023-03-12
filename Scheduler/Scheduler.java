@@ -199,21 +199,21 @@ public class Scheduler implements Runnable {
 	 * Test Method for the Scheduler class
 	 * @return Returns the length of the ArrayList of Validated Events
 	 */
-	protected int getValidQueueLength() {
+	public int getValidQueueLength() {
 		return this.validRequests.size();
 	}
 	
 	/**
 	 * @return Returns the size of the ArrayList of incoming events
 	 */
-	protected int getIncomingQueueLength() {
+	public int getIncomingQueueLength() {
 		return this.incomingRequests.size();
 	}
 	
 	/**
 	 * @return Returns the size of the ArrayList of response events
 	 */
-	protected int getResponseQueueLength() {
+	public int getResponseQueueLength() {
 		return this.returnResponses.size();
 	}
 
