@@ -127,7 +127,9 @@ public class Scheduler implements Runnable {
 			Config.printLine();
 			
 		} else if(e.getRequestStatus().equals(RequestStatus.REQUEST)) {
-			
+			if (!this.throughput.keySet().contains(packet.getPort())) {
+				this.throughput.put(packet.getPort(), 0);
+			}
 			//Adds the packet to the queue for when an event needs to be sent
 			System.out.println("Added to work queue: " + e.toString());
 			workPorts.add(packet.getPort());
@@ -239,7 +241,7 @@ public class Scheduler implements Runnable {
 	public synchronized void sendEvents() {
 		if(!validRequests.isEmpty() && !workPorts.isEmpty()) {
 			ElevatorEvent e = this.validRequests.remove(0);
-			int port = this.workPorts.remove(0);
+			int port = this.getPrioritizedPort();
 			try {
 				socket.send(UDPBuilder.newMessage(e, Config.getElevatorip(), port));
 				System.out.println("Sent Message to Elevator at port " + port + ": " + e.toString());
@@ -256,6 +258,22 @@ public class Scheduler implements Runnable {
 		}
 	}
 	
+	private int getPrioritizedPort() {
+		int nextPort = -1;
+		int min = -1;
+		for (int key : this.throughput.keySet()) {
+			Config.printLine();
+			System.out.println("Elevator @ Port " + key + " has handled " + this.throughput.get(key) + " requests");
+			if ((this.throughput.get(key) < min || min == -1) && this.workPorts.contains(key)) {
+				min = this.throughput.get(key);
+				nextPort = key;
+			}
+		}
+		System.out.println("Elevator @ Port " + nextPort + " assigned next request");
+		this.throughput.put(nextPort, this.throughput.getOrDefault(nextPort, 0) + 1);
+		return nextPort;
+	}
+
 	public void printThroughput() {
 		for(int i : this.throughput.keySet()) {
 			System.out.println("Elevator " + i + " processed " + this.throughput.get(i) + " requests");
