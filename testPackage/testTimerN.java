@@ -1,4 +1,4 @@
-package Util.Timer;
+package testPackage;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
+import Util.Timer.Timeable;
+import Util.Timer.TimerN;
 
 class testTimerN implements Timeable{
 	

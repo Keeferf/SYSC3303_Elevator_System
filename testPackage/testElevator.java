@@ -1,4 +1,4 @@
-package Elevator;
+package testPackage;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import Elevator.Elevator;
+import Elevator.IdleState;
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 import Scheduler.Scheduler;
