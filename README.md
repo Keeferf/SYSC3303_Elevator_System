@@ -35,7 +35,7 @@ Executing the main within the Simulation class will read in the test events for 
 Included within the zipped eclipse project is a text file named <b>Events.txt</b>. This file includs the formatted events\
 which are read into the program at the start. It is already in the correct location for testing purposes.
 
-## Project Iteration 2 - Breakdown of Responsibilities
+## Project Iteration 3 - Breakdown of Responsibilities
 
 Nicholas Rose - 101181935
 Implement Timer
