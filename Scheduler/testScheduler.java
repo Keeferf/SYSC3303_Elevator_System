@@ -13,7 +13,25 @@ import FloorSystem.FloorSubsystem;
  * Test Class for the Scheduler class
  * @author Colin Mandeville 101140289
  */
-class testScheduler {	
+class testScheduler {
+
+	@Test
+	public void testNewRequest() {
+		Scheduler scheduler = new Scheduler();
+		ElevatorEvent event = new ElevatorEvent(this, "14:05:15", Direction.UP, 0, 2);
+		scheduler.newRequest(event);
+		assertEquals(1, scheduler.getIncomingQueueLength());
+	}
+	
+	@Test
+	public void testSendResponse() {
+		Scheduler scheduler = new Scheduler();
+		ElevatorEvent event = new ElevatorEvent(this, "14:05:15", Direction.UP, 0, 2);
+		scheduler.newRequest(event);
+		assertEquals(0, scheduler.getValidQueueLength());
+		assertEquals(0, scheduler.getResponseQueueLength());
+	}
+
 	@Test
 	void testProcessEvents() {
 		FloorSubsystem f = new FloorSubsystem();
