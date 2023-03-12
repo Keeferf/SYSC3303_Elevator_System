@@ -104,13 +104,15 @@ public class Elevator implements Runnable{
 	 * @throws InterruptedException
 	 */
 	public void moveElevator() throws InterruptedException {
-		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == floorToGo) l.setState(true);}
-		for(ElevatorButton b: buttons) {if(b.getFloorNum() == floorToGo) b.toggle(true);}
+		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == currFloor) l.setState(true);}
+		for(ElevatorButton b: buttons) {if(b.getFloorNum() == currFloor) b.toggle(true);}
 		
 		if (floorToGo < currFloor) {
 			down();
 		} else if (floorToGo > currFloor){
 			up();
+		} else {
+			this.setState(new DoorOpenState(this));
 		}
 	}
 	
