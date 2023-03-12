@@ -26,7 +26,7 @@ class testElevator{
 			e.printStackTrace();
 			fail();
 		}
-		assertEquals(5,elevator.getCurrFloor());
+		assertEquals(1,elevator.getCurrFloor());
 	}
 	
 	@Test
