@@ -16,13 +16,15 @@ public class TimerN implements Runnable {
 	 * @param payload Object
 	 * @param reference Timeable
 	 */
-	public synchronized static void startTimer(int n, Object payload, Timeable reference) {
+	public synchronized static TimerN startTimer(int n, Object payload, Timeable reference) {
 		
 		//Creates a new timer to go off on its own
 		TimerN timer = new TimerN(n,payload,reference);
 		Thread thread = new Thread(timer);
 		
 		thread.start();
+		
+		return timer;
 	}
 	
 	/**
@@ -31,13 +33,15 @@ public class TimerN implements Runnable {
 	 * @param n - time in ms
 	 * @param reference Timeable
 	 */
-	public synchronized static void startTimer(int n, Timeable reference) {
+	public synchronized static TimerN startTimer(int n, Timeable reference) {
 		
 		//Creates a new timer to go off on its own
 		TimerN timer = new TimerN(n, null, reference);
 		Thread thread = new Thread(timer);
 		
 		thread.start();
+		
+		return timer;
 	}
 	
 	//Creates new thread. Sleeps for time
@@ -61,6 +65,18 @@ public class TimerN implements Runnable {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
+		
+		if(timerKilled) return;
+		
 		reference.timerFinished(payload);
+	}
+	
+	private boolean timerKilled = false;
+	
+	/**
+	 * Used to disable the timer mid execution
+	 */
+	public void killTimer() {
+		timerKilled = true;
 	}
 }

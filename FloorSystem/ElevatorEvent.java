@@ -24,6 +24,8 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
     private final int floorToGo;
     private final int currFloor;
     
+    private int elevatorNum;
+    
     private int seconds;
     
     private RequestStatus requestStatus;
@@ -180,6 +182,22 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
         } catch (final ClassNotFoundException | IOException ex) {
             throw new RuntimeException(ex);
         }
+    }
+    
+    /**
+     * Sets the elevator that this event is dispatched to
+     * @param n
+     */
+    public void setElevatorNum(int n) {
+    	elevatorNum = n;
+    }
+    
+    /**
+     * Gets the elevator id that this event was dispatched to
+     * @return
+     */
+    public int getElevatorNum() {
+    	return elevatorNum;
     }
     
     
