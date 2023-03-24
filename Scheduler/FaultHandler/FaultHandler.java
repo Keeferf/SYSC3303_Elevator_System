@@ -106,6 +106,12 @@ public class FaultHandler implements Runnable, Timeable{
 		} else {
 			//Already completed
 		}
+		
+		//Clear the list back to unfulfilled if its the last one
+		if(event.getElevatorTimingState().equals(ElevatorTimingState.DOOR_OPEN)) {
+			clearList(event.getElevatorId());
+		}
+		
 		timers.get(event.getElevatorId()).get(event.getElevatorTimingState().ordinal()).killTimer();	//Kill the timer associated with this packet
 		
 		faultList.set(event.getElevatorId(), faults);
@@ -146,6 +152,11 @@ public class FaultHandler implements Runnable, Timeable{
 		}
 		faultList.set(e.getElevatorId(), faults);
 		
+		//Clear the list back to unfulfilled if its the last one
+		if(e.getElevatorTimingState().equals(ElevatorTimingState.DOOR_OPEN)) {
+			clearList(e.getElevatorId());
+		}
+		
 		if(faultHandlerFrame != null) {
 			faultHandlerFrame.update(faultList);
 		}
@@ -181,7 +192,13 @@ public class FaultHandler implements Runnable, Timeable{
 			
 			ElevatorTimingEvent ete = new ElevatorTimingEvent(e,s);
 			
-			TimerN timer = TimerN.startTimer((int)s.time()+2, ete,this);
+			TimerN timer;
+			if(s.equals(ElevatorTimingState.ACCELERATING) || s.equals(ElevatorTimingState.DECELERATING)) {
+				int time = (int)s.time() * Math.abs(e.getFloorToGo() - e.getCurrFloor());
+				timer = TimerN.startTimer(time, ete,this);
+			} else {
+				timer = TimerN.startTimer((int)s.time()+5, ete,this);
+			}
 			
 			//Add to list of active timers
 			t.add(timer);
@@ -190,6 +207,35 @@ public class FaultHandler implements Runnable, Timeable{
 		faultList.set(e.getElevatorNum(), faults);
 		
 		timers.set(e.getElevatorNum(),t);
+		
+		if(faultHandlerFrame != null) {
+			faultHandlerFrame.update(faultList);
+		}
+	}
+	
+	/**
+	 * Sets the statuses of all enums in the state list
+	 * back to Unfulfilled
+	 */
+	private void clearList(int elevatorNum) {
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ArrayList<FaultState> faults = new ArrayList<>();
+		
+		ElevatorTimingState states[] = ElevatorTimingState.values();
+		
+		for(int i = 0;i < ElevatorTimingState.values().length; i++) {
+			//add unfulfilled to the list of faults
+			faults.add(FaultState.UNFULFILLED);
+			
+			//Dispatch a timer thread to keep track of the state
+			//Conversion to int is negligble because of fudge factor
+		}
+		faultList.set(elevatorNum, faults);
 		
 		if(faultHandlerFrame != null) {
 			faultHandlerFrame.update(faultList);
@@ -207,6 +253,7 @@ public class FaultHandler implements Runnable, Timeable{
 	 * Or trigger 1 by 1 as errors are detected
 	 */
 	private void killAllTimers(ArrayList<TimerN> timers) {
+		
 		for(TimerN t: timers) {
 			t.killTimer();
 		}

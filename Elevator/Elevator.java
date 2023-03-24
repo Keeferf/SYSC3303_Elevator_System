@@ -114,7 +114,7 @@ public class Elevator implements Runnable{
 		} else if (floorToGo > currFloor){
 			up();
 		} else {
-			this.setState(new DoorOpenState(this));
+			//this.setState(new DoorOpenState(this));
 		}
 	}
 	

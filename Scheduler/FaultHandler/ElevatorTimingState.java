@@ -13,7 +13,7 @@ public enum ElevatorTimingState {
 	
 	private final double time;
 	
-	private static final double FUDGE_FACTOR = 1.5;
+	private static final double FUDGE_FACTOR = 2;
 	
 	ElevatorTimingState(double time) {
 		this.time = (time * FUDGE_FACTOR);
