@@ -1,5 +1,7 @@
 package Elevator;
 
+import Scheduler.FaultHandler.ElevatorTimingState;
+
 /**
  * Door close state class to handle the doors of the elevator states
  */
@@ -40,6 +42,9 @@ public class DoorClosedState implements ElevatorState{
 		} else {
 			this.elevator.setFloorToGo(this.elevator.getRequest().getFloorToGo());
 			System.out.println("Elevator " + this.elevator.getID() + " Picked up passenger, Door Closed -> Accelerating\n");
+			
+			elevator.sendTimingEvent(ElevatorTimingState.DOOR_CLOSED);
+			
 			elevator.setState(new AcceleratingState(elevator));
 		}
 	}

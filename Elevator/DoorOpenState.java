@@ -1,5 +1,7 @@
 package Elevator;
 
+import Scheduler.FaultHandler.ElevatorTimingState;
+
 /**
  * Door open state class to handle the doors of the elevator states
  */
@@ -21,6 +23,7 @@ public class DoorOpenState implements ElevatorState{
 	@Override
 	public void runState() {
 		System.out.println("Elevator " + this.elevator.getID() + " Arrived on floor " + this.elevator.getCurrFloor() + "\n");
+		elevator.sendTimingEvent(ElevatorTimingState.DOOR_OPEN);
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {

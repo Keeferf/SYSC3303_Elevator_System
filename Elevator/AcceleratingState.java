@@ -2,6 +2,7 @@ package Elevator;
 
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
+import Scheduler.FaultHandler.ElevatorTimingState;
 
 /**
  * Acceleration state class to handle the accelertion of the elevator states
@@ -47,17 +48,20 @@ public class AcceleratingState implements ElevatorState{
 			if (req.getDirection() == Direction.UP) {
 				if(elevator.getCurrFloor() == elevator.getFloorToGo() - 1) {
 					System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
+					elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
 					elevator.setState(new DeceleratingState(elevator));
 				}
 			} else {
 				if(elevator.getCurrFloor() == elevator.getFloorToGo() + 1) {
 					System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
+					elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
 					elevator.setState(new DeceleratingState(elevator));
 				}
 			}
 		} else {
 			if(elevator.getCurrFloor() >= elevator.getFloorToGo() - 1 && elevator.getCurrFloor() <= elevator.getFloorToGo() + 1) {
 				System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
+				elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
 				elevator.setState(new DeceleratingState(elevator));
 			}
 		}

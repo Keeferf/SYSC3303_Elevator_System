@@ -1,5 +1,7 @@
 package Elevator;
 
+import Scheduler.FaultHandler.ElevatorTimingState;
+
 /**
  * Deceleration state class to handle the decelertion of the elevator states
  */
@@ -30,6 +32,7 @@ public class DeceleratingState implements ElevatorState{
 			this.checkState();
 		}
 		
+		
 	}
 
 	/**
@@ -40,6 +43,7 @@ public class DeceleratingState implements ElevatorState{
 		try {
 			this.elevator.moveElevator();
 			System.out.println("Elevator " + this.elevator.getID() + ": Decelerating -> Door Open\n");
+			elevator.sendTimingEvent(ElevatorTimingState.DECELERATING);
 			this.elevator.setState(new DoorOpenState(this.elevator));
 		} catch (InterruptedException e) {
 			e.printStackTrace();

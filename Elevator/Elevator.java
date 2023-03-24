@@ -10,6 +10,8 @@ import Elevator.Components.ElevatorDoor;
 import Elevator.Components.ElevatorLamp;
 import Elevator.Components.ElevatorMotor;
 import FloorSystem.ElevatorEvent;
+import Scheduler.FaultHandler.ElevatorTimingEvent;
+import Scheduler.FaultHandler.ElevatorTimingState;
 import Util.Comms.Config;
 import Util.Comms.RequestStatus;
 import Util.Comms.UDPBuilder;
@@ -256,6 +258,23 @@ public class Elevator implements Runnable{
 			elevatorActivated();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sends a timing event to the fault handler.
+	 * @param ets
+	 */
+	protected void sendTimingEvent(ElevatorTimingState ets) {
+		req.setElevatorNum(getID());
+		
+		ElevatorTimingEvent event = new ElevatorTimingEvent(req,ets);
+		
+		//Send the timing event back to the fault handler
+		try {
+			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
