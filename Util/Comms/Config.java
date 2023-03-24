@@ -41,6 +41,21 @@ public class Config {
 	public static int getElevatorport(int id) {
 		return ElevatorPort[id];
 	}
+	/**
+	 * Returns the elevator id/num associated with the port number passed
+	 * @param port
+	 * @return
+	 */
+	public static int getElevatorNumber(int port) {
+		int counter = 0;
+		for(int i: ElevatorPort) {
+			if(i == port) {
+				return counter;
+			}
+				counter++;
+		}
+		return (Integer) null;
+	}
 	public static String getFaulthandlerip() {
 		return FaultHandlerIP;
 	}

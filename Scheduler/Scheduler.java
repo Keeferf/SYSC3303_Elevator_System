@@ -11,6 +11,7 @@ import Util.Comms.Config;
 import Util.Comms.RequestStatus;
 import Util.Comms.UDPBuilder;
 import FloorSystem.ElevatorEvent;
+import Scheduler.FaultHandler.FaultHandler;
 
 public class Scheduler implements Runnable {
 	
@@ -24,6 +25,8 @@ public class Scheduler implements Runnable {
 	private HashMap<Integer, Integer> throughput;
 	private int numRequests;
 	private int numResponses;
+	
+	private FaultHandler faultHandler;
 
 	/**
 	 * Scheduler constructor
@@ -39,6 +42,8 @@ public class Scheduler implements Runnable {
         this.throughput = new HashMap<Integer, Integer>();
         this.numRequests = 0;
         this.numResponses = 0;
+        
+        faultHandler = new FaultHandler(this);
     }
     
     /**
@@ -242,12 +247,16 @@ public class Scheduler implements Runnable {
 		if(!validRequests.isEmpty() && !workPorts.isEmpty()) {
 			ElevatorEvent e = this.validRequests.remove(0);
 			int port = this.getPrioritizedPort();
+			e.setElevatorNum(Config.getElevatorNumber(port));
 			try {
 				socket.send(UDPBuilder.newMessage(e, Config.getElevatorip(), port));
 				System.out.println("Sent Message to Elevator at port " + port + ": " + e.toString());
 			} catch (IOException e1) {
 				System.out.println("Failed to send Message" + e.toString());
 			}
+			
+			//Start a fault handler for the sent event
+			faultHandler.notify(e);
 			Config.printLine();
 		} else {
 			try {

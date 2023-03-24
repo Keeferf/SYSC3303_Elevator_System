@@ -74,6 +74,8 @@ public class FaultHandler implements Runnable, Timeable{
 			return;
 		}
 		
+		System.out.println("Recieved Timing Event: " + e.toString());
+		
 		ElevatorTimingEvent event = (ElevatorTimingEvent) UDPBuilder.getPayload(packet);
 		
 		ArrayList<FaultState> faults = faultList.get(event.getElevatorNum());
@@ -99,7 +101,11 @@ public class FaultHandler implements Runnable, Timeable{
 			System.out.println("Invalid payload type");
 			return;
 		}
+		
+		
 		ElevatorTimingEvent e = (ElevatorTimingEvent) payload;
+		
+		System.out.println("Fault Timer Caught: " + e.toString() + " Fault State: " + e.getElevatorTimingState().toString());
 		
 		ArrayList<FaultState> faults = faultList.get(e.getElevatorNum());
 		
@@ -122,7 +128,7 @@ public class FaultHandler implements Runnable, Timeable{
 	 * @param e
 	 * @param elevatorId
 	 */
-	public void notify(ElevatorEvent e, int elevatorId) {
+	public void notify(ElevatorEvent e) {
 		//Creates a new list with 4 unfulfilled events
 		ArrayList<FaultState> faults = new ArrayList<>();
 		
@@ -145,9 +151,9 @@ public class FaultHandler implements Runnable, Timeable{
 			t.add(timer);
 		}
 		
-		faultList.add(elevatorId, new ArrayList<FaultState>());
+		faultList.add(e.getElevatorNum(), new ArrayList<FaultState>());
 		
-		timers.add(elevatorId,t);
+		timers.add(e.getElevatorNum(),t);
 		
 		
 	}
@@ -156,7 +162,7 @@ public class FaultHandler implements Runnable, Timeable{
 	 * Kills all the timers in the passed list.
 	 * 
 	 * Means that the last event has been hit
-	 * Don't want the last timer to trigger the next event
+	 * Don't want the last timer to trigger in the next event sent
 	 * 
 	 * May or may not implement
 	 * System should kill timers 1 by 1 as packets come in
