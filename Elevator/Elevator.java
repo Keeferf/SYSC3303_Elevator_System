@@ -114,7 +114,8 @@ public class Elevator implements Runnable{
 		} else if (floorToGo > currFloor){
 			up();
 		} else {
-			//this.setState(new DoorOpenState(this));
+			sendTimingEvent(ElevatorTimingState.DECELERATING);
+			this.setState(new DoorOpenState(this));
 		}
 	}
 	
@@ -155,6 +156,7 @@ public class Elevator implements Runnable{
 		ElevatorEvent e = UDPBuilder.getPayload(packet);
 		
 		req = e;
+		//req.setElevatorNum(getID());
 		
 		System.out.println("Elevator " + this.id + " Received Request: " + this.req.toString());
 		
@@ -268,8 +270,9 @@ public class Elevator implements Runnable{
 	protected void sendTimingEvent(ElevatorTimingState ets) {
 		req.setElevatorNum(getID());
 		
-		ElevatorTimingEvent event = new ElevatorTimingEvent(req,ets);
 		
+		ElevatorTimingEvent event = new ElevatorTimingEvent(req,ets);
+		//event.setElevatorId
 		//Send the timing event back to the fault handler
 		try {
 			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));

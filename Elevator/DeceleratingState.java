@@ -42,8 +42,7 @@ public class DeceleratingState implements ElevatorState{
 	public void checkState() {
 		try {
 			this.elevator.moveElevator();
-			System.out.println("Elevator " + this.elevator.getID() + ": Decelerating -> Door Open\n");
-			elevator.sendTimingEvent(ElevatorTimingState.DECELERATING);
+			System.out.println("Elevator " + this.elevator.getID() + ": Decelerating -> Door Open\n");	
 			this.elevator.setState(new DoorOpenState(this.elevator));
 		} catch (InterruptedException e) {
 			e.printStackTrace();

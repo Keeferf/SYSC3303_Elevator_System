@@ -256,7 +256,7 @@ public class Scheduler implements Runnable {
 			}
 			
 			//Start a fault handler for the sent event
-			faultHandler.notify(e);
+			//faultHandler.notify(e);
 			Config.printLine();
 		} else {
 			try {

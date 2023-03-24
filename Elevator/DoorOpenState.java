@@ -22,13 +22,15 @@ public class DoorOpenState implements ElevatorState{
 	 */
 	@Override
 	public void runState() {
+		
 		System.out.println("Elevator " + this.elevator.getID() + " Arrived on floor " + this.elevator.getCurrFloor() + "\n");
-		elevator.sendTimingEvent(ElevatorTimingState.DOOR_OPEN);
+		
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		elevator.sendTimingEvent(ElevatorTimingState.DOOR_OPEN);
 		this.checkState();		
 	}
 
@@ -37,6 +39,7 @@ public class DoorOpenState implements ElevatorState{
 	 */
 	@Override
 	public void checkState() {
+		
 		System.out.println("Elevator " + this.elevator.getID() + " Door Open -> Door Closed\n");
 		this.elevator.setState(new DoorClosedState(this.elevator));
 	}
