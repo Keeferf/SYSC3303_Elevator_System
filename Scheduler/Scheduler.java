@@ -43,7 +43,7 @@ public class Scheduler implements Runnable {
         this.numRequests = 0;
         this.numResponses = 0;
         
-        faultHandler = new FaultHandler(this);
+        faultHandler = new FaultHandler();
     }
     
     /**

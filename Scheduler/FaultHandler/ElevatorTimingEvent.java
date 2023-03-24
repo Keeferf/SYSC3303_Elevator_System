@@ -20,15 +20,21 @@ public class ElevatorTimingEvent extends ElevatorEvent implements Serializable{
 	
 	private int elevatorNum;
 
-	
 	public ElevatorTimingEvent(ElevatorEvent event, ElevatorTimingState timingState) {
-		super((Object)event.getSource(), event.getTimestamp(), event.getDirection(), event.getFloorToGo(), event.getCurrFloor());
+		super(null, event.getTimestamp(), event.getDirection(), event.getFloorToGo(), event.getCurrFloor());
 		
 		elevatorNum = event.getElevatorNum();
 		
 		this.timingState = timingState;
 		
 		completedTime = LocalTime.now().toString();
+		
+		if(event.getElevatorNum() != -1) {
+			elevatorNum = event.getElevatorNum();
+		} else {
+			throw new IllegalArgumentException("Elevator Number must be set in the ElevatorEvent Object");
+		}
+		
 	}
 	
 	

@@ -33,6 +33,13 @@ public class FaultHandlerFrame extends JFrame implements FaultHandlerView{
 		
 		setLocationRelativeTo(null);	//centers
 		
+		JLabel title = new JLabel("<html><b>Starting Up...</u></html>", JLabel.CENTER);
+		title.setSize(WIDTH/4,HEIGHT);
+		
+		title.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		
+		add(title);
+		
 		pack();
 		
 		setVisible(true);

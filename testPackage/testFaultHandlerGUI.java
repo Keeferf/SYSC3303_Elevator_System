@@ -21,6 +21,13 @@ public class testFaultHandlerGUI {
 	        	faultList.add(i, states);
 	        }
 	        
+	        try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	        
 	        frame.update(faultList);
 	        
 	        try {

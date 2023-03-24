@@ -59,6 +59,7 @@ public class TimerN implements Runnable {
 
 	@Override
 	public void run() {
+		//System.out.println("Timer started for " + time + "s");
 		try {
 			Thread.sleep(time * 1000);
 		} catch (InterruptedException e) {

@@ -6,8 +6,11 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
+
 import FloorSystem.ElevatorEvent;
 import Scheduler.Scheduler;
+import Scheduler.FaultHandler.GUI.FaultHandlerFrame;
 import Util.Comms.Config;
 import Util.Comms.UDPBuilder;
 import Util.Timer.Timeable;
@@ -20,23 +23,30 @@ import Util.Timer.TimerN;
  */
 public class FaultHandler implements Runnable, Timeable{
 	
-	private Scheduler scheduler;
 	
 	private DatagramSocket socket;
 	
 	private ArrayList<ArrayList<FaultState>> faultList;
 	private ArrayList<ArrayList<TimerN>> timers;
 	
-	public FaultHandler(Scheduler scheduler) {
-		this.scheduler = scheduler;
+	private FaultHandlerFrame faultHandlerFrame;
+	
+	public FaultHandler() {
 		
 		faultList = new ArrayList<>();
 		timers = new ArrayList<>();
+		
+		//Initialise inner lists
+		for(int i = 0; i < Config.getElevatorPorts().length; i++) {
+			faultList.add(new ArrayList<FaultState>());
+			timers.add(new ArrayList<TimerN>());
+		}
 		
 		try {
 			socket = new DatagramSocket(Config.getFaultHandlerPort());
 		} catch (SocketException e) {
 			System.out.println("FAILED TO INITIALISE FAULT HANDLER");
+			e.printStackTrace();
 			System.exit(1);
 		}
 		
@@ -47,6 +57,9 @@ public class FaultHandler implements Runnable, Timeable{
 
 	@Override
 	public void run() {
+		//Startup the GUI!!!!
+		faultHandlerFrame = new FaultHandlerFrame();
+		
 		//Continual loop of receive timing event and process
 		while(true) {
 			byte[] pack = new byte[Config.getMaxMessageSize()];
@@ -74,22 +87,32 @@ public class FaultHandler implements Runnable, Timeable{
 			return;
 		}
 		
-		System.out.println("Recieved Timing Event: " + e.toString());
-		
 		ElevatorTimingEvent event = (ElevatorTimingEvent) UDPBuilder.getPayload(packet);
 		
-		ArrayList<FaultState> faults = faultList.get(event.getElevatorNum());
+		//System.out.println("Fault Timer Caught: " + event.toString() + " Fault State: " + event.getElevatorTimingState().toString() + " Elevator Num: " + event.getElevatorId());
+
+		
+		ArrayList<FaultState> faults = faultList.get(event.getElevatorId());
 		
 		FaultState faultState = faults.get(event.getElevatorTimingState().ordinal());
 		
+		//System.out.println("Ordinal #: " + event.getElevatorTimingState().ordinal());
+		//System.out.println("Current Fault State: " + faultState.toString());
+		
 		if(faultState.equals(FaultState.UNFULFILLED)) {
-			faults.set(event.getElevatorNum(), faultState.COMPLETED);
+			faults.set(event.getElevatorTimingState().ordinal(), faultState.COMPLETED);
 		} else if(faultState.equals(FaultState.ERROR)){
-			System.out.println("SYSTEM REPORTED ERROR INCORRECTLY");
+			System.out.println("SYSTEM REPORTED ERROR INCORRECTLY -> Received Response Packet after Timeout");
 		} else {
 			//Already completed
 		}
-		timers.get(event.getElevatorNum()).get(event.getElevatorTimingState().ordinal()).killTimer();	//Kill the timer associated with this packet
+		timers.get(event.getElevatorId()).get(event.getElevatorTimingState().ordinal()).killTimer();	//Kill the timer associated with this packet
+		
+		faultList.set(event.getElevatorId(), faults);
+		
+		if(faultHandlerFrame != null) {
+			faultHandlerFrame.update(faultList);
+		}
 	}
 
 	/**
@@ -105,30 +128,42 @@ public class FaultHandler implements Runnable, Timeable{
 		
 		ElevatorTimingEvent e = (ElevatorTimingEvent) payload;
 		
-		System.out.println("Fault Timer Caught: " + e.toString() + " Fault State: " + e.getElevatorTimingState().toString());
+		//System.out.println("Fault Timer Caught: " + e.toString() + " Fault State: " + e.getElevatorTimingState().toString() + " Elevator Num: " + e.getElevatorId());
 		
-		ArrayList<FaultState> faults = faultList.get(e.getElevatorNum());
+		ArrayList<FaultState> faults = faultList.get(e.getElevatorId());
 		
 		FaultState faultState = faults.get(e.getElevatorTimingState().ordinal());
 		
+//		System.out.println("Ordinal #: " + e.getElevatorTimingState().ordinal());
+//		System.out.println("Current Fault State: " + faultState.toString());
+		
 		if(faultState.equals(FaultState.UNFULFILLED)) {
-			faults.set(e.getElevatorNum(), faultState.ERROR);
+			faults.set(e.getElevatorTimingState().ordinal(), faultState.ERROR);
 		} else if(faultState.equals(FaultState.ERROR)){
-			System.out.println("SYSTEM ALREADY REPORTED ERROR");
+			System.out.println("SYSTEM ALREADY REPORTED ERROR");	//Should not proc
 		} else {
 			//Already completed, so should never get here, but can be ignored
 		}
+		faultList.set(e.getElevatorId(), faults);
 		
-		
+		if(faultHandlerFrame != null) {
+			faultHandlerFrame.update(faultList);
+		}
 	}
 	
 	/**
 	 * Called from scheduler. Command has been sent for elevator to do
 	 * Generates list of unfulfilled timer events
+	 * 
+	 * Elevator Event must have elevator num filled in
 	 * @param e
 	 * @param elevatorId
 	 */
 	public void notify(ElevatorEvent e) {
+		if(e.getElevatorNum() == -1) {
+			throw new RuntimeException("ElevatorNum has not been set.");
+		}
+		
 		//Creates a new list with 4 unfulfilled events
 		ArrayList<FaultState> faults = new ArrayList<>();
 		
@@ -143,19 +178,22 @@ public class FaultHandler implements Runnable, Timeable{
 			//Dispatch a timer thread to keep track of the state
 			//Conversion to int is negligble because of fudge factor
 			
+			
 			ElevatorTimingEvent ete = new ElevatorTimingEvent(e,s);
 			
-			TimerN timer = TimerN.startTimer((int)s.time(), ete,this);
+			TimerN timer = TimerN.startTimer((int)s.time()+2, ete,this);
 			
 			//Add to list of active timers
 			t.add(timer);
 		}
+		System.out.println("ElevatorNum:" + e.getElevatorNum());
+		faultList.set(e.getElevatorNum(), faults);
 		
-		faultList.add(e.getElevatorNum(), new ArrayList<FaultState>());
+		timers.set(e.getElevatorNum(),t);
 		
-		timers.add(e.getElevatorNum(),t);
-		
-		
+		if(faultHandlerFrame != null) {
+			faultHandlerFrame.update(faultList);
+		}
 	}
 	
 	/**
@@ -173,4 +211,17 @@ public class FaultHandler implements Runnable, Timeable{
 			t.killTimer();
 		}
 	}
+	
+	/////////////////////////////////
+	//Getters - For testing purposes
+	/////////////////////////////////
+	public ArrayList<ArrayList<FaultState>> getFaultList() {
+		return faultList;
+	}
+	
+	public ArrayList<ArrayList<TimerN>> getTimerList() {
+		return timers;
+	}
+	
+	
 }

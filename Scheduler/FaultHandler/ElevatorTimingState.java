@@ -6,10 +6,10 @@ package Scheduler.FaultHandler;
  *
  */
 public enum ElevatorTimingState {
-	DOOR_CLOSED(1000),
-	ACCELERATING(DOOR_CLOSED.time() + 1318), 
-	DECELERATING(ACCELERATING.time() + 1000), 
-	DOOR_OPEN(DECELERATING.time() + 5000);
+	DOOR_CLOSED(1),
+	ACCELERATING(DOOR_CLOSED.time() + 1.318), 
+	DECELERATING(ACCELERATING.time() + 3.000), 
+	DOOR_OPEN(DECELERATING.time() + 1.000);
 	
 	private final double time;
 	

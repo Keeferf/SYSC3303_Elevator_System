@@ -14,7 +14,7 @@ public class Config {
 	private static final int FloorSubsystemPort = 5040;
 	private static final int SchedulerPort = 5041;
 	private static final int[] ElevatorPort = {5043, 5044, 5045, 5046};
-	private static final int FaultHandlerPort = 5050;
+	private static final int FaultHandlerPort = 5066;
 	
 	private static final int MAXMESSAGESIZE = 1000;
 	
@@ -56,7 +56,7 @@ public class Config {
 		}
 		return (Integer) null;
 	}
-	public static String getFaulthandlerip() {
+	public static String getFaultHandlerIp() {
 		return FaultHandlerIP;
 	}
 	public static int getFaultHandlerPort() {
@@ -73,6 +73,9 @@ public class Config {
 	}
 	public static void printLine() {
 		System.out.println("-----------------");
+	}
+	public static int[] getElevatorPorts() {
+		return ElevatorPort;
 	}
 	
 	
