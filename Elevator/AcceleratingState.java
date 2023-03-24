@@ -1,5 +1,6 @@
 package Elevator;
 
+import Elevator.Components.ElevatorArrivalSensor;
 import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 
@@ -9,6 +10,7 @@ import FloorSystem.ElevatorEvent;
 public class AcceleratingState implements ElevatorState{
 	
 	private Elevator elevator;
+	private ElevatorArrivalSensor sensor;
 	
 	/**
 	 * Constructor for the acceleration state class
@@ -16,6 +18,7 @@ public class AcceleratingState implements ElevatorState{
 	 */
 	public AcceleratingState(Elevator elevator) {
 		this.elevator = elevator;
+		this.sensor = new ElevatorArrivalSensor();
 	}
 
 	/**
@@ -28,6 +31,7 @@ public class AcceleratingState implements ElevatorState{
 			if (this.elevator.getState() == this) {
 				try {
 					this.elevator.moveElevator();
+					this.sensor.setHasArrived(false);
 					System.out.println("Elevator " + this.elevator.getID() + " passes floor " + this.elevator.getCurrFloor());
 					Thread.sleep(1318);
 				} catch (InterruptedException e) {
