@@ -33,7 +33,7 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
 	private boolean motorFault;
 
     /**
-     * Constructor for the elevator event class
+     * Constructor for the elevator event classes with errors
      * 
      * Recently updated to not extend event object.
      * Was throwing errors since event received via UDP and cannot find source
@@ -62,17 +62,33 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
         requestStatus = RequestStatus.NEW;
     }
     
+    /**
+     * Constructor for the elevator event class, calls primary constructor with no errors
+     * 
+     * @param source: Object
+     * @param timestamp: String
+     * @param direction: Direction
+     * @param floorToGo: Int
+     * @param currFloor: Int
+     */
+    public ElevatorEvent(Object source, String timestamp, Direction direction, int floorToGo, int currFloor) {
+    	this(source, timestamp, direction, floorToGo, currFloor, false, false);
+    }
+    
+    /**
+     * Custom Constructor for making null elevator requests for work
+     */
     public ElevatorEvent(Object source) {
+    	this(source, "", null, 0, 0, false, false);
     	//super(source);
-    	this.timestamp = "";
-		this.direction = null;
-		this.floorToGo = 0;
-		this.currFloor = 0;
-		
-		elevatorNum = -1;
-		
-		requestStatus = RequestStatus.REQUEST;
-		
+//    	this.timestamp = "";
+//		this.direction = null;
+//		this.floorToGo = 0;
+//		this.currFloor = 0;
+//		
+//		elevatorNum = -1;
+//		
+//		requestStatus = RequestStatus.REQUEST;
 	}
 
 	/**
