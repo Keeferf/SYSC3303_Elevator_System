@@ -120,15 +120,7 @@ public class Elevator implements Runnable{
 		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == currFloor) l.setState(true);}
 		for(ElevatorButton b: buttons) {if(b.getFloorNum() == currFloor) b.toggle(true);}
 		
-		if(doorFault == true) {
-			System.out.println("Door Fault Detected");
-			return;
-		}
-		else if(motorFault == true) {
-			System.out.println("Motor Fault Detected");
-			return;
-		}
-		else if (floorToGo < currFloor) {
+		if (floorToGo < currFloor) {
 			down();
 		} else if (floorToGo > currFloor){
 			up();
@@ -248,6 +240,22 @@ public class Elevator implements Runnable{
 	 */
 	public int getID() {
 		return this.id;
+	}
+	
+	/**
+	 * Checks for
+	 */
+	public void checkDoorFault() {
+		if(doorFault == true) {
+			byte[] pack = new byte[Config.getMaxMessageSize()];
+			DatagramPacket packet = new DatagramPacket(pack,pack.length);
+			try {
+				socket.receive(packet);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**

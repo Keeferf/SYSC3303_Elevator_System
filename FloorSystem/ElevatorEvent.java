@@ -79,16 +79,16 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
      * Custom Constructor for making null elevator requests for work
      */
     public ElevatorEvent(Object source) {
-    	this(source, "", null, 0, 0, false, false);
+//    	this(source, "", null, 0, 0, false, false);
     	//super(source);
-//    	this.timestamp = "";
-//		this.direction = null;
-//		this.floorToGo = 0;
-//		this.currFloor = 0;
-//		
-//		elevatorNum = -1;
-//		
-//		requestStatus = RequestStatus.REQUEST;
+    	this.timestamp = "";
+		this.direction = null;
+		this.floorToGo = 0;
+		this.currFloor = 0;
+		
+		elevatorNum = -1;
+		
+		requestStatus = RequestStatus.REQUEST;
 	}
 
 	/**

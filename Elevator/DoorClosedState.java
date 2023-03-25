@@ -35,6 +35,7 @@ public class DoorClosedState implements ElevatorState{
 		}
 		if(elevator.getRequest().getCurrFloor() == elevator.getCurrFloor() ) {
 			elevator.sendTimingEvent(ElevatorTimingState.START);
+			elevator.checkDoorFault();
 		}
 		this.checkState();
 	}

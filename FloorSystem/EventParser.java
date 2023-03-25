@@ -73,8 +73,10 @@ public class EventParser {
         String additionalInfo = line.length >= 5 ? line[4] : "";
         
         if(additionalInfo.equals("DOOR")) {
-        	System.out.println("DOOR IS ACTIVE");
         	doorFault = true;
+        }
+        if(additionalInfo.equals("MOTOR")) {
+        	motorFault = true;
         }
         
         //Creates new event object
