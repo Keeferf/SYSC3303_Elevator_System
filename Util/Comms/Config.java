@@ -9,10 +9,12 @@ public class Config {
 	private static final String FloorSubsystemIP = "192.168.56.1";
 	private static final String SchedulerIP = "192.168.56.1";
 	private static final String ElevatorIP = "192.168.56.1";
+	private static final String FaultHandlerIP = "192.168.56.1";
 	
 	private static final int FloorSubsystemPort = 5040;
 	private static final int SchedulerPort = 5041;
 	private static final int[] ElevatorPort = {5043, 5044, 5045, 5046};
+	private static final int FaultHandlerPort = 5066;
 	
 	private static final int MAXMESSAGESIZE = 1000;
 	
@@ -39,6 +41,27 @@ public class Config {
 	public static int getElevatorport(int id) {
 		return ElevatorPort[id];
 	}
+	/**
+	 * Returns the elevator id/num associated with the port number passed
+	 * @param port
+	 * @return
+	 */
+	public static int getElevatorNumber(int port) {
+		int counter = 0;
+		for(int i: ElevatorPort) {
+			if(i == port) {
+				return counter;
+			}
+				counter++;
+		}
+		return (Integer) null;
+	}
+	public static String getFaultHandlerIp() {
+		return FaultHandlerIP;
+	}
+	public static int getFaultHandlerPort() {
+		return FaultHandlerPort;
+	}
 	public static int getMaxMessageSize() {
 		return MAXMESSAGESIZE;
 	}
@@ -50,6 +73,9 @@ public class Config {
 	}
 	public static void printLine() {
 		System.out.println("-----------------");
+	}
+	public static int[] getElevatorPorts() {
+		return ElevatorPort;
 	}
 	
 	

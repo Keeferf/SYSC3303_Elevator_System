@@ -16,7 +16,7 @@ import Util.Comms.RequestStatus;
 /**
  * Elevator event handles the input of events
  */
-public class ElevatorEvent extends EventObject implements Comparable<ElevatorEvent>, Serializable, Cloneable {
+public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, Cloneable {
 
 	private static final long serialVersionUID = 1L;
 	private final String timestamp;
@@ -24,12 +24,18 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
     private final int floorToGo;
     private final int currFloor;
     
+    private int elevatorNum;
+    
     private int seconds;
     
     private RequestStatus requestStatus;
 
     /**
      * Constructor for the elevator event class
+     * 
+     * Recently updated to not extend event object.
+     * Was throwing errors since event received via UDP and cannot find source
+     * Source wasn't used in any client files
      * @param source: Object
      * @param timestamp: String
      * @param direction: Direction
@@ -37,7 +43,7 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
      * @param currFloor: Int
      */
     public ElevatorEvent(Object source, String timestamp, Direction direction, int floorToGo, int currFloor) {
-        super(source);
+        //super(source);
         this.timestamp = timestamp;
         this.direction = direction;
         this.floorToGo = floorToGo;
@@ -45,17 +51,21 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
         
         seconds = convertToSeconds(timestamp);
         
+        elevatorNum = -1;
+        
         //New elevator events always start off at "NEW" status
         
         requestStatus = RequestStatus.NEW;
     }
     
     public ElevatorEvent(Object source) {
-    	super(source);
+    	//super(source);
     	this.timestamp = "";
 		this.direction = null;
 		this.floorToGo = 0;
 		this.currFloor = 0;
+		
+		elevatorNum = -1;
 		
 		requestStatus = RequestStatus.REQUEST;
 		
@@ -180,6 +190,22 @@ public class ElevatorEvent extends EventObject implements Comparable<ElevatorEve
         } catch (final ClassNotFoundException | IOException ex) {
             throw new RuntimeException(ex);
         }
+    }
+    
+    /**
+     * Sets the elevator that this event is dispatched to
+     * @param n
+     */
+    public void setElevatorNum(int n) {
+    	elevatorNum = n;
+    }
+    
+    /**
+     * Gets the elevator id that this event was dispatched to
+     * @return
+     */
+    public int getElevatorNum() {
+    	return elevatorNum;
     }
     
     
