@@ -50,8 +50,8 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
         this.direction = direction;
         this.floorToGo = floorToGo;
         this.currFloor = currFloor;
-        this.doorFault = false;
-		this.motorFault = false;
+        this.doorFault = doorFault;
+		this.motorFault = motorFault;
         
         seconds = convertToSeconds(timestamp);
         
