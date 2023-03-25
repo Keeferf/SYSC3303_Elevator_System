@@ -244,7 +244,6 @@ public class Elevator implements Runnable{
 	 * 
 	 */
 	public void checkDoorFault() {
-		
 		if(req.getDoorFault()) {
 			Config.printLine();
 			System.out.println("Elevator " + id + " DOOR ERROR CAUGHT. WAITING FOR RESPONSE");
@@ -254,8 +253,12 @@ public class Elevator implements Runnable{
 			try {
 				socket.receive(packet);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+			}
+			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
+				this.setState(new Error(this, true));
+			} else {
+				
 			}
 		}
 	}
@@ -273,14 +276,18 @@ public class Elevator implements Runnable{
 			byte[] pack = new byte[Config.getMaxMessageSize()];
 			DatagramPacket packet = new DatagramPacket(pack,pack.length);
 			
-			//Maybe while loop
 			try {
 				socket.receive(packet);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
+				this.setState(new Error(this, false));
+			} else {
+				
+			}
 		}
+		
 	}
 	
 	/**
@@ -363,6 +370,16 @@ public class Elevator implements Runnable{
 			System.exit(1);
 		}
 		this.state.runState();
+	}
+	
+	public void handleDoorFault() {
+		this.req = new ElevatorEvent(this, this.req.getTimestamp(), this.req.getDirection(), this.req.getFloorToGo(), this.req.getCurrFloor());
+	}
+	
+	public void exit() {
+		this.state = null;
+		this.req = null;
+		this.floorToGo = this.currFloor;
 	}
 }
 
