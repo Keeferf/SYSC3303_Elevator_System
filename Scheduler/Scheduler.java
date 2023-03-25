@@ -280,6 +280,7 @@ public class Scheduler implements Runnable {
 		}
 		System.out.println("Elevator @ Port " + nextPort + " assigned next request");
 		this.throughput.put(nextPort, this.throughput.getOrDefault(nextPort, 0) + 1);
+		this.workPorts.remove(this.workPorts.indexOf(nextPort));
 		return nextPort;
 	}
 

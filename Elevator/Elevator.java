@@ -268,10 +268,12 @@ public class Elevator implements Runnable{
 		
 		if(req.getMotorFault()) {
 			Config.printLine();
-			System.out.println("Elevator " + id + " DOOR ERROR CAUGHT. WAITING FOR RESPONSE");
+			System.out.println("Elevator " + id + " MOTOR ERROR CAUGHT. WAITING FOR RESPONSE");
 			Config.printLine();
 			byte[] pack = new byte[Config.getMaxMessageSize()];
 			DatagramPacket packet = new DatagramPacket(pack,pack.length);
+			
+			//Maybe while loop
 			try {
 				socket.receive(packet);
 			} catch (IOException e) {
