@@ -23,7 +23,6 @@ import Util.Timer.TimerN;
  */
 public class FaultHandler implements Runnable, Timeable{
 	
-	
 	private DatagramSocket socket;
 	
 	private ArrayList<ArrayList<FaultState>> faultList;

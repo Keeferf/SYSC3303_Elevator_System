@@ -29,6 +29,8 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
     private int seconds;
     
     private RequestStatus requestStatus;
+	private boolean doorFault;
+	private boolean motorFault;
 
     /**
      * Constructor for the elevator event class
@@ -42,12 +44,14 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
      * @param floorToGo: Int
      * @param currFloor: Int
      */
-    public ElevatorEvent(Object source, String timestamp, Direction direction, int floorToGo, int currFloor) {
+    public ElevatorEvent(Object source, String timestamp, Direction direction, int floorToGo, int currFloor, boolean doorFault, boolean motorFault) {
         //super(source);
         this.timestamp = timestamp;
         this.direction = direction;
         this.floorToGo = floorToGo;
         this.currFloor = currFloor;
+        this.doorFault = false;
+		this.motorFault = false;
         
         seconds = convertToSeconds(timestamp);
         
@@ -126,6 +130,12 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
     	if(direction == null) {
     		return "REQUEST";
     	}
+    	else if(doorFault == true) {
+    		return timestamp + ";" + currFloor + ";" + direction.toString() + ";" + floorToGo + ";" + "Door Fault: " + doorFault;
+    	}
+    	else if(motorFault == true) {
+    		return timestamp + ";" + currFloor + ";" + direction.toString() + ";" + floorToGo + ";" + "Motor Fault: " + motorFault;
+    	}
     	return timestamp + ";" + currFloor + ";" + direction.toString() + ";" + floorToGo;
     }
 
@@ -152,6 +162,14 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
     
     public int getTimeAsSeconds() {
     	return seconds;
+    }
+    
+    /**
+     * Getter for the door fault boolean
+     * @return doorFault: boolean
+     */
+    public boolean getDoorFault() {
+        return doorFault;
     }
     
     /**

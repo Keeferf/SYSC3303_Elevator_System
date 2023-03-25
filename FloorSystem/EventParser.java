@@ -65,8 +65,19 @@ public class EventParser {
         //Process numbers
         int floorToGo = parseInt(line[3]);
         int currFloor = parseInt(line[1]);
-
+        
+        //Processing fault from file
+        boolean doorFault = false;
+        boolean motorFault = false;
+        
+        String additionalInfo = line.length >= 5 ? line[4] : "";
+        
+        if(additionalInfo.equals("DOOR")) {
+        	System.out.println("DOOR IS ACTIVE");
+        	doorFault = true;
+        }
+        
         //Creates new event object
-        return new ElevatorEvent(this, line[0],direction,floorToGo,currFloor);
+        return new ElevatorEvent(this, line[0],direction,floorToGo,currFloor,doorFault,motorFault);
     }
 }

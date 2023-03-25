@@ -30,6 +30,9 @@ public class Elevator implements Runnable{
 	private int floorToGo;
 	private ElevatorState state;
 	
+	private boolean doorFault = false;
+	private boolean motorFault = false;
+	
 	private final ArrayList<ElevatorLamp> lamps;
 	private final ArrayList<ElevatorButton> buttons;
 	private final ElevatorDoor door;
@@ -117,7 +120,15 @@ public class Elevator implements Runnable{
 		for(ElevatorLamp l: lamps) {if(l.getFloorNum() == currFloor) l.setState(true);}
 		for(ElevatorButton b: buttons) {if(b.getFloorNum() == currFloor) b.toggle(true);}
 		
-		if (floorToGo < currFloor) {
+		if(doorFault == true) {
+			System.out.println("Door Fault Detected");
+			return;
+		}
+		else if(motorFault == true) {
+			System.out.println("Motor Fault Detected");
+			return;
+		}
+		else if (floorToGo < currFloor) {
 			down();
 		} else if (floorToGo > currFloor){
 			up();
