@@ -50,8 +50,8 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
         this.direction = direction;
         this.floorToGo = floorToGo;
         this.currFloor = currFloor;
-        this.doorFault = false;
-		this.motorFault = false;
+        this.doorFault = doorFault;
+		this.motorFault = motorFault;
         
         seconds = convertToSeconds(timestamp);
         
@@ -189,6 +189,14 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
     }
     
     /**
+     * Getter for the motor fault boolean
+     * @return motorFault: boolean
+     */
+    public boolean getMotorFault() {
+		return motorFault;
+	}
+    
+    /**
      * Serialization methods provided by SerializationUtils
      * 
      * https://github.com/apache/commons-lang/blob/master/src/main/java/org/apache/commons/lang3/SerializationUtils.java
@@ -241,6 +249,8 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
     public int getElevatorNum() {
     	return elevatorNum;
     }
+
+	
     
     
 }

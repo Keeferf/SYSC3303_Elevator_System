@@ -30,9 +30,6 @@ public class Elevator implements Runnable{
 	private int floorToGo;
 	private ElevatorState state;
 	
-	private boolean doorFault = false;
-	private boolean motorFault = false;
-	
 	private final ArrayList<ElevatorLamp> lamps;
 	private final ArrayList<ElevatorButton> buttons;
 	private final ElevatorDoor door;
@@ -243,10 +240,36 @@ public class Elevator implements Runnable{
 	}
 	
 	/**
-	 * Checks for
+	 * Checks for if there is a door fault.
+	 * 
 	 */
 	public void checkDoorFault() {
-		if(doorFault == true) {
+		
+		if(req.getDoorFault()) {
+			Config.printLine();
+			System.out.println("Elevator " + id + " DOOR ERROR CAUGHT. WAITING FOR RESPONSE");
+			Config.printLine();
+			byte[] pack = new byte[Config.getMaxMessageSize()];
+			DatagramPacket packet = new DatagramPacket(pack,pack.length);
+			try {
+				socket.receive(packet);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Checks for if there is a motor fault.
+	 * 
+	 */
+	public void checkMotorFault() {
+		
+		if(req.getMotorFault()) {
+			Config.printLine();
+			System.out.println("Elevator " + id + " DOOR ERROR CAUGHT. WAITING FOR RESPONSE");
+			Config.printLine();
 			byte[] pack = new byte[Config.getMaxMessageSize()];
 			DatagramPacket packet = new DatagramPacket(pack,pack.length);
 			try {
@@ -308,6 +331,10 @@ public class Elevator implements Runnable{
 		} else if(ets.equals(ElevatorTimingState.DOOR_OPEN)) {
 			timingHasStarted = false;
 			sent.clear();
+		} else if(ets.equals(ElevatorTimingState.DOOR_CLOSED) && timingHasStarted) {
+			checkDoorFault();
+		} else if(ets.equals(ElevatorTimingState.ACCELERATING) && timingHasStarted) {
+			checkMotorFault();
 		}
 		req.setElevatorNum(getID());
 		
