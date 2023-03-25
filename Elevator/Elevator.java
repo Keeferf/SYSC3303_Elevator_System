@@ -37,6 +37,9 @@ public class Elevator implements Runnable{
 	private DatagramSocket socket;
 	
 	private static int idCounter = 0;
+	
+	private boolean timingHasStarted;
+	private ArrayList<ElevatorTimingState> sent;
 
 	/**
 	 * Constructor for the elevator class
@@ -50,6 +53,7 @@ public class Elevator implements Runnable{
 		idCounter++;
 		this.state = new IdleState(this);
 	
+		sent = new ArrayList<>();
 		
 		//Initialize the components
 		lamps = new ArrayList<>();
@@ -62,6 +66,8 @@ public class Elevator implements Runnable{
 			lamps.add(new ElevatorLamp(i));
 			buttons.add(new ElevatorButton(i));
 		}
+		
+		timingHasStarted = false;
 	}
 	
 	/**
@@ -114,6 +120,7 @@ public class Elevator implements Runnable{
 		} else if (floorToGo > currFloor){
 			up();
 		} else {
+			sendTimingEvent(ElevatorTimingState.ACCELERATING);	//Added to fix state skip
 			sendTimingEvent(ElevatorTimingState.DECELERATING);
 			this.setState(new DoorOpenState(this));
 		}
@@ -265,9 +272,22 @@ public class Elevator implements Runnable{
 	
 	/**
 	 * Sends a timing event to the fault handler.
+	 * 
+	 * + logic for 
 	 * @param ets
 	 */
 	protected void sendTimingEvent(ElevatorTimingState ets) {
+		if(timingHasStarted && ets.equals(ElevatorTimingState.START)) return;
+		
+		if(sent.contains(ets)) return;	//already been send
+		sent.add(ets);
+		
+		if(ets.equals(ElevatorTimingState.START)) {
+			timingHasStarted = true;
+		} else if(ets.equals(ElevatorTimingState.DOOR_OPEN)) {
+			timingHasStarted = false;
+			sent.clear();
+		}
 		req.setElevatorNum(getID());
 		
 		

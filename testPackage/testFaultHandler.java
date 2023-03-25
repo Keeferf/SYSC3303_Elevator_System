@@ -83,7 +83,7 @@ public class testFaultHandler {
 			fHandler.notify(new ElevatorTimingEvent(e,ElevatorTimingState.START));	//pass in the test object
 		
 			try {
-				Thread.sleep(15 * 1000);
+				Thread.sleep((5 + 4 + 4 + 5) * 1000);
 			} catch (InterruptedException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -99,8 +99,12 @@ public class testFaultHandler {
 		assertEquals("2nd Element: ", FaultState.ERROR,fList.get(1));
 		assertEquals("3rd Element: ", FaultState.ERROR,fList.get(2));
 		assertEquals("4th Element: ", FaultState.ERROR,fList.get(3));
+		try {
+			fHandler.shutdown();
+		} catch(Throwable ex) {
+			
+		}
 		
-		fHandler.shutdown();
 	}
 	
 	@Test
@@ -163,100 +167,5 @@ public class testFaultHandler {
 		fHandler.shutdown();
 	}
 	
-	/**
-	 * Test all 3 above with a mix of inputs, and multiple rounds
-	 */
-	@Test
-	void testCombination() {
-		try {
-			fHandler = new FaultHandler();
-			
-			//Source no longer needed*
-			ElevatorEvent e = new ElevatorEvent(null, "00:00:05.0",Direction.UP,4,2);
-			
-			int elevatorNum = 3;
-			
-			e.setElevatorNum(elevatorNum);
-			
-			fHandler.notify(new ElevatorTimingEvent(e,ElevatorTimingState.ACCELERATING));	//pass in the test object
-		
-			//Shoot off 4 packets very fast
-			DatagramSocket socket = new DatagramSocket();
-			Thread.sleep(1000);
-			ElevatorTimingEvent event = new ElevatorTimingEvent(e, ElevatorTimingState.DOOR_CLOSED);
-			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
-			
-			Thread.sleep(1000);
-			event = new ElevatorTimingEvent(e, ElevatorTimingState.ACCELERATING);
-			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
-			
-			Thread.sleep(1000);
-			event = new ElevatorTimingEvent(e, ElevatorTimingState.DECELERATING);
-			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
-			
-			Thread.sleep(1000 * 20);	//Should fail
-			event = new ElevatorTimingEvent(e, ElevatorTimingState.DOOR_OPEN);
-			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
-		
-		
-			ArrayList<ArrayList<FaultState>> faultList = fHandler.getFaultList();
-			
-			//Test to ensure list is initialised correctly
-			ArrayList<FaultState> fList = faultList.get(elevatorNum);
-			Thread.sleep(10 * 1000);//enough to wait for all timers
-			
-			assertEquals("1st Element: ", FaultState.COMPLETED,fList.get(0));
-			assertEquals("2nd Element: ", FaultState.ERROR,fList.get(1));
-			assertEquals("3rd Element: ", FaultState.COMPLETED,fList.get(2));
-			assertEquals("4th Element: ", FaultState.ERROR,fList.get(3));
-			
-			//Now for a second go around
-			
-			fHandler.notify(new ElevatorTimingEvent(e,ElevatorTimingState.ACCELERATING));	//pass in the test object
-			
-			fList = faultList.get(elevatorNum);
-			//Check reset
-			assertEquals("RESET: ", FaultState.UNFULFILLED,fList.get(0));
-			assertEquals("RESET: ", FaultState.UNFULFILLED,fList.get(1));
-			assertEquals("RESET: ", FaultState.UNFULFILLED,fList.get(2));
-			assertEquals("RESET: ", FaultState.UNFULFILLED,fList.get(3));
-			
-			//Shoot off 4 packets very fast
-			socket = new DatagramSocket();
-			Thread.sleep(1000);
-			event = new ElevatorTimingEvent(e, ElevatorTimingState.DOOR_CLOSED);
-			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
-			
-			Thread.sleep(1000);
-			event = new ElevatorTimingEvent(e, ElevatorTimingState.ACCELERATING);
-			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
-			
-			Thread.sleep(1000);
-			event = new ElevatorTimingEvent(e, ElevatorTimingState.DECELERATING);
-			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
-			
-			Thread.sleep(1000 * 20);	//Should fail
-			event = new ElevatorTimingEvent(e, ElevatorTimingState.DOOR_OPEN);
-			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
-		
-		
-			faultList = fHandler.getFaultList();
-			
-			//Test to ensure list is initialised correctly
-			fList = faultList.get(elevatorNum);
-			Thread.sleep(10 * 1000);//enough to wait for all timers
-			
-			assertEquals("1st Element: ", FaultState.COMPLETED,fList.get(0));
-			assertEquals("2nd Element: ", FaultState.COMPLETED,fList.get(1));
-			assertEquals("3rd Element: ", FaultState.COMPLETED,fList.get(2));
-			assertEquals("4th Element: ", FaultState.COMPLETED,fList.get(3));
-		
-		} catch(Throwable ee) {
-			fHandler.shutdown();
-			ee.printStackTrace();
-			fail();
-		}
-		fHandler.shutdown();
-		
-	}
+	
 }

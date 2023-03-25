@@ -35,6 +35,8 @@ public class AcceleratingState implements ElevatorState{
 					e.printStackTrace();
 				}
 			}
+			elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
+
 		}
 	}
 
@@ -48,20 +50,19 @@ public class AcceleratingState implements ElevatorState{
 			if (req.getDirection() == Direction.UP) {
 				if(elevator.getCurrFloor() == elevator.getFloorToGo() - 1) {
 					System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
-					elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
+					//elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
 					elevator.setState(new DeceleratingState(elevator));
 				}
 			} else {
 				if(elevator.getCurrFloor() == elevator.getFloorToGo() + 1) {
 					System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
-					elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
 					elevator.setState(new DeceleratingState(elevator));
 				}
 			}
 		} else {
 			if(elevator.getCurrFloor() >= elevator.getFloorToGo() - 1 && elevator.getCurrFloor() <= elevator.getFloorToGo() + 1) {
 				System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
-				elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
+				//elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
 				elevator.setState(new DeceleratingState(elevator));
 			}
 		}

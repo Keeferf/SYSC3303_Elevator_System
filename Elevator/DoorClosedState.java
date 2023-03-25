@@ -27,7 +27,7 @@ public class DoorClosedState implements ElevatorState{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		if(elevator.getRequest().getCurrFloor() == elevator.getCurrFloor()) {
+		if(elevator.getRequest().getCurrFloor() == elevator.getCurrFloor() ) {
 			elevator.sendTimingEvent(ElevatorTimingState.START);
 		}
 		this.checkState();
@@ -47,7 +47,6 @@ public class DoorClosedState implements ElevatorState{
 			System.out.println("Elevator " + this.elevator.getID() + " Picked up passenger, Door Closed -> Accelerating\n");
 			
 			elevator.sendTimingEvent(ElevatorTimingState.START);
-			
 			
 			elevator.sendTimingEvent(ElevatorTimingState.DOOR_CLOSED);
 			

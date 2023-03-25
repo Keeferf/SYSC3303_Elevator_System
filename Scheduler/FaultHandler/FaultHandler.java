@@ -94,7 +94,6 @@ public class FaultHandler implements Runnable, Timeable{
 		
 		ElevatorTimingEvent event = (ElevatorTimingEvent) UDPBuilder.getPayload(packet);
 		
-		System.out.println("Received Timing Packet: " + event.toString() + " Fault State: " + event.getElevatorTimingState().toString() + " Elevator Num: " + event.getElevatorId());
 		//Start event
 		if(event.getElevatorTimingState().equals(ElevatorTimingState.START)) {
 			//System.out.println(hasStarted.get(event.getElevatorId()));
@@ -107,9 +106,12 @@ public class FaultHandler implements Runnable, Timeable{
 		//Guard statement for premature timing events
 		if(!hasStarted.get(event.getElevatorId())) {
 			//System.out.println(hasStarted.get(event.getElevatorId()));
-			System.out.println("Prematurely Got sent");
+			//System.out.println("Prematurely Got sent");
 			return;
 		}
+		
+		System.out.println("Received Timing Packet: " + event.toString() + " Fault State: " + event.getElevatorTimingState().toString() + " Elevator Num: " + event.getElevatorId());
+
 		
 		ArrayList<FaultState> faults = faultList.get(event.getElevatorId());
 		
@@ -137,6 +139,7 @@ public class FaultHandler implements Runnable, Timeable{
 		}
 		
 		timers.get(event.getElevatorId()).get(event.getElevatorTimingState().ordinal()-1).killTimer();	//Kill the timer associated with this packet
+		//System.out.println("IsKilled: " + timers.get(event.getElevatorId()).get(event.getElevatorTimingState().ordinal()-1).isKilled());
 		
 		faultList.set(event.getElevatorId(), faults);
 		
@@ -168,14 +171,15 @@ public class FaultHandler implements Runnable, Timeable{
 		
 		FaultState faultState = faults.get(e.getElevatorTimingState().ordinal()-1);
 		
-		System.out.println("Ordinal #: " + e.getElevatorTimingState().ordinal());
-		System.out.println("Current Fault State: " + faultState.toString());
+		//System.out.println("Ordinal #: " + e.getElevatorTimingState().ordinal());
+		//System.out.println("Current Fault State: " + faultState.toString());
 		
 		if(faultState.equals(FaultState.UNFULFILLED)) {
 			faults.set(e.getElevatorTimingState().ordinal()-1, faultState.ERROR);
 		} else if(faultState.equals(FaultState.ERROR)){
 			System.out.println("SYSTEM ALREADY REPORTED ERROR");	//Should not proc
 		} else {
+			System.out.println("TIMER TRIGGERED EVENT THOUGH EVENT ALREADY COMPLETED");
 			return;
 		}
 		faultList.set(e.getElevatorId(), faults);
@@ -186,7 +190,7 @@ public class FaultHandler implements Runnable, Timeable{
 		//Clear the list back to unfulfilled if its the last one
 		if(e.getElevatorTimingState().equals(ElevatorTimingState.DOOR_OPEN)) {
 			killAllTimers(e.getElevatorId());
-			clearList(e.getElevatorId());
+			//clearList(e.getElevatorId());
 			hasStarted.set(e.getElevatorId(), false);
 		}
 		
@@ -234,12 +238,12 @@ public class FaultHandler implements Runnable, Timeable{
 		
 			ElevatorTimingEvent ete = new ElevatorTimingEvent(e,s);
 			
-			TimerN timer = TimerN.startTimer(computeStateTime(s,ete), ete,this);;
+			TimerN timer = new TimerN(computeStateTime(s,ete),ete,this);//TimerN.startTimer(computeStateTime(s,ete), ete,this);;
 			
 			//Add to list of active timers
 			t.add(timer);
 		}
-		System.out.println("ElevatorNum:" + e.getElevatorNum());
+		//System.out.println("ElevatorNum:" + e.getElevatorNum());
 		faultList.set(elevatorNum, faults);
 		
 		timers.set(elevatorNum,t);
@@ -293,7 +297,10 @@ public class FaultHandler implements Runnable, Timeable{
 		
 		for(TimerN t: ttimers) {
 			t.killTimer();
+			//System.out.println("IsKilled: " + t.isKilled());
 		}
+		
+		timers.set(elevatorNum,ttimers);
 	}
 	
 	/**
@@ -301,12 +308,12 @@ public class FaultHandler implements Runnable, Timeable{
 	 * its destination
 	 * @param s
 	 */
-	private double computeStateTime(ElevatorTimingState s, ElevatorTimingEvent e) {
+	public double computeStateTime(ElevatorTimingState s, ElevatorTimingEvent e) {
 		//Note: Start is always at the curr floor in event. Does not include movement to start
 		if(s.equals(ElevatorTimingState.START)) {return 0;}
 		final double DOOR_CLOSE_TIME = 5;
 		final double ACCEL_TIME_PER_FLOOR = 1.318;
-		final double DECEL_TIME_PER_FLOOR = 2;
+		final double DECEL_TIME_PER_FLOOR = 4;
 		final double DOOR_OPEN_TIME = 5;
 		
 		double time = 0;

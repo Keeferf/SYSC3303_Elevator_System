@@ -23,9 +23,6 @@ public class TimerN implements Runnable {
 		
 		//Creates a new timer to go off on its own
 		TimerN timer = new TimerN(n,payload,reference);
-		Thread thread = new Thread(timer);
-		
-		thread.start();
 		
 		return timer;
 	}
@@ -40,9 +37,6 @@ public class TimerN implements Runnable {
 		
 		//Creates a new timer to go off on its own
 		TimerN timer = new TimerN(n, null, reference);
-		Thread thread = new Thread(timer);
-		
-		thread.start();
 		
 		return timer;
 	}
@@ -57,9 +51,6 @@ public class TimerN implements Runnable {
 	public static TimerN startTimer(double n, Object payload, Timeable reference) {
 		//Creates a new timer to go off on its own
 		TimerN timer = new TimerN(n,payload,reference);
-		Thread thread = new Thread(timer);
-		
-		thread.start();
 		
 		return timer;
 	}
@@ -70,7 +61,7 @@ public class TimerN implements Runnable {
 	private Object payload;
 	private Timeable reference;
 	
-	private boolean timerKilled;
+	private volatile boolean timerKilled;
 	
 	public TimerN(int n, Object payload, Timeable reference) {
 		time = n;
@@ -78,6 +69,12 @@ public class TimerN implements Runnable {
 		this.reference = reference;
 		
 		timerKilled = false;
+		
+		Thread thread = new Thread(this);
+		
+		thread.start();
+		
+		//System.out.println("TImer Started");
 	}
 	
 
@@ -87,6 +84,12 @@ public class TimerN implements Runnable {
 		this.reference = reference;
 		
 		timerKilled = false;
+		
+		Thread thread = new Thread(this);
+		
+		thread.start();
+		
+		//System.out.println("TImer Started");
 	}
 
 	@Override
@@ -98,11 +101,9 @@ public class TimerN implements Runnable {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
-		synchronized (reference) {
-			if(!timerKilled) {System.out.println("Timer killed: " + timerKilled);reference.timerFinished(payload);}
-		}
 		
-		
+		if(!timerKilled) {reference.timerFinished(payload);}
+		//System.out.println("Killed Timer Worked");
 		
 	}
 	
@@ -110,15 +111,15 @@ public class TimerN implements Runnable {
 	 * Used to disable the timer mid execution
 	 */
 	public void killTimer() {
-		synchronized (reference) {
-			System.out.println("Killed Timer");
+		//System.out.println("Timer Killed");
+			//System.out.println("Killed Timer");
 			timerKilled = true;
-		}
+		
 	}
 	
 	public boolean isKilled() {
 		return timerKilled;
-		}
+	}
 
 	
 }

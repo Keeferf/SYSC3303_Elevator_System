@@ -194,7 +194,7 @@ public class Scheduler implements Runnable {
 		try {
 			this.socket = new DatagramSocket(Config.getSchedulerport());
 		} catch (SocketException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 			System.exit(1);
 		}
 		this.state.executeState();
