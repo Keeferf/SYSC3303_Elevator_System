@@ -1,6 +1,10 @@
 package Elevator;
 
+
 import Scheduler.FaultHandler.ElevatorTimingState;
+
+import Elevator.Components.ElevatorArrivalSensor;
+
 
 /**
  * Door close state class to handle the doors of the elevator states
@@ -8,6 +12,7 @@ import Scheduler.FaultHandler.ElevatorTimingState;
 public class DoorClosedState implements ElevatorState{
 
 	private Elevator elevator;
+	private ElevatorArrivalSensor sensor;
 	
 	/**
 	 * Constructor for door close state class
@@ -15,6 +20,7 @@ public class DoorClosedState implements ElevatorState{
 	 */
 	public DoorClosedState(Elevator elevator) {
 		this.elevator = elevator;
+		this.sensor = new ElevatorArrivalSensor();
 	}
 	
 	/**
@@ -40,10 +46,12 @@ public class DoorClosedState implements ElevatorState{
 	public void checkState() {
 		if(elevator.getCurrFloor() == this.elevator.getRequest().getFloorToGo()) {
 			this.elevator.arrivedAtFloor(this.elevator.getCurrFloor());
+			this.sensor.setHasArrived(true);
 			System.out.println("Elevator " + this.elevator.getID() + ": Dropped off passenger, Door Closed -> Idle\n");
 			elevator.setState(new IdleState(elevator));
 		} else {
 			this.elevator.setFloorToGo(this.elevator.getRequest().getFloorToGo());
+			this.sensor.setHasArrived(false);
 			System.out.println("Elevator " + this.elevator.getID() + " Picked up passenger, Door Closed -> Accelerating\n");
 			
 			elevator.sendTimingEvent(ElevatorTimingState.START);
