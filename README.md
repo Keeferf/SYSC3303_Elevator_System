@@ -18,11 +18,12 @@ Must accurately describe the goal of the file/class.
 2. Open the unzipped folder in eclipse\
 3. Navigate to the "Util.Comms" package\
 4. From there you can see the Config.java file. Open it.\
-5. In Config.java, change the FloorSubsystem, Scheduler, Elevator, and FaultHandler IP Addresses
+5. Open up a command prompt and type "ipconfig". Copy paste the IpV4 address into the config.
+6. In Config.java, change the FloorSubsystem, Scheduler, Elevator, and FaultHandler IP Addresses
     - Note: Scheduler and FaultHandler IPs must match, as they are meant to be run on the same device
-6. Navigate to "Simulation" package\
-7. From there, you will find the three files "SimulationScheduler.java", "SimulationElevator.java", "SimulationFloorSubsystem.java".\
-8. Run the main method in those files in the following order
+7. Navigate to "Simulation" package\
+8. From there, you will find the three files "SimulationScheduler.java", "SimulationElevator.java", "SimulationFloorSubsystem.java".\
+9. Run the main method in those files in the following order
     1) SimulationScheduler.java
     2) SimulationElevator.java
     3) SimulationFloorSubsyste.java
