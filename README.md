@@ -39,11 +39,12 @@ Executing the main within the Simulation class will read in the test events for 
 Included within the zipped eclipse project is a text file named <b>Events.txt</b>. This file includs the formatted events\
 which are read into the program at the start. It is already in the correct location for testing purposes.
 
-## Project Iteration 3 - Breakdown of Responsibilities
+## Project Iteration 4 - Breakdown of Responsibilities
 
 Nicholas Rose - 101181935
 Implements Fault Detection
 Implements Fault Handler Classes
+Implements Fault Handler Tests + GUI
 UML Diagrams
 Documentation
 
@@ -56,7 +57,7 @@ Documentation
 Keefer Belanger - 101152085
 Implements System Reading Faults from Input File
 Extend Elevator Event Class
-UML Diagrams
+UML Diagrams, Timing Diagrams
 Documentation
 
 Joshua Noronha - 101194076
