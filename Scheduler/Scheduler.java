@@ -47,6 +47,22 @@ public class Scheduler implements Runnable {
     }
     
     /**
+	 * Scheduler test constructor
+	 * @param floors The FloorSubsystem instance executing as a Thread
+	 */
+    public Scheduler(boolean isTest) {
+    	this.incomingRequests = new ArrayList<>();
+        this.validRequests = new ArrayList<>();
+        this.returnResponses = new ArrayList<>();
+        this.workPorts = new ArrayList<>();
+        this.state = new Idle(this);
+        this.lastRequestPassed = false;
+        this.throughput = new HashMap<Integer, Integer>();
+        this.numRequests = 0;
+        this.numResponses = 0;
+    }
+    
+    /**
      * Method used by Floor Subsystem to pass new elevator requests to scheduler
      * @param elevatorEvent Event signifying a passenger pressed an elevator 
      * 						request button

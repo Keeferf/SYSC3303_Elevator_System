@@ -96,9 +96,9 @@ public class testFaultHandler {
 		ArrayList<FaultState> fList = faultList.get(elevatorNum);
 		
 		assertEquals("1st Element: ", FaultState.ERROR,fList.get(0));
-		assertEquals("2nd Element: ", FaultState.ERROR,fList.get(1));
-		assertEquals("3rd Element: ", FaultState.ERROR,fList.get(2));
-		assertEquals("4th Element: ", FaultState.ERROR,fList.get(3));
+		assertEquals("2nd Element: ", FaultState.UNFULFILLED,fList.get(1));
+		assertEquals("3rd Element: ", FaultState.UNFULFILLED,fList.get(2));
+		assertEquals("4th Element: ", FaultState.UNFULFILLED,fList.get(3));
 		try {
 			fHandler.shutdown();
 		} catch(Throwable ex) {

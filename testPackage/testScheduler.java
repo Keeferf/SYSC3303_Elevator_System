@@ -9,6 +9,7 @@ import FloorSystem.Direction;
 import FloorSystem.ElevatorEvent;
 import FloorSystem.FloorSubsystem;
 import Scheduler.Scheduler;
+import Scheduler.FaultHandler.FaultHandler;
 
 /**
  * Test Class for the Scheduler class
@@ -18,16 +19,16 @@ class testScheduler {
 
 	@Test
 	public void testNewRequest() {
-		Scheduler scheduler = new Scheduler();
-		ElevatorEvent event = new ElevatorEvent(this, "14:05:15", Direction.UP, 0, 2);
+		Scheduler scheduler = new Scheduler(true);
+		ElevatorEvent event = new ElevatorEvent(this, "14:05:15", Direction.UP, 0, 2, false, false);
 		scheduler.newRequest(event);
 		assertEquals(1, scheduler.getIncomingQueueLength());
 	}
 	
 	@Test
 	public void testSendResponse() {
-		Scheduler scheduler = new Scheduler();
-		ElevatorEvent event = new ElevatorEvent(this, "14:05:15", Direction.UP, 0, 2);
+		Scheduler scheduler = new Scheduler(true);
+		ElevatorEvent event = new ElevatorEvent(this, "14:05:15", Direction.UP, 0, 2, false, false);
 		scheduler.newRequest(event);
 		assertEquals(0, scheduler.getValidQueueLength());
 		assertEquals(0, scheduler.getResponseQueueLength());
