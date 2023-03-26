@@ -16,9 +16,13 @@ Must accurately describe the goal of the file/class.
 ## Setup Instructions
 1. Unzip the Elevator System project onto your local machine.\
 2. Open the unzipped folder in eclipse\
-3. Navigate to "Simulation" package\
-4. From there, you will find the three files "SimulationScheduler.java", "SimulationElevator.java", "SimulationFloorSubsystem.java".\
-5. Run the main method in those files in the following order
+3. Navigate to the "Util.Comms" package\
+4. From there you can see the Config.java file. Open it.\
+5. In Config.java, change the FloorSubsystem, Scheduler, Elevator, and FaultHandler IP Addresses
+    - Note: Scheduler and FaultHandler IPs must match, as they are meant to be run on the same device
+6. Navigate to "Simulation" package\
+7. From there, you will find the three files "SimulationScheduler.java", "SimulationElevator.java", "SimulationFloorSubsystem.java".\
+8. Run the main method in those files in the following order
     1) SimulationScheduler.java
     2) SimulationElevator.java
     3) SimulationFloorSubsyste.java
@@ -38,24 +42,24 @@ which are read into the program at the start. It is already in the correct locat
 ## Project Iteration 3 - Breakdown of Responsibilities
 
 Nicholas Rose - 101181935
-Implement Timer
-Implement UDP Communication
+Implements Fault Detection
+Implements Fault Handler Classes
 UML Diagrams
 Documentation
 
 Colin Mandeville - 101140289
-Scheduler Optimization
-Fix Elevator State Machine
-Solve Merge Conflicts
+Extend Elevator State Machine
+Implements Fault Handling
 UML Diagrams, Elevator State diagram
 Documentation
 
 Keefer Belanger - 101152085
-Enable Multiple Elevators
+Implements System Reading Faults from Input File
+Extend Elevator Event Class
 UML Diagrams
 Documentation
 
 Joshua Noronha - 101194076
-Implement UDP Commuincations
+Implement Arrival Sensor
 UML Diagrams, Sequence Diagram
 Documentation
