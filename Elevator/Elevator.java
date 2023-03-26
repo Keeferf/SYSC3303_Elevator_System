@@ -343,6 +343,7 @@ public class Elevator implements Runnable{
 		req.setElevatorNum(getID());
 		
 		
+		
 		ElevatorTimingEvent event = new ElevatorTimingEvent(req,ets);
 		//event.setElevatorId
 		//Send the timing event back to the fault handler
@@ -364,7 +365,14 @@ public class Elevator implements Runnable{
 			e.printStackTrace();
 			System.exit(1);
 		}
-		this.state.runState();
+		try {
+			this.state.runState();
+		} catch (NullPointerException e) {
+			Config.printLine();
+			System.out.println("Elevator " + this.id + " has exited");
+			Config.printLine();
+		}
+		
 	}
 	
 	public void handleDoorFault() {
