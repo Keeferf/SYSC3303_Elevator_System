@@ -257,8 +257,6 @@ public class Elevator implements Runnable{
 			}
 			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
 				this.setState(new Error(this, true));
-			} else {
-				
 			}
 		}
 	}
@@ -283,8 +281,6 @@ public class Elevator implements Runnable{
 			}
 			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
 				this.setState(new Error(this, false));
-			} else {
-				
 			}
 		}
 		
