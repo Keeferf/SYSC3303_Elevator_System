@@ -240,6 +240,53 @@ public class Elevator implements Runnable{
 	}
 	
 	/**
+	 * Checks for if there is a door fault.
+	 * 
+	 */
+	public void checkDoorFault() {
+		if(req.getDoorFault()) {
+			Config.printLine();
+			System.out.println("Elevator " + id + " DOOR ERROR CAUGHT. WAITING FOR RESPONSE");
+			Config.printLine();
+			byte[] pack = new byte[Config.getMaxMessageSize()];
+			DatagramPacket packet = new DatagramPacket(pack,pack.length);
+			try {
+				socket.receive(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
+				this.setState(new Error(this, true));
+			}
+		}
+	}
+	
+	/**
+	 * Checks for if there is a motor fault.
+	 * 
+	 */
+	public void checkMotorFault() {
+		
+		if(req.getMotorFault()) {
+			Config.printLine();
+			System.out.println("Elevator " + id + " MOTOR ERROR CAUGHT. WAITING FOR RESPONSE");
+			Config.printLine();
+			byte[] pack = new byte[Config.getMaxMessageSize()];
+			DatagramPacket packet = new DatagramPacket(pack,pack.length);
+			
+			try {
+				socket.receive(packet);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
+				this.setState(new Error(this, false));
+			}
+		}
+		
+	}
+	
+	/**
 	 * For when a car has arrived at a floor
 	 * @param floorNum Floor Number arrived at
 	 */
@@ -289,6 +336,10 @@ public class Elevator implements Runnable{
 		} else if(ets.equals(ElevatorTimingState.DOOR_OPEN)) {
 			timingHasStarted = false;
 			sent.clear();
+		} else if(ets.equals(ElevatorTimingState.DOOR_CLOSED) && timingHasStarted) {
+			checkDoorFault();
+		} else if(ets.equals(ElevatorTimingState.ACCELERATING) && timingHasStarted) {
+			checkMotorFault();
 		}
 		req.setElevatorNum(getID());
 		
@@ -315,6 +366,16 @@ public class Elevator implements Runnable{
 			System.exit(1);
 		}
 		this.state.runState();
+	}
+	
+	public void handleDoorFault() {
+		this.req = new ElevatorEvent(this, this.req.getTimestamp(), this.req.getDirection(), this.req.getFloorToGo(), this.req.getCurrFloor());
+	}
+	
+	public void exit() {
+		this.state = null;
+		this.req = null;
+		this.floorToGo = this.currFloor;
 	}
 }
 

@@ -6,10 +6,10 @@ package Util.Comms;
  */
 public class Config {
 	
-	private static final String FloorSubsystemIP = "192.168.56.1";
-	private static final String SchedulerIP = "192.168.56.1";
-	private static final String ElevatorIP = "192.168.56.1";
-	private static final String FaultHandlerIP = "192.168.56.1";
+	private static final String FloorSubsystemIP = "192.168.0.15";
+	private static final String SchedulerIP = "192.168.0.15";
+	private static final String ElevatorIP = "192.168.0.15";
+	private static final String FaultHandlerIP = "192.168.0.15";
 	
 	private static final int FloorSubsystemPort = 5040;
 	private static final int SchedulerPort = 5041;

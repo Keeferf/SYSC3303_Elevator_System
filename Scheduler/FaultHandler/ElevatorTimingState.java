@@ -24,5 +24,3 @@ public enum ElevatorTimingState {
 		return time;
 	}
 }
-
-

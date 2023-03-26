@@ -34,12 +34,7 @@ public class ElevatorTimingEvent extends ElevatorEvent implements Serializable{
 		} else {
 			throw new IllegalArgumentException("Elevator Number must be set in the ElevatorEvent Object");
 		}
-		
 	}
-	
-	
-	
-	
 	
 	public ElevatorTimingState getElevatorTimingState() {
 		return timingState;

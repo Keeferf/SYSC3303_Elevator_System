@@ -12,6 +12,7 @@ import FloorSystem.ElevatorEvent;
 import Scheduler.Scheduler;
 import Scheduler.FaultHandler.GUI.FaultHandlerFrame;
 import Util.Comms.Config;
+import Util.Comms.RequestStatus;
 import Util.Comms.UDPBuilder;
 import Util.Timer.Timeable;
 import Util.Timer.TimerN;
@@ -22,7 +23,6 @@ import Util.Timer.TimerN;
  *
  */
 public class FaultHandler implements Runnable, Timeable{
-	
 	
 	private DatagramSocket socket;
 	
@@ -175,7 +175,14 @@ public class FaultHandler implements Runnable, Timeable{
 		//System.out.println("Current Fault State: " + faultState.toString());
 		
 		if(faultState.equals(FaultState.UNFULFILLED)) {
-			faults.set(e.getElevatorTimingState().ordinal()-1, faultState.ERROR);
+			if (!faults.contains(faultState.ERROR)) {
+				faults.set(e.getElevatorTimingState().ordinal()-1, faultState.ERROR);
+				try {
+					this.socket.send(UDPBuilder.newMessage(new ElevatorEvent(this, RequestStatus.ERROR), Config.getElevatorip(), Config.getElevatorport(e.getElevatorId())));
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}			
 		} else if(faultState.equals(FaultState.ERROR)){
 			System.out.println("SYSTEM ALREADY REPORTED ERROR");	//Should not proc
 		} else {
@@ -324,7 +331,7 @@ public class FaultHandler implements Runnable, Timeable{
 		time += ACCEL_TIME_PER_FLOOR * Math.abs(e.getCurrFloor() - e.getFloorToGo());
 		if(s.equals(ElevatorTimingState.ACCELERATING)) return time;
 		
-		time += DECEL_TIME_PER_FLOOR;//Only decellerates 1 floor
+		time += DECEL_TIME_PER_FLOOR;//Only decelerates 1 floor
 		if(s.equals(ElevatorTimingState.DECELERATING)) return time;
 		
 		time += DOOR_OPEN_TIME;
@@ -353,8 +360,6 @@ public class FaultHandler implements Runnable, Timeable{
 		} catch(Throwable e) {
 			
 		}
-		
-		
 	}
 	
 }

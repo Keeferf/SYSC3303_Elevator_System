@@ -29,9 +29,11 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
     private int seconds;
     
     private RequestStatus requestStatus;
+	private boolean doorFault;
+	private boolean motorFault;
 
     /**
-     * Constructor for the elevator event class
+     * Constructor for the elevator event classes with errors
      * 
      * Recently updated to not extend event object.
      * Was throwing errors since event received via UDP and cannot find source
@@ -42,12 +44,14 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
      * @param floorToGo: Int
      * @param currFloor: Int
      */
-    public ElevatorEvent(Object source, String timestamp, Direction direction, int floorToGo, int currFloor) {
+    public ElevatorEvent(Object source, String timestamp, Direction direction, int floorToGo, int currFloor, boolean doorFault, boolean motorFault) {
         //super(source);
         this.timestamp = timestamp;
         this.direction = direction;
         this.floorToGo = floorToGo;
         this.currFloor = currFloor;
+        this.doorFault = doorFault;
+		this.motorFault = motorFault;
         
         seconds = convertToSeconds(timestamp);
         
@@ -58,7 +62,40 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
         requestStatus = RequestStatus.NEW;
     }
     
+    /**
+     * Constructor for the elevator event class, calls primary constructor with no errors
+     * 
+     * @param source: Object
+     * @param timestamp: String
+     * @param direction: Direction
+     * @param floorToGo: Int
+     * @param currFloor: Int
+     */
+    public ElevatorEvent(Object source, String timestamp, Direction direction, int floorToGo, int currFloor) {
+    	this(source, timestamp, direction, floorToGo, currFloor, false, false);
+    }
+    
+    /**
+     * Custom Constructor for making null elevator requests for work
+     */
+    public ElevatorEvent(Object source, RequestStatus r) {
+//    	this(source, "", null, 0, 0, false, false);
+    	//super(source);
+    	this.timestamp = "";
+		this.direction = null;
+		this.floorToGo = 0;
+		this.currFloor = 0;
+		
+		elevatorNum = -1;
+		
+		requestStatus = r;
+	}
+    
+    /**
+     * Custom Constructor for making null elevator requests for work
+     */
     public ElevatorEvent(Object source) {
+//    	this(source, "", null, 0, 0, false, false);
     	//super(source);
     	this.timestamp = "";
 		this.direction = null;
@@ -68,7 +105,6 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
 		elevatorNum = -1;
 		
 		requestStatus = RequestStatus.REQUEST;
-		
 	}
 
 	/**
@@ -126,6 +162,12 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
     	if(direction == null) {
     		return "REQUEST";
     	}
+    	else if(doorFault == true) {
+    		return timestamp + ";" + currFloor + ";" + direction.toString() + ";" + floorToGo + ";" + "Door Fault: " + doorFault;
+    	}
+    	else if(motorFault == true) {
+    		return timestamp + ";" + currFloor + ";" + direction.toString() + ";" + floorToGo + ";" + "Motor Fault: " + motorFault;
+    	}
     	return timestamp + ";" + currFloor + ";" + direction.toString() + ";" + floorToGo;
     }
 
@@ -153,6 +195,22 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
     public int getTimeAsSeconds() {
     	return seconds;
     }
+    
+    /**
+     * Getter for the door fault boolean
+     * @return doorFault: boolean
+     */
+    public boolean getDoorFault() {
+        return doorFault;
+    }
+    
+    /**
+     * Getter for the motor fault boolean
+     * @return motorFault: boolean
+     */
+    public boolean getMotorFault() {
+		return motorFault;
+	}
     
     /**
      * Serialization methods provided by SerializationUtils
@@ -207,6 +265,8 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
     public int getElevatorNum() {
     	return elevatorNum;
     }
+
+	
     
     
 }
