@@ -40,7 +40,6 @@ public class AcceleratingState implements ElevatorState{
 				}
 			}
 			elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
-
 		}
 	}
 
