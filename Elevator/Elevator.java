@@ -256,7 +256,7 @@ public class Elevator implements Runnable{
 				e.printStackTrace();
 			}
 			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
-				this.setState(new Error(this, false));
+				this.setState(new Error(this, true));
 			}
 		}
 	}
@@ -280,7 +280,7 @@ public class Elevator implements Runnable{
 				e.printStackTrace();
 			}
 			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
-				this.setState(new Error(this, false));
+				this.setState(new Error(this, true));
 			}
 		}
 	}
