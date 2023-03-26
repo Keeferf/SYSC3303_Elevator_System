@@ -51,7 +51,7 @@ Documentation
 Colin Mandeville - 101140289
 Extend Elevator State Machine
 Implements Fault Handling
-UML Diagrams, Elevator State diagram
+UML Diagrams, Elevator State diagram, Timing Diagram
 Documentation
 
 Keefer Belanger - 101152085
