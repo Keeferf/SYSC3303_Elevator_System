@@ -21,6 +21,8 @@ public class Error implements ElevatorState {
 			Config.printLine();
 			System.out.println("Elevator " + this.elevator.getID() + " attempting to close door again");
 			Config.printLine();
+			elevator.errorState = ErrorState.DOOR_ERROR;
+			elevator.sendStateEvent();
 			this.checkState();
 		} else {
 			this.exit();
@@ -38,6 +40,8 @@ public class Error implements ElevatorState {
 	}
 	
 	private void exit() {
+		elevator.errorState = ErrorState.MOTOR_ERROR;
+		elevator.sendStateEvent();
 		Config.printLine();
 		System.out.println("Elevator Motor Experiencing Difficulties, Elevator Process Ending, Awaiting Maintenance");
 		Config.printLine();

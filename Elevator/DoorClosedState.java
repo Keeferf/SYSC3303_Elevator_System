@@ -56,9 +56,11 @@ public class DoorClosedState implements ElevatorState{
 			System.out.println("Elevator " + this.elevator.getID() + " Picked up passenger, Door Closed -> Accelerating\n");
 			
 			elevator.sendTimingEvent(ElevatorTimingState.START);
+			elevator.sendStateEvent();
 			elevator.checkDoorFault();
 			
 			elevator.sendTimingEvent(ElevatorTimingState.DOOR_CLOSED);
+			elevator.sendStateEvent();
 			
 			elevator.setState(new AcceleratingState(elevator));
 		}

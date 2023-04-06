@@ -85,12 +85,12 @@ public class FloorSubsystem implements Runnable, Timeable{
 			
 			//Extract payload from the packet
 			ElevatorEvent e;
-			if(!(UDPBuilder.getPayload(p) instanceof ElevatorEvent)) {
+			if(!(UDPBuilder.getEventPayload(p) instanceof ElevatorEvent)) {
 				System.out.println("Bad Data");
 				Config.printLine();
 				continue;
 			} else {
-				e = (ElevatorEvent) UDPBuilder.getPayload(p);
+				e = (ElevatorEvent) UDPBuilder.getEventPayload(p);
 			}
 			
 			//Logic for acknowledge/fullfilled requests received

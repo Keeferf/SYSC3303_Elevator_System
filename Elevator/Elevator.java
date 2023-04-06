@@ -42,6 +42,10 @@ public class Elevator implements Runnable{
 	
 	private boolean timingHasStarted;
 	private ArrayList<ElevatorTimingState> sent;
+	
+	private boolean hasPassenger;
+	ElevatorTimingState elevatorTimingState;
+	protected ErrorState errorState;
 
 	/**
 	 * Constructor for the elevator class
@@ -49,6 +53,9 @@ public class Elevator implements Runnable{
 	 */
 	public Elevator()  {
 		this.currFloor = groundFloor;
+		
+		errorState = ErrorState.NO_ERROR;
+		elevatorTimingState = ElevatorTimingState.DOOR_CLOSED;
 	
 		this.id = Elevator.idCounter;
 		System.out.println("Elevator " + id + " created.");
@@ -69,6 +76,7 @@ public class Elevator implements Runnable{
 			buttons.add(new ElevatorButton(i));
 		}
 		
+		hasPassenger = false;
 		timingHasStarted = false;
 	}
 	
@@ -119,12 +127,16 @@ public class Elevator implements Runnable{
 		
 		if (floorToGo < currFloor) {
 			down();
+			sendStateEvent();
 		} else if (floorToGo > currFloor){
 			up();
+			sendStateEvent();
 		} else {
 			sendTimingEvent(ElevatorTimingState.ACCELERATING);	//Added to fix state skip
 			sendTimingEvent(ElevatorTimingState.DECELERATING);
+			sendStateEvent();
 			this.setState(new DoorOpenState(this));
+			
 		}
 	}
 	
@@ -162,7 +174,7 @@ public class Elevator implements Runnable{
 		}
 		
 		//Get payload of response
-		ElevatorEvent e = UDPBuilder.getPayload(packet);
+		ElevatorEvent e = UDPBuilder.getEventPayload(packet);
 		
 		req = e;
 		//req.setElevatorNum(getID());
@@ -255,7 +267,7 @@ public class Elevator implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
+			if (UDPBuilder.getEventPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
 				this.setState(new Error(this, true));
 			}
 		}
@@ -279,7 +291,7 @@ public class Elevator implements Runnable{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			if (UDPBuilder.getPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
+			if (UDPBuilder.getEventPayload(packet).getRequestStatus() == RequestStatus.ERROR) {
 				this.setState(new Error(this, false));
 			}
 		}
@@ -303,7 +315,7 @@ public class Elevator implements Runnable{
 			DatagramPacket packet = new DatagramPacket(pack,pack.length);
 			
 			socket.receive(packet);
-			if(UDPBuilder.getPayload(packet).getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
+			if(UDPBuilder.getEventPayload(packet).getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
 				System.out.println("Scheduler Acknowledged the fulfilled request: " + e + " by elevator: " + id);
 			}
 		} catch (IOException e1) {
@@ -325,15 +337,22 @@ public class Elevator implements Runnable{
 	 * @param ets
 	 */
 	protected void sendTimingEvent(ElevatorTimingState ets) {
+		if(!ets.equals(ElevatorTimingState.START)) {
+			elevatorTimingState = ets;
+		}
+		
+		
 		if(timingHasStarted && ets.equals(ElevatorTimingState.START)) return;
 		
 		if(sent.contains(ets)) return;	//already been send
 		sent.add(ets);
 		
 		if(ets.equals(ElevatorTimingState.START)) {
+			hasPassenger = true;
 			timingHasStarted = true;
 		} else if(ets.equals(ElevatorTimingState.DOOR_OPEN)) {
 			timingHasStarted = false;
+			hasPassenger = false;
 			sent.clear();
 		} else if(ets.equals(ElevatorTimingState.DOOR_CLOSED) && timingHasStarted) {
 			checkDoorFault();
@@ -351,6 +370,22 @@ public class Elevator implements Runnable{
 			socket.send(UDPBuilder.newMessage(event, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Sends an event on the current state of the elevator to the fault handler
+	 * 
+	 * Should be updated every change in state
+	 */
+	protected void sendStateEvent() {
+		req.setElevatorNum(getID());
+		ElevatorStateEvent e = new ElevatorStateEvent(req, elevatorTimingState, currFloor, hasPassenger, getID(), errorState);
+		
+		try {
+			socket.send(UDPBuilder.newMessage(e, Config.getFaultHandlerIp(), Config.getFaultHandlerPort()));
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 	

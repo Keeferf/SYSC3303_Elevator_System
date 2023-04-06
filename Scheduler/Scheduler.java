@@ -120,7 +120,7 @@ public class Scheduler implements Runnable {
 		
 		Config.printLine();
 		
-		ElevatorEvent e = UDPBuilder.getPayload(packet);
+		ElevatorEvent e = UDPBuilder.getEventPayload(packet);
 
 		System.out.println("Received Packet: " + e.toString());
 		
