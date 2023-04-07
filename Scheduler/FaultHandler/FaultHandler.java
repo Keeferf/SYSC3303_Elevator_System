@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
+import Elevator.ElevatorStateEvent;
 import FloorSystem.ElevatorEvent;
 import Scheduler.Scheduler;
 import Scheduler.FaultHandler.GUI.FaultHandlerFrame;
@@ -29,9 +30,9 @@ public class FaultHandler implements Runnable, Timeable{
 	private ArrayList<ArrayList<FaultState>> faultList;
 	private ArrayList<ArrayList<TimerN>> timers;
 	private ArrayList<Boolean> hasStarted;
+	private ArrayList<ElevatorStateEvent> states;	//Current state of each elevator
 	
 	private FaultHandlerFrame faultHandlerFrame;
-	private boolean b;
 	public boolean isRunning = true;
 	
 	public FaultHandler() {
@@ -39,12 +40,14 @@ public class FaultHandler implements Runnable, Timeable{
 		faultList = new ArrayList<>();
 		timers = new ArrayList<>();
 		hasStarted = new ArrayList<>();
+		states = new ArrayList<>();
 		
 		//Initialise inner lists
 		for(int i = 0; i < Config.getElevatorPorts().length; i++) {
 			faultList.add(new ArrayList<FaultState>());
 			timers.add(new ArrayList<TimerN>());
 			hasStarted.add(i, false);
+			states.add(i,null);
 		}
 		
 		try {
@@ -72,11 +75,12 @@ public class FaultHandler implements Runnable, Timeable{
 			
 			try {
 				socket.receive(packet);
+				processPacket(packet);
 			} catch (IOException e) {
 				e.printStackTrace();
 				continue;
 			}
-			processPacket(packet);
+			
 		}
 		
 	}
@@ -87,65 +91,16 @@ public class FaultHandler implements Runnable, Timeable{
 	 */
 	private void processPacket(DatagramPacket packet) {
 		//Unpack the timing event
-		ElevatorEvent e = UDPBuilder.getPayload(packet);
-		if(!(e instanceof ElevatorEvent)) {
-			return;
+		Object o = UDPBuilder.getGenericPayload(packet);
+		
+		//If timing or state event, process it
+		if(o instanceof ElevatorTimingEvent) {
+			processTimingEvent((ElevatorTimingEvent) o);
+		} else if(o instanceof ElevatorStateEvent) {
+			processStateEvent((ElevatorStateEvent) o);
 		}
 		
-		ElevatorTimingEvent event = (ElevatorTimingEvent) UDPBuilder.getPayload(packet);
 		
-		//Start event
-		if(event.getElevatorTimingState().equals(ElevatorTimingState.START)) {
-			//System.out.println(hasStarted.get(event.getElevatorId()));
-			hasStarted.set(event.getElevatorId(), true);
-			//System.out.println(hasStarted.get(event.getElevatorId()));
-			notify(event);
-			return;
-		}
-		
-		//Guard statement for premature timing events
-		if(!hasStarted.get(event.getElevatorId())) {
-			//System.out.println(hasStarted.get(event.getElevatorId()));
-			//System.out.println("Prematurely Got sent");
-			return;
-		}
-		
-		System.out.println("Received Timing Packet: " + event.toString() + " Fault State: " + event.getElevatorTimingState().toString() + " Elevator Num: " + event.getElevatorId());
-
-		
-		ArrayList<FaultState> faults = faultList.get(event.getElevatorId());
-		
-		FaultState faultState = faults.get(event.getElevatorTimingState().ordinal()-1);
-		
-		//System.out.println("Ordinal #: " + event.getElevatorTimingState().ordinal());
-		//System.out.println("Current Fault State: " + faultState.toString());
-		
-		if(faultState.equals(FaultState.UNFULFILLED)) {
-			faults.set(event.getElevatorTimingState().ordinal()-1, faultState.COMPLETED);
-		} else if(faultState.equals(FaultState.ERROR)){
-			System.out.println("***********************************");
-			System.out.println("SYSTEM REPORTED ERROR INCORRECTLY -> Received Response Packet after Timeout");
-			System.out.println(event.toString());
-			System.out.println("***********************************");
-		} else {
-			//Already completed
-		}
-		
-		//End of cycle actions
-		if(event.getElevatorTimingState().equals(ElevatorTimingState.DOOR_OPEN)) {
-			killAllTimers(event.getElevatorId());
-			clearList(event.getElevatorId());
-			hasStarted.set(event.getElevatorId(), false);
-		}
-		
-		timers.get(event.getElevatorId()).get(event.getElevatorTimingState().ordinal()-1).killTimer();	//Kill the timer associated with this packet
-		//System.out.println("IsKilled: " + timers.get(event.getElevatorId()).get(event.getElevatorTimingState().ordinal()-1).isKilled());
-		
-		faultList.set(event.getElevatorId(), faults);
-		
-		if(faultHandlerFrame != null) {
-			faultHandlerFrame.update(faultList);
-		}
 	}
 
 	/**
@@ -204,6 +159,81 @@ public class FaultHandler implements Runnable, Timeable{
 		if(faultHandlerFrame != null) {
 			faultHandlerFrame.update(faultList);
 		}
+		
+	}
+	
+	/**
+	 * Processes a timing event sent from an elevator
+	 * Used to ensure deadlines are met
+	 * @param e ElevatorEvent
+	 */
+	public void processTimingEvent(ElevatorTimingEvent event) {
+		
+		
+		//Start event
+		if(event.getElevatorTimingState().equals(ElevatorTimingState.START)) {
+			//System.out.println(hasStarted.get(event.getElevatorId()));
+			hasStarted.set(event.getElevatorId(), true);
+			//System.out.println(hasStarted.get(event.getElevatorId()));
+			notify(event);
+			return;
+		}
+		
+		//Guard statement for premature timing events
+		if(!hasStarted.get(event.getElevatorId())) {
+			//System.out.println(hasStarted.get(event.getElevatorId()));
+			//System.out.println("Prematurely Got sent");
+			return;
+		}
+		
+		System.out.println("Received Timing Packet: " + event.toString() + " Fault State: " + event.getElevatorTimingState().toString() + " Elevator Num: " + event.getElevatorId());
+
+		
+		ArrayList<FaultState> faults = faultList.get(event.getElevatorId());
+		
+		FaultState faultState = faults.get(event.getElevatorTimingState().ordinal()-1);
+		
+		//System.out.println("Ordinal #: " + event.getElevatorTimingState().ordinal());
+		//System.out.println("Current Fault State: " + faultState.toString());
+		
+		if(faultState.equals(FaultState.UNFULFILLED)) {
+			faults.set(event.getElevatorTimingState().ordinal()-1, faultState.COMPLETED);
+		} else if(faultState.equals(FaultState.ERROR)){
+			System.out.println("***********************************");
+			System.out.println("SYSTEM REPORTED ERROR INCORRECTLY -> Received Response Packet after Timeout");
+			System.out.println(event.toString());
+			System.out.println("***********************************");
+		} else {
+			//Already completed
+		}
+		
+		//End of cycle actions
+		if(event.getElevatorTimingState().equals(ElevatorTimingState.DOOR_OPEN)) {
+			killAllTimers(event.getElevatorId());
+			clearList(event.getElevatorId());
+			hasStarted.set(event.getElevatorId(), false);
+		}
+		
+		timers.get(event.getElevatorId()).get(event.getElevatorTimingState().ordinal()-1).killTimer();	//Kill the timer associated with this packet
+		//System.out.println("IsKilled: " + timers.get(event.getElevatorId()).get(event.getElevatorTimingState().ordinal()-1).isKilled());
+		
+		faultList.set(event.getElevatorId(), faults);
+		
+		if(faultHandlerFrame != null) {
+			faultHandlerFrame.update(faultList);
+		}
+	}
+	
+	/**
+	 * Processes an elevator state change event sent from an elevator
+	 * Used to monitor the current state of an elevator
+	 * @param e ElevatorStateEvent
+	 */
+	public void processStateEvent(ElevatorStateEvent e) {
+		states.set(e.getElevatorNum(), e);	//Sets the list of the current states of all the elevators to the most up to date event received
+		
+		System.out.println(e);
+		//Notify the GUI interface here using "states" list :D
 		
 	}
 	
