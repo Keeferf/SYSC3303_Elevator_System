@@ -36,12 +36,6 @@ public class GUI {
 	private static final int DEFAULT_FLOOR_ROW_HEIGHT = 50;
 	private static final double DEFAULT_ROW_WEIGHT = 1.0;
 
-	public static final int OPEN = 0;
-	public static final int CLOSED = 1;
-	public static final int STUCK = 2;
-	public static final int ODO = 3;
-	public static final int MOVING = 5;
-
 	public GUI() {
 		this.floorNum = 22;
 		this.elevatorNum = 4;
@@ -126,10 +120,7 @@ public class GUI {
 			displays[i - 1] = new JPanel();
 			displays[i - 1].setBorder(new TitledBorder(new LineBorder(null), new String("Elevator " + Integer.toString(i - 1)), TitledBorder.LEADING, TitledBorder.TOP, null, null));
 			GridBagConstraints elevatorDisplayGBC = new GridBagConstraints();
-			// elevatorDisplayGBC.fill = GridBagConstraints.BOTH;
 			elevatorDisplayGBC.insets = new Insets(0, 0, 0, 5);
-			// elevatorDisplayGBC.gridx = i;
-			// elevatorDisplayGBC.gridy = 0;
 			displayPanel.add(displays[i - 1], elevatorDisplayGBC);
 			GridBagLayout gbl_elevatorDisplay = new GridBagLayout();
 			gbl_elevatorDisplay.columnWidths = new int[] {DEFAULT_COLUMN_WIDTH};
