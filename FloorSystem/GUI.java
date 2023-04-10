@@ -11,11 +11,15 @@ import java.awt.Color;
 
 import javax.swing.border.TitledBorder;
 
+import Elevator.Elevator;
+import Scheduler.FaultHandler.FaultState;
+
 import javax.swing.SwingConstants;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import java.awt.Font;
 import javax.swing.UIManager;
@@ -25,6 +29,8 @@ public class GUI {
 
 	private int floorNum;
 	private int elevatorNum; 
+	private Elevator elevator;
+	private FaultState fault;
 	private JLabel[] floorTitles;
 	private JLabel[][] floors;
 	private JPanel[] displays;
@@ -39,6 +45,7 @@ public class GUI {
 	public GUI() {
 		this.floorNum = 22;
 		this.elevatorNum = 4;
+		this.elevator = new Elevator();
 		initialize();
 	}
 
@@ -162,16 +169,29 @@ public class GUI {
 			elevInfoPanels[i].setLayout(new GridLayout(0, 1, 0, 0));
 
 			elevInfos[i][0] = new JLabel("Direction: ");
+			if(elevator.getCurrFloor() < this.elevator.getRequest().getFloorToGo()) {
+				elevInfos[i][0] = new JLabel("Direction: UP");
+			}else if (elevator.getCurrFloor() > this.elevator.getRequest().getFloorToGo()) {
+				elevInfos[i][0] = new JLabel("Direction: DOWN");
+			}else {
+				elevInfos[i][0] = new JLabel("Direction: ON CURRENT FLOOR");
+			}
 			elevInfos[i][0].setFont(new Font("Inter", Font.PLAIN, 20));
 			elevInfoPanels[i].add(elevInfos[i][0]);
 
-			elevInfos[i][1] = new JLabel("Request: ");
+			elevInfos[i][1] = new JLabel("Request: " + this.elevator.getRequest().getFloorToGo());			
 			elevInfos[i][1].setFont(new Font("Inter", Font.PLAIN, 20));
 			elevInfoPanels[i].add(elevInfos[i][1]);
 			
 			elevInfos[i][2] = new JLabel("Fault: ");
+			if(fault.equals(FaultState.COMPLETED)) {
+				elevInfos[i][2] = new JLabel("Fault: NO FAULT");
+			} else if(fault.equals(FaultState.ERROR)) {
+				elevInfos[i][2] = new JLabel("Fault: ERROR");
+			}
 			elevInfos[i][2].setFont(new Font("Inter", Font.PLAIN, 20));
 			elevInfoPanels[i].add(elevInfos[i][2]);
+			
 		}
 		ElevatorFrame.setVisible(true);
 		ElevatorFrame.setResizable(false);
