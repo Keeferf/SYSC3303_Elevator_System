@@ -27,6 +27,8 @@ import Util.Timer.TimerN;
  */
 public class FaultHandler implements Runnable, Timeable{
 	
+	private GUI gui;
+
 	private DatagramSocket socket;
 	
 	private ArrayList<ArrayList<FaultState>> faultList;
@@ -39,6 +41,8 @@ public class FaultHandler implements Runnable, Timeable{
 	
 	public FaultHandler() {
 		
+		this.gui = new GUI();
+
 		faultList = new ArrayList<>();
 		timers = new ArrayList<>();
 		hasStarted = new ArrayList<>();
@@ -236,9 +240,9 @@ public class FaultHandler implements Runnable, Timeable{
 		
 		System.out.println(e);
 		//Notify the GUI interface here using "states" list :D
-		GUI.getInstance().setDirectionInfo(e.getElevatorNum());
-		GUI.getInstance().setRequestInfo(e.getElevatorNum());
-		GUI.getInstance().setFaultInfo(e.getElevatorNum());
+		gui.setDirectionInfo(e.getElevatorNum());
+		gui.setRequestInfo(e.getElevatorNum());
+		gui.setFaultInfo(e.getElevatorNum());
 	}
 	
 	/**

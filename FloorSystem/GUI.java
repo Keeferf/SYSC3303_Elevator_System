@@ -42,8 +42,6 @@ public class GUI {
 	private static final int DEFAULT_FLOOR_ROW_HEIGHT = 50;
 	private static final double DEFAULT_ROW_WEIGHT = 1.0;
 
-	private static GUI instance;
-
 	public GUI() {
 		this.floorNum = 22;
 		this.elevatorNum = 4;
@@ -218,7 +216,6 @@ public class GUI {
 		}
 	}
 
-
 	public int getNumElevators() {
 		return elevatorNum;
 	}
@@ -226,11 +223,4 @@ public class GUI {
 	public int getNumFloors() {
 		return floorNum;
 	}
-
-	public static GUI getInstance() {
-        if (instance == null) {
-            instance = new GUI();
-        }
-        return instance;
-    }
 }
