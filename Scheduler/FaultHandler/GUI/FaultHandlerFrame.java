@@ -16,33 +16,24 @@ import javax.swing.border.Border;
 
 import Scheduler.FaultHandler.FaultState;
 
-public class FaultHandlerFrame extends JFrame implements FaultHandlerView{
+public class FaultHandlerFrame implements FaultHandlerView{
 	
 	private static final int HEIGHT = 500;
 	private static final int WIDTH = 500;
 
+	private JPanel allFaultHandlerPanel;
+
 	public FaultHandlerFrame() {
-		super("Fault Handler 3000");
+		allFaultHandlerPanel = new JPanel();
 		
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(700,480);
-		
-		getContentPane().setLayout(
-			    new BoxLayout(getContentPane(), BoxLayout.X_AXIS)
-			);
-		
-		setLocationRelativeTo(null);	//centers
-		
+		allFaultHandlerPanel.setLayout(new BoxLayout(allFaultHandlerPanel, BoxLayout.X_AXIS));
+			
 		JLabel title = new JLabel("<html><b>Starting Up...</u></html>", JLabel.CENTER);
 		title.setSize(WIDTH/4,HEIGHT);
 		
 		title.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		
-		add(title);
-		
-		pack();
-		
-		setVisible(true);
+		allFaultHandlerPanel.add(title);
 	}
 	
 	/**
@@ -51,30 +42,21 @@ public class FaultHandlerFrame extends JFrame implements FaultHandlerView{
 	@Override
 	public void update(ArrayList<ArrayList<FaultState>> faultStates) {
 		//remove current components on board
-		for(Component c: getContentPane().getComponents()) {
-			remove(c);
-		}
+		allFaultHandlerPanel.removeAll();
 		
 		int elevatorNum = 0;
 		//Add one by one
 		for(ArrayList<FaultState> states: faultStates) {
-			
-			add(createPanel(states,elevatorNum));
-			
+			allFaultHandlerPanel.add(createPanel(states, elevatorNum));
 			elevatorNum++;
 		}
-		
-		pack();
-		//setSize(WIDTH,HEIGHT);
+		allFaultHandlerPanel.revalidate();
+		allFaultHandlerPanel.repaint();
 	}
 	
 	private JPanel createPanel(ArrayList<FaultState> states, int elevatorNum) {
 		JPanel panel = new JPanel();
-		
-//		BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
-//		
-//		setLayout(boxLayout);
-		
+	
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		
 		panel.setSize(WIDTH/4,HEIGHT);
@@ -99,4 +81,7 @@ public class FaultHandlerFrame extends JFrame implements FaultHandlerView{
 		return panel;
 	}
 
+	public JPanel getPanel(){
+		return allFaultHandlerPanel;
+	}
 }

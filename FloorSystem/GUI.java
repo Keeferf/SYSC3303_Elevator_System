@@ -13,6 +13,7 @@ import javax.swing.border.TitledBorder;
 
 import Elevator.Elevator;
 import Scheduler.FaultHandler.FaultState;
+import Scheduler.FaultHandler.GUI.FaultHandlerFrame;
 
 import javax.swing.SwingConstants;
 import java.awt.GridBagLayout;
@@ -20,6 +21,7 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import java.awt.Font;
 import javax.swing.UIManager;
@@ -42,10 +44,13 @@ public class GUI {
 	private static final int DEFAULT_FLOOR_ROW_HEIGHT = 50;
 	private static final double DEFAULT_ROW_WEIGHT = 1.0;
 
+	private FaultHandlerFrame FHF;
+
 	public GUI() {
 		this.floorNum = 22;
 		this.elevatorNum = 4;
 		this.elevator = new Elevator();
+		this.FHF = new FaultHandlerFrame();
 		initialize();
 	}
 
@@ -76,7 +81,7 @@ public class GUI {
 		int columns = 1 + elevatorNum + 1; // adds the floor column, elevator columns, then the data column
 		int[] columnWidths = new int[columns];
 		for (int i = 0; i < columns; i++) { //loops over all the columns in the display
-			if(i != 1 + elevatorNum) { //checks to make sure the column isnt the elevator info
+			if(i != 1 + elevatorNum && i != columns - 1) { //checks to make sure the column isnt the elevator info
 				columnWidths[i] = DEFAULT_COLUMN_WIDTH;
 			}else {
 				columnWidths[i] = (elevatorNum / 2) * 350;
@@ -141,31 +146,31 @@ public class GUI {
 				floors[i-1][floorNum - 1 - j] = new JLabel("");
 				
 				floors[i-1][floorNum - 1 - j].setHorizontalAlignment(SwingConstants.CENTER);
-				GridBagConstraints gbc_floor = new GridBagConstraints();
-				gbc_floor.fill = GridBagConstraints.BOTH;
-				gbc_floor.insets = new Insets(0, 0, 5, 0);
-				gbc_floor.gridx = 0;
-				gbc_floor.gridy = j;
-				displays[i - 1].add(floors[i-1][floorNum - 1 - j], gbc_floor);
+				GridBagConstraints floorGBC = new GridBagConstraints();
+				floorGBC.fill = GridBagConstraints.BOTH;
+				floorGBC.insets = new Insets(0, 0, 5, 0);
+				floorGBC.gridx = 0;
+				floorGBC.gridy = j;
+				displays[i - 1].add(floors[i-1][floorNum - 1 - j], floorGBC);
 			}
 		}
 
-		JPanel panel = new JPanel();
-		GridBagConstraints gbc_panel = new GridBagConstraints();
-		gbc_panel.insets = new Insets(0, 0, 0, 5);
-		gbc_panel.fill = GridBagConstraints.BOTH;
-		gbc_panel.gridx = columns - 1;
-		gbc_panel.gridy = 0;
-		displayPanel.add(panel, gbc_panel);
+		JPanel infoPanel = new JPanel();
+		GridBagConstraints infoPanelGBC = new GridBagConstraints();
+		infoPanelGBC.insets = new Insets(0, 0, 0, 5);
+		infoPanelGBC.fill = GridBagConstraints.BOTH;
+		infoPanelGBC.gridx = columns - 1;
+		infoPanelGBC.gridy = 0;
+		displayPanel.add(infoPanel, infoPanelGBC);
 
-		panel.setLayout(new GridLayout(2, 4, 0, 0));
+		infoPanel.setLayout(new GridLayout(2, 4, 0, 0));
 
 		elevInfoPanels = new JPanel[elevatorNum];
 		elevInfo = new JLabel[elevatorNum][4];
 		for(int i = 0; i < elevatorNum; i++) {
 			elevInfoPanels[i] = new JPanel();
 			elevInfoPanels[i].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)),new String( "Elevator "+ Integer.toString(i) +" Info"), TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
-			panel.add(elevInfoPanels[i]);
+			infoPanel.add(elevInfoPanels[i]);
 			elevInfoPanels[i].setLayout(new GridLayout(0, 1, 0, 0));
 
 			elevInfo[i][0] = new JLabel("Direction: ");
@@ -181,6 +186,19 @@ public class GUI {
 			elevInfoPanels[i].add(elevInfo[i][2]);
 			
 		}
+
+		//Setup for faults panel area
+		JPanel faultPanel = new JPanel();
+		faultPanel.setBackground(UIManager.getColor("Button.background"));
+		faultPanel.setBorder(new TitledBorder(new LineBorder(null), "Faults", TitledBorder.LEADING, TitledBorder.TOP, null, Color.BLACK));
+		faultPanel.setLayout(new BoxLayout(faultPanel, BoxLayout.X_AXIS));
+		GridBagConstraints faultPanelGBC = new GridBagConstraints();
+		faultPanelGBC.insets = new Insets(0, 0, 0, 5);
+		faultPanelGBC.fill = GridBagConstraints.VERTICAL;
+		faultPanel.add(FHF.getPanel());
+
+		displayPanel.add(faultPanel, faultPanelGBC);
+
 		ElevatorFrame.setVisible(true);
 		ElevatorFrame.setResizable(false);
         ElevatorFrame.pack();
