@@ -41,7 +41,7 @@ public class FaultHandler implements Runnable, Timeable{
 	
 	public FaultHandler() {
 		
-		this.gui = new GUI();
+		// this.gui = new GUI();
 
 		faultList = new ArrayList<>();
 		timers = new ArrayList<>();

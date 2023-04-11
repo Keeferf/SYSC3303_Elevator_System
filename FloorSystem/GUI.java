@@ -65,7 +65,7 @@ public class GUI {
 
 		ElevatorFrame = new JFrame("Elevator System");
 		ElevatorFrame.getContentPane().setBackground(UIManager.getColor("Button.background"));
-		ElevatorFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("Util\\Closed.png"));
+		ElevatorFrame.setIconImage(Toolkit.getDefaultToolkit().getImage("Util\\Images\\CULogo.png"));
 		GridBagLayout mainGBL = new GridBagLayout();
 		mainGBL.columnWidths = new int[] {GUIWidth};
 		mainGBL.rowHeights = new int[] {rowHeight};
@@ -144,7 +144,7 @@ public class GUI {
 			//create the floors for the elevator
 			for (int j = 0; j < floorNum; j++) {
 				floors[i-1][floorNum - 1 - j] = new JLabel("");
-				
+				floors[i-1][floorNum - 1 - j].setIcon(new ImageIcon("Util\\Images\\Closed.png"));
 				floors[i-1][floorNum - 1 - j].setHorizontalAlignment(SwingConstants.CENTER);
 				GridBagConstraints floorGBC = new GridBagConstraints();
 				floorGBC.fill = GridBagConstraints.BOTH;
@@ -153,6 +153,7 @@ public class GUI {
 				floorGBC.gridy = j;
 				displays[i - 1].add(floors[i-1][floorNum - 1 - j], floorGBC);
 			}
+			floors[i-1][0].setIcon(new ImageIcon("Util\\Images\\Moving.jpg"));
 		}
 
 		JPanel infoPanel = new JPanel();
@@ -231,6 +232,9 @@ public class GUI {
 			elevInfo[elevator][2].setText("Fault: NO FAULT");
 		} else if(fault.equals(FaultState.ERROR)) {
 			elevInfo[elevator][2].setText("Fault: ERROR");
+			for (int i = 0; i <floorNum; i++) {
+				floors[elevator][i].setIcon(new ImageIcon("Util\\Images\\Shutdown.png"));
+			}
 		}
 	}
 
