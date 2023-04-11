@@ -201,7 +201,7 @@ public class GUI {
 
 	public void setRequestInfo(int elevator){
 		String tempRequests = "Requests: ";
-		if(s.isEmpty()){
+		if(this.elevator.getRequest().toString().isEmpty()){
 			tempRequests += "No Requests";
 		}
 		else{
@@ -232,9 +232,5 @@ public class GUI {
             instance = new GUI();
         }
         return instance;
-    }
-
-    public static void main(String[] args) {
-        new GUI();
     }
 }
