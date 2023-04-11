@@ -8,8 +8,10 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
+import Elevator.Elevator;
 import Elevator.ElevatorStateEvent;
 import FloorSystem.ElevatorEvent;
+import FloorSystem.GUI;
 import Scheduler.Scheduler;
 import Scheduler.FaultHandler.GUI.FaultHandlerFrame;
 import Util.Comms.Config;
@@ -234,7 +236,9 @@ public class FaultHandler implements Runnable, Timeable{
 		
 		System.out.println(e);
 		//Notify the GUI interface here using "states" list :D
-		
+		GUI.getInstance().setDirectionInfo(e.getElevatorNum());
+		GUI.getInstance().setRequestInfo(e.getElevatorNum());
+		GUI.getInstance().setFaultInfo(e.getElevatorNum());
 	}
 	
 	/**

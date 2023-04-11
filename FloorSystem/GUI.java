@@ -35,12 +35,14 @@ public class GUI {
 	private JLabel[][] floors;
 	private JPanel[] displays;
 	private JFrame ElevatorFrame;
-	private JLabel[][] elevInfos;
+	private JLabel[][] elevInfo;
 	private JPanel[] elevInfoPanels;
 	private static final int DEFAULT_COLUMN_WIDTH = 65;
 	private static final int DEFAULT_ROW_HEIGHT = 35;
 	private static final int DEFAULT_FLOOR_ROW_HEIGHT = 50;
 	private static final double DEFAULT_ROW_WEIGHT = 1.0;
+
+	private static GUI instance;
 
 	public GUI() {
 		this.floorNum = 22;
@@ -161,36 +163,24 @@ public class GUI {
 		panel.setLayout(new GridLayout(2, 4, 0, 0));
 
 		elevInfoPanels = new JPanel[elevatorNum];
-		elevInfos = new JLabel[elevatorNum][4];
+		elevInfo = new JLabel[elevatorNum][4];
 		for(int i = 0; i < elevatorNum; i++) {
 			elevInfoPanels[i] = new JPanel();
 			elevInfoPanels[i].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)),new String( "Elevator "+ Integer.toString(i) +" Info"), TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
 			panel.add(elevInfoPanels[i]);
 			elevInfoPanels[i].setLayout(new GridLayout(0, 1, 0, 0));
 
-			elevInfos[i][0] = new JLabel("Direction: ");
-			if(elevator.getCurrFloor() < this.elevator.getRequest().getFloorToGo()) {
-				elevInfos[i][0] = new JLabel("Direction: UP");
-			}else if (elevator.getCurrFloor() > this.elevator.getRequest().getFloorToGo()) {
-				elevInfos[i][0] = new JLabel("Direction: DOWN");
-			}else {
-				elevInfos[i][0] = new JLabel("Direction: ON CURRENT FLOOR");
-			}
-			elevInfos[i][0].setFont(new Font("Inter", Font.PLAIN, 20));
-			elevInfoPanels[i].add(elevInfos[i][0]);
+			elevInfo[i][0] = new JLabel("Direction: ");
+			elevInfo[i][0].setFont(new Font("Inter", Font.PLAIN, 20));
+			elevInfoPanels[i].add(elevInfo[i][0]);
 
-			elevInfos[i][1] = new JLabel("Request: " + this.elevator.getRequest().getFloorToGo());			
-			elevInfos[i][1].setFont(new Font("Inter", Font.PLAIN, 20));
-			elevInfoPanels[i].add(elevInfos[i][1]);
+			elevInfo[i][1] = new JLabel("Request: ");			
+			elevInfo[i][1].setFont(new Font("Inter", Font.PLAIN, 20));
+			elevInfoPanels[i].add(elevInfo[i][1]);
 			
-			elevInfos[i][2] = new JLabel("Fault: ");
-			if(fault.equals(FaultState.COMPLETED)) {
-				elevInfos[i][2] = new JLabel("Fault: NO FAULT");
-			} else if(fault.equals(FaultState.ERROR)) {
-				elevInfos[i][2] = new JLabel("Fault: ERROR");
-			}
-			elevInfos[i][2].setFont(new Font("Inter", Font.PLAIN, 20));
-			elevInfoPanels[i].add(elevInfos[i][2]);
+			elevInfo[i][2] = new JLabel("Fault: ");
+			elevInfo[i][2].setFont(new Font("Inter", Font.PLAIN, 20));
+			elevInfoPanels[i].add(elevInfo[i][2]);
 			
 		}
 		ElevatorFrame.setVisible(true);
@@ -199,7 +189,36 @@ public class GUI {
 		ElevatorFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	
+	public void setDirectionInfo(int elevator){
+		if(this.elevator.getCurrFloor() < this.elevator.getRequest().getFloorToGo()) {
+			elevInfo[elevator][0].setText("Direction: UP");
+		}else if (this.elevator.getCurrFloor() > this.elevator.getRequest().getFloorToGo()) {
+			elevInfo[elevator][0].setText("Direction: DOWN");
+		}else {
+			elevInfo[elevator][0].setText("Direction: ON CURRENT FLOOR");
+		}
+	}
+
+	public void setRequestInfo(int elevator){
+		String tempRequests = "Requests: ";
+		if(s.isEmpty()){
+			tempRequests += "No Requests";
+		}
+		else{
+			tempRequests += this.elevator.getRequest().getFloorToGo();
+		}
+		elevInfo[elevator][1].setText(tempRequests);
+	}
+
+	public void setFaultInfo(int elevator){
+		if(fault.equals(FaultState.COMPLETED)) {
+			elevInfo[elevator][2].setText("Fault: NO FAULT");
+		} else if(fault.equals(FaultState.ERROR)) {
+			elevInfo[elevator][2].setText("Fault: ERROR");
+		}
+	}
+
+
 	public int getNumElevators() {
 		return elevatorNum;
 	}
@@ -208,8 +227,14 @@ public class GUI {
 		return floorNum;
 	}
 
+	public static GUI getInstance() {
+        if (instance == null) {
+            instance = new GUI();
+        }
+        return instance;
+    }
+
     public static void main(String[] args) {
         new GUI();
     }
-
 }
