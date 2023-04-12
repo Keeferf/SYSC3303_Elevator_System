@@ -55,11 +55,11 @@ public class AcceleratingState extends MeasurableState implements ElevatorState{
 		ElevatorEvent req = elevator.getRequest();
 		Date exitTime = new Date();
 		if (req.getFloorToGo() == elevator.getFloorToGo()) {
+			Config.printLine();
+			System.out.println("Elevator " + this.elevator.getID() + "\nEntered Accelerating State At " + super.startTime.getTime() + "ms\nExiting Accelerating State At " + exitTime.getTime() + "ms\nExpended Time In Accelerating State Is " + (exitTime.getTime() - super.startTime.getTime()) + "ms");
+			Config.printLine();
+			super.setStartTime();
 			if (req.getDirection() == Direction.UP) {
-				Config.printLine();
-				System.out.println("Elevator " + this.elevator.getID() + "\nEntered Accelerating State At " + super.startTime.getTime() + "ms\nExiting Accelerating State At " + exitTime.getTime() + "ms\nExpended Time In Accelerating State Is " + (exitTime.getTime() - super.startTime.getTime()) + "ms");
-				Config.printLine();
-				super.setStartTime();
 				if(elevator.getCurrFloor() == elevator.getFloorToGo() - 1) {
 					System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
 					//elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
