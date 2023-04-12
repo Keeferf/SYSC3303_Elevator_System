@@ -58,7 +58,10 @@ public class Elevator implements Runnable{
 		elevatorTimingState = ElevatorTimingState.DOOR_CLOSED;
 	
 		this.id = Elevator.idCounter;
+		Config.printLine();
 		System.out.println("Elevator " + id + " created.");
+		System.out.println("Elevator " + id + " is set to take " + Config.getElevatorTimeBetweenFloors() + "ms to go between floors and have doors open for " + Config.getElevatorTimeDoorsOpen() + "ms.");
+		Config.printLine();
 		idCounter++;
 		this.state = new IdleState(this);
 	

@@ -38,7 +38,7 @@ public class AcceleratingState extends MeasurableState implements ElevatorState{
 					this.elevator.moveElevator();
 					this.sensor.setHasArrived(false);
 					System.out.println("Elevator " + this.elevator.getID() + " passes floor " + this.elevator.getCurrFloor());
-					Thread.sleep(1318);
+					Thread.sleep(Config.getElevatorTimeBetweenFloors());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

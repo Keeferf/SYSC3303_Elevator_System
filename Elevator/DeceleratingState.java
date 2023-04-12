@@ -2,7 +2,7 @@ package Elevator;
 
 
 import Scheduler.FaultHandler.ElevatorTimingState;
-
+import Util.Comms.Config;
 import Elevator.Components.ElevatorArrivalSensor;
 
 
@@ -31,7 +31,7 @@ public class DeceleratingState implements ElevatorState{
 		while(elevator.getState() == this) {
 			try {
 				this.elevator.moveElevator();
-				Thread.sleep(1000);
+				Thread.sleep(Config.getElevatorTimeBetweenFloors());
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

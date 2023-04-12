@@ -32,11 +32,9 @@ public class DoorOpenState extends MeasurableState implements ElevatorState {
 	 */
 	@Override
 	public void runState() {
-		
 		System.out.println("Elevator " + this.elevator.getID() + " Arrived on floor " + this.elevator.getCurrFloor() + "\n");
-		
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(Config.getElevatorTimeDoorsOpen());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

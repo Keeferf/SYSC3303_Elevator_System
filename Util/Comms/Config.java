@@ -21,6 +21,9 @@ public class Config {
 	private static final int MAXFLOOR = 22;
 	private static final int MINFLOOR = 0;
 	
+	private static final int TimeMovingBetweenFloors = 1318;
+	private static final int TimeDoorsAreOpen = 5000;
+	
 	//Getters
 	
 	public static String getFloorsubsystemip() {
@@ -40,6 +43,12 @@ public class Config {
 	}
 	public static int getElevatorport(int id) {
 		return ElevatorPort[id];
+	}
+	public static int getElevatorTimeBetweenFloors() {
+		return TimeMovingBetweenFloors;
+	}
+	public static int getElevatorTimeDoorsOpen() {
+		return TimeDoorsAreOpen;
 	}
 	/**
 	 * Returns the elevator id/num associated with the port number passed

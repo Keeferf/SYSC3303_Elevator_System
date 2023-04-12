@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Date;
+
 import Util.Comms.Config;
 import Util.Comms.RequestStatus;
 import Util.Comms.UDPBuilder;
@@ -62,9 +64,16 @@ public class FloorSubsystem implements Runnable, Timeable{
 			System.exit(1);
 		}
 		System.out.println("Events loaded from \"Events.txt\"");
-			
+		
+		Date startTime = new Date();
+		
+		int numValidReqs = 0;
+		
 		for(ElevatorEvent e: ee) {
 			//Dispatch a new event that will send at x seconds, calling Timeable method below
+			if (!e.getMotorFault()) {
+				numValidReqs++;
+			}
 			TimerN.startTimer(e.getTimeAsSeconds(),  e, this);
 		}
 		System.out.println("Events loaded into timed execution objects");
@@ -82,7 +91,6 @@ public class FloorSubsystem implements Runnable, Timeable{
 				continue;
 			}
 			
-			
 			//Extract payload from the packet
 			ElevatorEvent e;
 			if(!(UDPBuilder.getEventPayload(p) instanceof ElevatorEvent)) {
@@ -93,7 +101,7 @@ public class FloorSubsystem implements Runnable, Timeable{
 				e = (ElevatorEvent) UDPBuilder.getEventPayload(p);
 			}
 			
-			//Logic for acknowledge/fullfilled requests received
+			//Logic for acknowledge/fulfilled requests received
 			
 			if(e.getRequestStatus().equals(RequestStatus.ACKNOWLEDGED)) {
 				System.out.println("Scheduler Acknowledged Event: " + e.toString());
@@ -102,12 +110,24 @@ public class FloorSubsystem implements Runnable, Timeable{
 				System.out.println("Elevator Fulfilled Event: " + e.toString());
 				Config.printLine();
 				this.reqTracker++;
+				Config.printLine();
+				System.out.println("reqtracker = " + reqTracker + "\nee.size = " + ee.size() + "\nnumValidReqs = " + numValidReqs);
+				if (this.reqTracker == numValidReqs) {
+					System.out.println("Floor Subsystem Exiting");
+					break;
+				}
+				Config.printLine();
 			} else {
 				System.out.println("Invalid Request Data Received: " + e.getRequestStatus().toString() + " " + e.toString());
 				Config.printLine();
 				continue;
 			}
 		}
+		Date exitTime = new Date();
+		Config.printLine();
+		System.out.println("Started Sending Events At " + startTime.getTime() + "ms\nExiting At " + exitTime.getTime() + "ms\nExpended Time Is " + (exitTime.getTime() - startTime.getTime()) + "ms");
+		System.out.println("Sent " + ee.size() + " events, " + numValidReqs + " of which were valid, and " + this.reqTracker + " requests were fulfilled.");
+		Config.printLine();
 		System.exit(0);
 	}
 	/**
