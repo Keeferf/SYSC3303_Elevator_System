@@ -50,6 +50,7 @@ public class ElevatorStateEvent implements Serializable, Cloneable{
 	public ElevatorTimingState getElevatorState() { return elevatorState;}
 	public int getElevatorNum()  {return elevatorNum;}
 	public ElevatorEvent getElevatorRequest() { return elevatorEvent; }
+	public ErrorState getErrorState() {return errorState; }
 	
 	@Override
     public Object clone() throws CloneNotSupportedException {

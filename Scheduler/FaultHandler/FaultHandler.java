@@ -8,8 +8,10 @@ import java.util.ArrayList;
 
 import javax.swing.JFrame;
 
+import Elevator.Elevator;
 import Elevator.ElevatorStateEvent;
 import FloorSystem.ElevatorEvent;
+import FloorSystem.GUI;
 import Scheduler.Scheduler;
 import Scheduler.FaultHandler.GUI.FaultHandlerFrame;
 import Util.Comms.Config;
@@ -25,6 +27,8 @@ import Util.Timer.TimerN;
  */
 public class FaultHandler implements Runnable, Timeable{
 	
+	private GUI gui;
+
 	private DatagramSocket socket;
 	
 	private ArrayList<ArrayList<FaultState>> faultList;
@@ -37,6 +41,8 @@ public class FaultHandler implements Runnable, Timeable{
 	
 	public FaultHandler() {
 		
+		this.gui = new GUI();
+
 		faultList = new ArrayList<>();
 		timers = new ArrayList<>();
 		hasStarted = new ArrayList<>();
@@ -235,6 +241,10 @@ public class FaultHandler implements Runnable, Timeable{
 		System.out.println(e);
 		//Notify the GUI interface here using "states" list :D
 		
+		gui.update(states);
+//		gui.setDirectionInfo(e.getElevatorNum());
+//		gui.setRequestInfo(e.getElevatorNum());
+//		gui.setFaultInfo(e.getElevatorNum());
 	}
 	
 	/**

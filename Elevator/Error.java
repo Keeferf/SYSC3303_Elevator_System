@@ -35,7 +35,10 @@ public class Error implements ElevatorState {
 		// Ideally it would verify if the issue is with the hardware, in which case the elevator would 
 		// require maintenance, or due to a non system issue such as a passenger blocking the door, 
 		// in which case the elevator would just try to close the door again
-		this.elevator.handleDoorFault(); 
+		this.elevator.handleDoorFault();
+		//Will always be handled
+//		elevator.errorState = ErrorState.NO_ERROR;
+//		elevator.sendStateEvent();
 		this.elevator.setState(new DoorOpenState(this.elevator));
 	}
 	
