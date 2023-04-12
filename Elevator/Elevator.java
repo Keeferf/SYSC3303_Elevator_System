@@ -90,7 +90,7 @@ public class Elevator implements Runnable{
 	 * 
 	 * @throws InterruptedException
 	 */
-	private void up() throws InterruptedException {
+	public void up() throws InterruptedException {
 		if (currFloor == floorToGo) {
 			motor.activateUp();
 			currFloor++;
@@ -343,9 +343,7 @@ public class Elevator implements Runnable{
 	
 	/**
 	 * Sends a timing event to the fault handler.
-	 * 
-	 * + logic for 
-	 * @param ets
+	 * @param ets Elevator Timing Event containing the info being sent to the Fault Handler
 	 */
 	protected void sendTimingEvent(ElevatorTimingState ets) {
 		if(!ets.equals(ElevatorTimingState.START)) {
@@ -421,11 +419,18 @@ public class Elevator implements Runnable{
 		
 	}
 	
+	/**
+	 * Method to handle door faults, in this purely software implementation door errors will be discarded and 
+	 * assumed to be solved by just attempting to shut the door again.
+	 */
 	public void handleDoorFault() {
 		errorState = ErrorState.NO_ERROR;
 		this.req = new ElevatorEvent(this, this.req.getTimestamp(), this.req.getDirection(), this.req.getFloorToGo(), this.req.getCurrFloor());
 	}
 	
+	/**
+	 * Exit method for the elevator, sets important vars to null and stops the elevator by setting the destination floor as the current floor
+	 */
 	public void exit() {
 		this.state = null;
 		this.req = null;

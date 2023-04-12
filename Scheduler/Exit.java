@@ -8,6 +8,10 @@ public class Exit implements SchedulerState {
 	
 	private Scheduler s;
 	
+	/**
+	 * Constructor for the Exit State
+	 * @param s Scheduler instance
+	 */
 	public Exit(Scheduler s) {
 		this.s = s;
 	}

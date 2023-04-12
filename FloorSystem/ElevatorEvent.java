@@ -179,19 +179,34 @@ public class ElevatorEvent implements Comparable<ElevatorEvent>, Serializable, C
 		return this.currFloor - e.currFloor;
 	}
     
+    /**
+     * Clone the elevator event instance and return the clone
+     */
     @Override
     public Object clone() throws CloneNotSupportedException {
     	return super.clone();
     }
     
+    /**
+     * Getter for the status of the elevator event instance
+     * @return Returns the request status, will be a value belonging to the enum RequestStatus
+     */
     public RequestStatus getRequestStatus() {
     	return requestStatus;
     }
     
+    /**
+     * Setter for the status of the elevator event instance 
+     * @param rs The request status the event will be set to, this will be a value belonging to the enum RequestStatus
+     */
     public void setRequestStatus(RequestStatus rs) {
     	requestStatus = rs;
     }
     
+    /**
+     * Getter for the seconds at which the elevator event will be dispatched
+     * @return
+     */
     public int getTimeAsSeconds() {
     	return seconds;
     }

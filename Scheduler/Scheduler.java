@@ -283,6 +283,10 @@ public class Scheduler implements Runnable {
 		}
 	}
 	
+	/**
+	 * Find the next elevator port to send a request to based on equalizing requests being assigned to valid elevators
+	 * @return Returns the port to which the next request should be sent
+	 */
 	private int getPrioritizedPort() {
 		int nextPort = -1;
 		int min = -1;
@@ -300,6 +304,9 @@ public class Scheduler implements Runnable {
 		return nextPort;
 	}
 
+	/**
+	 * Prints the current throughput of elevators to the console
+	 */
 	public void printThroughput() {
 		for(int i : this.throughput.keySet()) {
 			System.out.println("Elevator " + i + " processed " + this.throughput.get(i) + " requests");

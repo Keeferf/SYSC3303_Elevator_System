@@ -8,10 +8,17 @@ public class ReturnResponse implements SchedulerState {
 	
 	private Scheduler s;
 	
+	/**
+	 * Constructor for Return Response state
+	 * @param s Scheduler instance
+	 */
 	public ReturnResponse(Scheduler s) {
 		this.s = s;
 	}
 	
+	/**
+	 * execute state method makes the Scheduler return responses from the Elevators to the Floor Subsystem
+	 */
 	@Override
 	public void executeState() {
 		while(s.getState() == this) {
@@ -25,6 +32,9 @@ public class ReturnResponse implements SchedulerState {
 		}
 	}
 	
+	/**
+	 * checkStateChange method causes the scheduler to exit or go idle if there are remaining requests
+	 */
 	@Override
 	public void checkStateChange() {
 		if (s.isEnd()) {

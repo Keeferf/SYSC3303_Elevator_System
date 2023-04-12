@@ -8,10 +8,17 @@ public class SendEvents implements SchedulerState {
 	
 	private Scheduler s;
 
+	/**
+	 * Constructor for the Send Events state
+	 * @param s Scheduler instance
+	 */
 	public SendEvents(Scheduler s) {
 		this.s = s;
 	}
 
+	/**
+	 * execute state method allows the scheduler to dispatch events to the scheduler
+	 */
 	@Override
 	public void executeState() {
 
@@ -27,6 +34,10 @@ public class SendEvents implements SchedulerState {
 		}
 	}
 
+	/**
+	 * checkStateChange mathod changes the scheduler state to Idle if there are no responses to send and no more events to dispatch, 
+	 * or return response state if there are no more events to dispatch.
+	 */
 	@Override
 	public void checkStateChange() {
 		if (s.getResponseQueueLength() == 0 && s.getValidQueueLength() == 0) {
@@ -35,8 +46,6 @@ public class SendEvents implements SchedulerState {
 		} else if (s.getValidQueueLength() == 0) {
 			System.out.println("Scheduler: SendEvents -> ReturnResponse\n");
 			s.setState(new ReturnResponse(s));
-		} else {
-			
 		}
 	}
 }

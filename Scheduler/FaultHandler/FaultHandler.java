@@ -39,6 +39,9 @@ public class FaultHandler implements Runnable, Timeable{
 	private FaultHandlerFrame faultHandlerFrame;
 	public boolean isRunning = true;
 	
+	/**
+	 * Constructor for the fault handler
+	 */
 	public FaultHandler() {
 		
 		this.gui = new GUI();
@@ -69,6 +72,9 @@ public class FaultHandler implements Runnable, Timeable{
 		thread.start();
 	}
 
+	/**
+	 * Run method to start the gui and run the thread
+	 */
 	@Override
 	public void run() {
 		//Startup the GUI!!!!
@@ -381,18 +387,34 @@ public class FaultHandler implements Runnable, Timeable{
 	/////////////////////////////////
 	//Getters - For testing purposes
 	/////////////////////////////////
+	/**
+	 * Getter method for the fault list in the Fault Handler object
+	 * @return Returns the list of faults
+	 */
 	public ArrayList<ArrayList<FaultState>> getFaultList() {
 		return faultList;
 	}
 	
+	/**
+	 * Getter method for the list of timers
+	 * @return Returns the list of timers
+	 */
 	public ArrayList<ArrayList<TimerN>> getTimerList() {
 		return timers;
 	}
 	
+	/**
+	 * Set the boolean for an elevator either being in the process of handling a request (true) or waiting for a request (false)
+	 * @param elevatorNum ID of the elevator whose state is changing
+	 * @param b boolean representing if the elevator is started (true) or waiting (false)
+	 */
 	public void toggleHasStarted(int elevatorNum, boolean b) {
 		hasStarted.set(elevatorNum, b);
 	}
 
+	/**
+	 * Method that shuts down the Fault Handler
+	 */
 	public void shutdown() {
 		isRunning = false;
 		try {

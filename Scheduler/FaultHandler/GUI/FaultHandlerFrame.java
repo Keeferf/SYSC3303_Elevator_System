@@ -23,6 +23,9 @@ public class FaultHandlerFrame implements FaultHandlerView{
 
 	private JPanel allFaultHandlerPanel;
 
+	/**
+	 * Constructor for FaultHandlerFrame
+	 */
 	public FaultHandlerFrame() {
 		allFaultHandlerPanel = new JPanel();
 		
@@ -54,6 +57,12 @@ public class FaultHandlerFrame implements FaultHandlerView{
 		allFaultHandlerPanel.repaint();
 	}
 	
+	/**
+	 * Initiate the JPanel used by the FaultHandler
+	 * @param states The set of fault states for the elevator
+	 * @param elevatorNum The id of the elevator
+	 * @return Returns the panel created containing the elevator states
+	 */
 	private JPanel createPanel(ArrayList<FaultState> states, int elevatorNum) {
 		JPanel panel = new JPanel();
 	
@@ -81,6 +90,10 @@ public class FaultHandlerFrame implements FaultHandlerView{
 		return panel;
 	}
 
+	/**
+	 * Getter for the panel of the FaultHandlerFrame
+	 * @return Returns the JPanel representing the frame of the FaultHandlerFrame
+	 */
 	public JPanel getPanel(){
 		return allFaultHandlerPanel;
 	}

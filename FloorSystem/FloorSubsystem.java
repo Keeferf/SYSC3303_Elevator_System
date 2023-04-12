@@ -23,6 +23,9 @@ public class FloorSubsystem implements Runnable, Timeable{
 	private DatagramSocket socket;
 	private int reqTracker = 0;
 	
+	/**
+	 * Constructor for FloorSubsystem instances
+	 */
 	public FloorSubsystem() {
 		//Max and min floors
 		int n = Config.getMaxFloor();
@@ -131,6 +134,7 @@ public class FloorSubsystem implements Runnable, Timeable{
 		Config.printLine();
 		System.exit(0);
 	}
+	
 	/**
 	 * Prints out the request which was completed, i.e. the passenger arrived at their destination floor
 	 * @param completedRequest Passenger request which was completed
