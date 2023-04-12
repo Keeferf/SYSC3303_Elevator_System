@@ -44,7 +44,7 @@ public class FloorSubsystem implements Runnable, Timeable{
 		//Creation of socket
 		Config.printLine();
 		System.out.println("Starting up...");
-		new GUI();
+		//new GUI();
 		try {
 			this.socket = new DatagramSocket(Config.getFloorsubsystemport());
 		} catch (SocketException e) {

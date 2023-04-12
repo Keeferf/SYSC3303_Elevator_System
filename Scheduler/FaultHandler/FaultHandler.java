@@ -41,7 +41,7 @@ public class FaultHandler implements Runnable, Timeable{
 	
 	public FaultHandler() {
 		
-		// this.gui = new GUI();
+		this.gui = new GUI();
 
 		faultList = new ArrayList<>();
 		timers = new ArrayList<>();
@@ -240,9 +240,11 @@ public class FaultHandler implements Runnable, Timeable{
 		
 		System.out.println(e);
 		//Notify the GUI interface here using "states" list :D
-		gui.setDirectionInfo(e.getElevatorNum());
-		gui.setRequestInfo(e.getElevatorNum());
-		gui.setFaultInfo(e.getElevatorNum());
+		
+		gui.update(states);
+//		gui.setDirectionInfo(e.getElevatorNum());
+//		gui.setRequestInfo(e.getElevatorNum());
+//		gui.setFaultInfo(e.getElevatorNum());
 	}
 	
 	/**

@@ -12,6 +12,8 @@ import java.awt.Color;
 import javax.swing.border.TitledBorder;
 
 import Elevator.Elevator;
+import Elevator.ElevatorStateEvent;
+import Elevator.ErrorState;
 import Scheduler.FaultHandler.FaultState;
 import Scheduler.FaultHandler.GUI.FaultHandlerFrame;
 
@@ -31,7 +33,7 @@ public class GUI {
 
 	private int floorNum;
 	private int elevatorNum; 
-	private Elevator elevator;
+	//private Elevator elevator;
 	private FaultState fault;
 	private JLabel[] floorTitles;
 	private JLabel[][] floors;
@@ -49,7 +51,7 @@ public class GUI {
 	public GUI() {
 		this.floorNum = 22;
 		this.elevatorNum = 4;
-		this.elevator = new Elevator();
+		//this.elevator = new Elevator();
 		this.FHF = new FaultHandlerFrame();
 		initialize();
 	}
@@ -81,7 +83,7 @@ public class GUI {
 		int columns = 1 + elevatorNum + 1; // adds the floor column, elevator columns, then the data column
 		int[] columnWidths = new int[columns];
 		for (int i = 0; i < columns; i++) { //loops over all the columns in the display
-			if(i != 1 + elevatorNum && i != columns - 1) { //checks to make sure the column isnt the elevator info
+			if(i != 1 + elevatorNum) { //checks to make sure the column isnt the elevator info
 				columnWidths[i] = DEFAULT_COLUMN_WIDTH;
 			}else {
 				columnWidths[i] = (elevatorNum / 2) * 350;
@@ -188,52 +190,89 @@ public class GUI {
 			
 		}
 
-		//Setup for faults panel area
-		JPanel faultPanel = new JPanel();
-		faultPanel.setBackground(UIManager.getColor("Button.background"));
-		faultPanel.setBorder(new TitledBorder(new LineBorder(null), "Faults", TitledBorder.LEADING, TitledBorder.TOP, null, Color.BLACK));
-		faultPanel.setLayout(new BoxLayout(faultPanel, BoxLayout.X_AXIS));
-		GridBagConstraints faultPanelGBC = new GridBagConstraints();
-		faultPanelGBC.insets = new Insets(0, 0, 0, 5);
-		faultPanelGBC.fill = GridBagConstraints.VERTICAL;
-		faultPanel.add(FHF.getPanel());
-
-		displayPanel.add(faultPanel, faultPanelGBC);
-
 		ElevatorFrame.setVisible(true);
 		ElevatorFrame.setResizable(false);
         ElevatorFrame.pack();
 		ElevatorFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	public void setDirectionInfo(int elevator){
-		if(this.elevator.getCurrFloor() < this.elevator.getRequest().getFloorToGo()) {
-			elevInfo[elevator][0].setText("Direction: UP");
-		}else if (this.elevator.getCurrFloor() > this.elevator.getRequest().getFloorToGo()) {
-			elevInfo[elevator][0].setText("Direction: DOWN");
+	public void setDirectionInfo(ElevatorStateEvent elevator){
+		if(elevator.getCurrFloor() < elevator.getTargetFloor()) {
+			elevInfo[elevator.getElevatorNum()][0].setText("Direction: UP");
+		}else if (elevator.getCurrFloor() > elevator.getTargetFloor()) {
+			elevInfo[elevator.getElevatorNum()][0].setText("Direction: DOWN");
 		}else {
-			elevInfo[elevator][0].setText("Direction: ON CURRENT FLOOR");
+			elevInfo[elevator.getElevatorNum()][0].setText("Direction: ON CURRENT FLOOR");
 		}
 	}
 
-	public void setRequestInfo(int elevator){
-		String tempRequests = "Requests: ";
-		if(this.elevator.getRequest().toString().isEmpty()){
+	public void setRequestInfo(ElevatorStateEvent elevator){
+		String tempRequests = "Target Floor: ";
+		if(elevator.toString().isEmpty()){
 			tempRequests += "No Requests";
 		}
 		else{
-			tempRequests += this.elevator.getRequest().getFloorToGo();
+			tempRequests += elevator.getTargetFloor();
 		}
-		elevInfo[elevator][1].setText(tempRequests);
+		elevInfo[elevator.getElevatorNum()][1].setText(tempRequests);
 	}
 
-	public void setFaultInfo(int elevator){
-		if(fault.equals(FaultState.COMPLETED)) {
-			elevInfo[elevator][2].setText("Fault: NO FAULT");
-		} else if(fault.equals(FaultState.ERROR)) {
-			elevInfo[elevator][2].setText("Fault: ERROR");
+	public void setFaultInfo(ElevatorStateEvent elevator){
+		if(elevator.getErrorState().equals(ErrorState.NO_ERROR)) {
+			elevInfo[elevator.getElevatorNum()][2].setText("Fault: NO FAULT");
+		} else {	//Might need to put conditional here
+			elevInfo[elevator.getElevatorNum()][2].setText("Fault: " + elevator.getErrorState());
 			for (int i = 0; i <floorNum; i++) {
-				floors[elevator][i].setIcon(new ImageIcon("Util\\Images\\Shutdown.png"));
+				floors[elevator.getElevatorNum()][i].setIcon(new ImageIcon("Util\\Images\\Shutdown.png"));
+			}
+		}
+	}
+	
+	public void update(ArrayList<ElevatorStateEvent> states) {
+		for(ElevatorStateEvent e: states) {
+			if(e != null) {
+				setDirectionInfo(e);
+				setRequestInfo(e);
+				setFaultInfo(e);
+			}
+			
+		}
+		updateDisplay(states);
+	}
+	
+	private void updateDisplay(ArrayList<ElevatorStateEvent> states) {
+		for(ElevatorStateEvent e: states) {
+			if(e == null) continue;
+			
+			for(int i = 0; i < floorNum; i++) {
+				if(!(e.getErrorState() == ErrorState.NO_ERROR)) {
+					//Process error
+					floors[e.getElevatorNum()][i].setIcon(new ImageIcon("Util\\Images\\Shutdown.png"));
+					
+				} else {
+					//Process regular change
+					
+					//check if its the current floor
+					if(e.getCurrFloor() == i) {
+						System.out.
+							println(i);
+						
+						System.
+							out.
+								println
+									(e.
+											getCurrFloor
+														()
+														)
+										;
+						floors[e.getElevatorNum()][0].setIcon(new ImageIcon("Util\\Images\\Moving.jpg"));
+					} else {
+						//else make it gray
+						floors[e.getElevatorNum()][floorNum - 1 - i].setIcon(new ImageIcon("Util\\Images\\Closed.png"));
+					}
+					
+					
+				}
 			}
 		}
 	}
