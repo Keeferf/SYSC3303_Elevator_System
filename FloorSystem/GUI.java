@@ -49,6 +49,9 @@ public class GUI {
 
 	private FaultHandlerFrame FHF;
 
+	/**
+	 * Constructor for the GUI of the Elevator System
+	 */
 	public GUI() {
 		this.floorNum = Config.getMaxFloor();
 		this.elevatorNum = 4;
@@ -173,6 +176,7 @@ public class GUI {
 
 		elevInfoPanels = new JPanel[elevatorNum];
 		elevInfo = new JLabel[elevatorNum][4];
+		// Sets the initial values for the elevator information panels
 		for(int i = 0; i < elevatorNum; i++) {
 			elevInfoPanels[i] = new JPanel();
 			elevInfoPanels[i].setBorder(new TitledBorder(new LineBorder(new Color(0, 0, 0)),new String( "Elevator "+ Integer.toString(i) +" Info"), TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 0, 0)));
@@ -205,6 +209,10 @@ public class GUI {
 		ElevatorFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
+	/**
+	 * Setter for the direction info in the elevator info panel
+	 * @param elevator Event used to update the GUI Elevator info panel direction element
+	 */
 	public void setDirectionInfo(ElevatorStateEvent elevator){
 		if(elevator.getCurrFloor() < elevator.getTargetFloor()) {
 			elevInfo[elevator.getElevatorNum()][0].setText("Direction: UP");
@@ -215,6 +223,10 @@ public class GUI {
 		}
 	}
 
+	/**
+	 * Setter for the request information in the elevator info panel
+	 * @param elevator Event containing updated request info
+	 */
 	public void setRequestInfo(ElevatorStateEvent elevator){
 		String tempRequests = "Target Floor: ";
 		if(elevator.toString().isEmpty()){
@@ -226,6 +238,10 @@ public class GUI {
 		elevInfo[elevator.getElevatorNum()][2].setText(tempRequests);
 	}
 
+	/**
+	 * Setter for the fault info in the elevator info panel, and the elevator shaft corresponding to the elevator experiencing the error
+	 * @param elevator Event containing updated fault info
+	 */
 	public void setFaultInfo(ElevatorStateEvent elevator){
 		if(elevator.getErrorState().equals(ErrorState.NO_ERROR)) {
 			elevInfo[elevator.getElevatorNum()][3].setText("Fault: NO FAULT");
@@ -237,12 +253,20 @@ public class GUI {
 		}
 	}
 	
+	/**
+	 * Setter for the state of the elevator info in the elevator info panel
+	 * @param elevator Event containing the updated state info
+	 */
 	public void setElevatorState(ElevatorStateEvent elevator) {
 		if((elevator.getErrorState().equals(ErrorState.NO_ERROR))) { elevInfo[elevator.getElevatorNum()][1].setText("Current State: " + elevator.getElevatorState()); return; }
 		
 		elevInfo[elevator.getElevatorNum()][1].setText("Current State: " + FaultState.ERROR);
 	}
 	
+	/**
+	 * Update method for the view of the gui. Calls setter methods then updates the GUI
+	 * @param states Arraylist of most recent elevator states
+	 */
 	public void update(ArrayList<ElevatorStateEvent> states) {
 		for(ElevatorStateEvent e: states) {
 			if(e != null) {
@@ -256,6 +280,12 @@ public class GUI {
 		updateDisplay(states);
 	}
 	
+	/**
+	 * Update display method, changes the shafts of the elevator to represent current states, 
+	 * the floor the elevator is on will be green and others will be gray unless there is an error.
+	 * In the case of an error, each part of the shaft will be red with a yellow x.
+	 * @param states Arraylist of most recent elevator states
+	 */
 	private void updateDisplay(ArrayList<ElevatorStateEvent> states) {
 		for(ElevatorStateEvent e: states) {
 			if(e == null) continue;
@@ -284,10 +314,18 @@ public class GUI {
 		}
 	}
 
+	/**
+	 * Getter method for the number of elevators in the system
+	 * @return Returns an integer representing the number of elevators
+	 */
 	public int getNumElevators() {
 		return elevatorNum;
 	}
 	
+	/**
+	 * Getter method for the number of floors in the system
+	 * @return Returns an integer representing the number of floors
+	 */
 	public int getNumFloors() {
 		return floorNum;
 	}

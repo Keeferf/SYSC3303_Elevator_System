@@ -19,11 +19,10 @@ import Scheduler.Scheduler;
 class testElevator{
 
 	@Test
-	void testUP() {
+	void testUp() {
 		Elevator elevator = new Elevator();
-		elevator.setFloorToGo(5);
 		try {
-			elevator.moveElevator();
+			elevator.up();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			fail();
@@ -34,21 +33,20 @@ class testElevator{
 	@Test
 	void testDown()  {
 		Elevator elevator = new Elevator();
-		elevator.setFloorToGo(10);
 		try {
-			elevator.moveElevator();
+			elevator.up();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			fail();
 		}
-		elevator.setFloorToGo(2);
+		elevator.setFloorToGo(0);
 		try {
-			elevator.moveElevator();
+			elevator.down();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			fail();
 		}
-		assertEquals(2,elevator.getCurrFloor());
+		assertEquals(0,elevator.getCurrFloor());
 	}
 	
 	@Test

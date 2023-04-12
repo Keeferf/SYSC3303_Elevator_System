@@ -10,11 +10,20 @@ public class Error implements ElevatorState {
 	private boolean doorError;
 	private Elevator elevator;
 	
+	/**
+	 * Constructor for the Error state
+	 * @param source Elevator object being set to this state
+	 * @param doorError Boolean on if the elevator will throw a door error or not
+	 */
 	public Error(Elevator source, boolean doorError) {
 		this.elevator = source;
 		this.doorError = doorError;
 	}
 
+	/**
+	 * runState method, if the elevator throws a door error, then it will handle that error, otherwise
+	 * it throws a motor error, where the elevator exits
+	 */
 	@Override
 	public void runState() {
 		if (this.doorError) {
@@ -29,6 +38,9 @@ public class Error implements ElevatorState {
 		}
 	}
 
+	/**
+	 * checkState method handles the door fault
+	 */
 	@Override
 	public void checkState() {
 		// This method exists since we can't use IRL Hardware to determine the reason for the door fault
@@ -42,6 +54,9 @@ public class Error implements ElevatorState {
 		this.elevator.setState(new DoorOpenState(this.elevator));
 	}
 	
+	/**
+	 * exit method causes the elevator to stop its run in the case of a motor error
+	 */
 	private void exit() {
 		elevator.errorState = ErrorState.MOTOR_ERROR;
 		elevator.sendStateEvent();

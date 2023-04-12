@@ -2,6 +2,10 @@ package Elevator;
 
 import java.util.Date;
 
+/**
+ * Superclass containing methods to track the timing of a state
+ * @author Colin Mandeville - 101140289
+ */
 public class MeasurableState {
 	protected Date startTime;
 	

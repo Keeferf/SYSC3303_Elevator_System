@@ -8,7 +8,6 @@ import Scheduler.FaultHandler.FaultHandler;
 /**
  * A class that executes methods/functions after a certain period of time
  * @author Nicholas Rose - 101181935
- *
  */
 public class TimerN implements Runnable {
 	
@@ -20,7 +19,6 @@ public class TimerN implements Runnable {
 	 * @param reference Timeable
 	 */
 	public synchronized static TimerN startTimer(int n, Object payload, Timeable reference) {
-		
 		//Creates a new timer to go off on its own
 		TimerN timer = new TimerN(n,payload,reference);
 		
@@ -34,7 +32,6 @@ public class TimerN implements Runnable {
 	 * @param reference Timeable
 	 */
 	public synchronized static TimerN startTimer(int n, Timeable reference) {
-		
 		//Creates a new timer to go off on its own
 		TimerN timer = new TimerN(n, null, reference);
 		
@@ -63,6 +60,12 @@ public class TimerN implements Runnable {
 	
 	private volatile boolean timerKilled;
 	
+	/**
+	 * Method to start a new timer as a thread and start it
+	 * @param n number of seconds to set the timer for, i.e. 3 indicates the timer will wait for 3 seconds before triggering
+	 * @param payload Package to be passed to reference when the timer ends
+	 * @param reference Object to pass the payload to when the timer ends
+	 */
 	public TimerN(int n, Object payload, Timeable reference) {
 		time = n;
 		this.payload = payload;
@@ -73,11 +76,14 @@ public class TimerN implements Runnable {
 		Thread thread = new Thread(this);
 		
 		thread.start();
-		
-		//System.out.println("TImer Started");
 	}
-	
 
+	/**
+	 * Method to start a new timer as a thread and start it
+	 * @param n number of seconds to set the timer for, i.e. 3.543 indicates the timer will wait for 3.543 seconds before triggering
+	 * @param payload Package to be passed to reference when the timer ends
+	 * @param reference Object to pass the payload to when the timer ends
+	 */
 	public TimerN(double n, Object payload, Timeable reference) {
 		time = n;
 		this.payload = payload;
@@ -88,13 +94,13 @@ public class TimerN implements Runnable {
 		Thread thread = new Thread(this);
 		
 		thread.start();
-		
-		//System.out.println("TImer Started");
 	}
 
+	/**
+	 * Run method for the timer, it will cause th ethread to sleep for the time duration, then pass the payload to the reference
+	 */
 	@Override
 	public void run() {
-		//System.out.println("Timer started for " + time + "s");
 		try {
 			Thread.sleep((int)(time * 1000));
 		} catch (InterruptedException e) {
@@ -103,23 +109,20 @@ public class TimerN implements Runnable {
 		}
 		
 		if(!timerKilled) {reference.timerFinished(payload);}
-		//System.out.println("Killed Timer Worked");
-		
 	}
 	
 	/**
 	 * Used to disable the timer mid execution
 	 */
 	public void killTimer() {
-		//System.out.println("Timer Killed");
-			//System.out.println("Killed Timer");
-			timerKilled = true;
-		
+		timerKilled = true;
 	}
 	
+	/**
+	 * Getter method for the state of the timer, if the timer is killed it will return true, otherwise return false
+	 * @return Boolean representing if the timer has been killed or not
+	 */
 	public boolean isKilled() {
 		return timerKilled;
 	}
-
-	
 }

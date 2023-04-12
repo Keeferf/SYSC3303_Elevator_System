@@ -10,6 +10,10 @@ public class Idle implements SchedulerState {
 	
 	private Scheduler s;
 	
+	/**
+	 * Constructor for the Idle state
+	 * @param s Scheduler instance
+	 */
 	public Idle(Scheduler s) {
 		this.s = s;
 	}
@@ -51,5 +55,4 @@ public class Idle implements SchedulerState {
 			s.setState(new Exit(this.s));
 		}
 	}
-
 }
