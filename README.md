@@ -43,25 +43,26 @@ which are read into the program at the start. It is already in the correct locat
 ## Project Iteration 4 - Breakdown of Responsibilities
 
 Nicholas Rose - 101181935
-Implements Fault Detection
-Implements Fault Handler Classes
-Implements Fault Handler Tests + GUI
-UML Diagrams
-Documentation
+- Elevator State events getting sent to GUI
+- General bug fixing for GUI
+- Diagrams + Documentation
+
 
 Colin Mandeville - 101140289
-Extend Elevator State Machine
-Implements Fault Handling
-UML Diagrams, Elevator State diagram, Timing Diagram
-Documentation
+- Implemented Timing/Measurement
+- Updated Javadocs for all methods
+- Updated Diagrams
+- Fixed Test Cases
+
 
 Keefer Belanger - 101152085
-Implements System Reading Faults from Input File
-Extend Elevator Event Class
-UML Diagrams, Timing Diagrams
-Documentation
+- Implemented GUI
+- General bug fixing
+- Diagrams & Documentation
+
 
 Joshua Noronha - 101194076
-Implement Arrival Sensor
-UML Diagrams, Sequence Diagram
-Documentation
+- GUI implementation
+- UML Diagrams, Sequence Diagram
+- Documentation
+
