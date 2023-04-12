@@ -37,8 +37,6 @@ public class DeceleratingState implements ElevatorState{
 			}
 			this.checkState();
 		}
-		
-		
 	}
 
 	/**

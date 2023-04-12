@@ -54,34 +54,14 @@ public class AcceleratingState extends MeasurableState implements ElevatorState{
 	public void checkState() {
 		ElevatorEvent req = elevator.getRequest();
 		Date exitTime = new Date();
-		if (req.getFloorToGo() == elevator.getFloorToGo()) {
-			Config.printLine();
-			System.out.println("Elevator " + this.elevator.getID() + "\nEntered Accelerating State At " + super.startTime.getTime() + "ms\nExiting Accelerating State At " + exitTime.getTime() + "ms\nExpended Time In Accelerating State Is " + (exitTime.getTime() - super.startTime.getTime()) + "ms");
-			Config.printLine();
-			super.setStartTime();
-			if (req.getDirection() == Direction.UP) {
-				if(elevator.getCurrFloor() == elevator.getFloorToGo() - 1) {
-					System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
-					//elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
-					elevator.setState(new DeceleratingState(elevator));
-				}
-			} else {
-				if(elevator.getCurrFloor() == elevator.getFloorToGo() + 1) {
-					System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
-					elevator.setState(new DeceleratingState(elevator));
-				}
-			}
-		} else {
-			Config.printLine();
-			System.out.println("Elevator " + this.elevator.getID() + "\nEntered Accelerating State At " + super.startTime.getTime() + "ms\nExiting Accelerating State At " + exitTime.getTime() + "ms\nExpended Time In Accelerating State Is " + (exitTime.getTime() - super.startTime.getTime()) + "ms");
-			Config.printLine();
-			super.setStartTime();
-			if(elevator.getCurrFloor() >= elevator.getFloorToGo() - 1 && elevator.getCurrFloor() <= elevator.getFloorToGo() + 1) {
-				System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
-				//elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
-				elevator.setState(new DeceleratingState(elevator));
-			}
+		Config.printLine();
+		System.out.println("Elevator " + this.elevator.getID() + "\nDeparted Floor At " + super.startTime.getTime() + "ms\nArrived On Floor At " + exitTime.getTime() + "ms\nExpended Time Is " + (exitTime.getTime() - super.startTime.getTime()) + "ms");
+		Config.printLine();
+		super.setStartTime();
+		if(Math.abs(this.elevator.getCurrFloor() - this.elevator.getFloorToGo()) <= 1) {
+			System.out.println("Elevator " + elevator.getID() + ": Accelerate -> Decelerate\n");
+			//elevator.sendTimingEvent(ElevatorTimingState.ACCELERATING);
+			elevator.setState(new DeceleratingState(elevator));
 		}
-		
 	}
 }

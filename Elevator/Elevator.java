@@ -141,7 +141,6 @@ public class Elevator implements Runnable{
 			sendTimingEvent(ElevatorTimingState.DECELERATING);
 			sendStateEvent();
 			this.setState(new DoorOpenState(this));
-			
 		}
 	}
 	
