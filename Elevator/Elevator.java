@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import Elevator.Components.ElevatorArrivalSensor;
 import Elevator.Components.ElevatorButton;
@@ -35,6 +36,7 @@ public class Elevator implements Runnable{
 	private final ElevatorDoor door;
 	private final ElevatorMotor motor;
 	private ElevatorEvent req;
+	private Date reqStartTime;
 	
 	private DatagramSocket socket;
 	
@@ -58,7 +60,10 @@ public class Elevator implements Runnable{
 		elevatorTimingState = ElevatorTimingState.DOOR_CLOSED;
 	
 		this.id = Elevator.idCounter;
+		Config.printLine();
 		System.out.println("Elevator " + id + " created.");
+		System.out.println("Elevator " + id + " is set to take " + Config.getElevatorTimeBetweenFloors() + "ms to go between floors and have doors open for " + Config.getElevatorTimeDoorsOpen() + "ms.");
+		Config.printLine();
 		idCounter++;
 		this.state = new IdleState(this);
 	
@@ -136,7 +141,6 @@ public class Elevator implements Runnable{
 			sendTimingEvent(ElevatorTimingState.DECELERATING);
 			sendStateEvent();
 			this.setState(new DoorOpenState(this));
-			
 		}
 	}
 	
@@ -172,6 +176,7 @@ public class Elevator implements Runnable{
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
+		this.reqStartTime = new Date();
 		
 		//Get payload of response
 		ElevatorEvent e = UDPBuilder.getEventPayload(packet);
@@ -322,6 +327,12 @@ public class Elevator implements Runnable{
 			System.out.println("Failed to send fulfilled message: " + e.toString());
 			e1.printStackTrace();
 		}
+		
+		Date reqEndTime = new Date();
+		
+		Config.printLine();
+		System.out.println("Elevator " + this.getID() + "\nReceived Request At " + this.reqStartTime.getTime() + "ms\nReceived Acknowledgement For Completing Request At " + reqEndTime.getTime() + "ms\nTime To Handle Request Is " + (reqEndTime.getTime() - this.reqStartTime.getTime()) + "ms");
+		Config.printLine();
 		
 		try {
 			elevatorActivated();

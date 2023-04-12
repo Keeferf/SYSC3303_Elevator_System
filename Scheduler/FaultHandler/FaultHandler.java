@@ -358,10 +358,10 @@ public class FaultHandler implements Runnable, Timeable{
 	public double computeStateTime(ElevatorTimingState s, ElevatorTimingEvent e) {
 		//Note: Start is always at the curr floor in event. Does not include movement to start
 		if(s.equals(ElevatorTimingState.START)) {return 0;}
-		final double DOOR_CLOSE_TIME = 5;
-		final double ACCEL_TIME_PER_FLOOR = 1.318;
+		final double DOOR_CLOSE_TIME = Config.getElevatorTimeDoorsOpen() / 1000;
+		final double ACCEL_TIME_PER_FLOOR = Config.getElevatorTimeBetweenFloors() / 1000;
 		final double DECEL_TIME_PER_FLOOR = 4;
-		final double DOOR_OPEN_TIME = 5;
+		final double DOOR_OPEN_TIME = Config.getElevatorTimeDoorsOpen() / 1000;
 		
 		double time = 0;
 		

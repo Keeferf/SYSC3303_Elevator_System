@@ -6,10 +6,10 @@ package Util.Comms;
  */
 public class Config {
 	
-	private static final String FloorSubsystemIP = "10.0.0.225";
-	private static final String SchedulerIP = "10.0.0.225";
-	private static final String ElevatorIP = "10.0.0.225";
-	private static final String FaultHandlerIP = "10.0.0.225";
+	private static final String FloorSubsystemIP = "192.168.0.15";
+	private static final String SchedulerIP = "192.168.0.15";
+	private static final String ElevatorIP = "192.168.0.15";
+	private static final String FaultHandlerIP = "192.168.0.15";
 	
 	private static final int FloorSubsystemPort = 5040;
 	private static final int SchedulerPort = 5041;
@@ -20,6 +20,9 @@ public class Config {
 	
 	private static final int MAXFLOOR = 22;
 	private static final int MINFLOOR = 0;
+	
+	private static final int TimeMovingBetweenFloors = 1318;
+	private static final int TimeDoorsAreOpen = 5000;
 	
 	//Getters
 	
@@ -40,6 +43,12 @@ public class Config {
 	}
 	public static int getElevatorport(int id) {
 		return ElevatorPort[id];
+	}
+	public static int getElevatorTimeBetweenFloors() {
+		return TimeMovingBetweenFloors;
+	}
+	public static int getElevatorTimeDoorsOpen() {
+		return TimeDoorsAreOpen;
 	}
 	/**
 	 * Returns the elevator id/num associated with the port number passed
