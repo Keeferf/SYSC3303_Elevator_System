@@ -108,7 +108,7 @@ public class Scheduler implements Runnable {
 	 * Sends and receives messages to the Elevator and the FloorSubsystem 
 	 * @throws IOException
 	 */
-	public void receiveAndSend() throws IOException {
+	public synchronized void receiveAndSend() throws IOException {
 		
 		// Receives Packet from FloorSubSystem
 		
