@@ -74,6 +74,8 @@ public class GUI {
 		mainGBL.columnWeights = new double[]{1.0};
 		mainGBL.rowWeights = new double[]{0.0};
 		ElevatorFrame.getContentPane().setLayout(mainGBL);
+		
+		ElevatorFrame.setLocationRelativeTo(null);
 
 		//Setup for the entire display area
 		JPanel displayPanel = new JPanel();
@@ -267,7 +269,7 @@ public class GUI {
 					
 					//check if its the current floor
 
-					if(e.getCurrFloor() == i) {
+					if((e.getCurrFloor()-1) == i) {
 					//  ;) your welcome
 						
 //						System.out.
