@@ -204,7 +204,7 @@ public class GUI {
 		}
 
 		ElevatorFrame.setVisible(true);
-		ElevatorFrame.setResizable(false);
+		ElevatorFrame.setResizable(true);
         ElevatorFrame.pack();
 		ElevatorFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
