@@ -116,7 +116,7 @@ public class FloorSubsystem implements Runnable, Timeable{
 				this.reqTracker++;
 				Config.printLine();
 				System.out.println("reqtracker = " + reqTracker + "\nee.size = " + ee.size() + "\nnumValidReqs = " + numValidReqs);
-				if (this.reqTracker == numValidReqs) {
+				if (e.getCurrFloor() == ee.get(ee.size() - 1).getCurrFloor() && e.getFloorToGo() == ee.get(ee.size() - 1).getFloorToGo() && e.getTimeAsSeconds() == ee.get(ee.size() - 1).getTimeAsSeconds()) {
 					System.out.println("Floor Subsystem Exiting");
 					break;
 				}
@@ -130,9 +130,8 @@ public class FloorSubsystem implements Runnable, Timeable{
 		Date exitTime = new Date();
 		Config.printLine();
 		System.out.println("Started Sending Events At " + startTime.getTime() + "ms\nExiting At " + exitTime.getTime() + "ms\nExpended Time Is " + (exitTime.getTime() - startTime.getTime()) + "ms");
-		System.out.println("Sent " + ee.size() + " events, " + numValidReqs + " of which were valid, and " + this.reqTracker + " requests were fulfilled.");
 		Config.printLine();
-		System.exit(0);
+		//System.exit(0);
 	}
 	
 	/**
