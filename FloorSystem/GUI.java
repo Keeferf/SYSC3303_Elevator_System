@@ -16,6 +16,7 @@ import Elevator.ElevatorStateEvent;
 import Elevator.ErrorState;
 import Scheduler.FaultHandler.FaultState;
 import Scheduler.FaultHandler.GUI.FaultHandlerFrame;
+import Util.Comms.Config;
 
 import javax.swing.SwingConstants;
 import java.awt.GridBagLayout;
@@ -49,7 +50,7 @@ public class GUI {
 	private FaultHandlerFrame FHF;
 
 	public GUI() {
-		this.floorNum = 22;
+		this.floorNum = Config.getMaxFloor();
 		this.elevatorNum = 4;
 		//this.elevator = new Elevator();
 		this.FHF = new FaultHandlerFrame();
@@ -268,19 +269,7 @@ public class GUI {
 					//check if its the current floor
 
 					if(e.getCurrFloor() == i) {
-					//  ;) your welcome
-						
-//						System.out.
-//							println(i);
-//						
-//						System.
-//							out.
-//								println
-//									(e.
-//											getCurrFloor
-//														()
-//														)
-//										;
+					
 						floors[e.getElevatorNum()][i].setIcon(new ImageIcon("Util\\Images\\Moving.jpg"));
 					} else {
 						//else make it gray
