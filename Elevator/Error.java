@@ -37,8 +37,8 @@ public class Error implements ElevatorState {
 		// in which case the elevator would just try to close the door again
 		this.elevator.handleDoorFault();
 		//Will always be handled
-		elevator.errorState = ErrorState.NO_ERROR;
-		elevator.sendStateEvent();
+//		elevator.errorState = ErrorState.NO_ERROR;
+//		elevator.sendStateEvent();
 		this.elevator.setState(new DoorOpenState(this.elevator));
 	}
 	

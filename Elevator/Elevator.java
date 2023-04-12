@@ -411,6 +411,7 @@ public class Elevator implements Runnable{
 	}
 	
 	public void handleDoorFault() {
+		errorState = ErrorState.NO_ERROR;
 		this.req = new ElevatorEvent(this, this.req.getTimestamp(), this.req.getDirection(), this.req.getFloorToGo(), this.req.getCurrFloor());
 	}
 	

@@ -179,14 +179,20 @@ public class GUI {
 			elevInfo[i][0] = new JLabel("Direction: ");
 			elevInfo[i][0].setFont(new Font("Inter", Font.PLAIN, 20));
 			elevInfoPanels[i].add(elevInfo[i][0]);
-
-			elevInfo[i][1] = new JLabel("Request: ");			
+			
+			elevInfo[i][1] = new JLabel("Current State: ");
 			elevInfo[i][1].setFont(new Font("Inter", Font.PLAIN, 20));
 			elevInfoPanels[i].add(elevInfo[i][1]);
-			
-			elevInfo[i][2] = new JLabel("Fault: ");
+
+			elevInfo[i][2] = new JLabel("Target Floor: ");			
 			elevInfo[i][2].setFont(new Font("Inter", Font.PLAIN, 20));
 			elevInfoPanels[i].add(elevInfo[i][2]);
+			
+			elevInfo[i][3] = new JLabel("Fault: ");
+			elevInfo[i][3].setFont(new Font("Inter", Font.PLAIN, 20));
+			elevInfoPanels[i].add(elevInfo[i][3]);
+			
+			
 			
 		}
 
@@ -214,18 +220,24 @@ public class GUI {
 		else{
 			tempRequests += elevator.getTargetFloor();
 		}
-		elevInfo[elevator.getElevatorNum()][1].setText(tempRequests);
+		elevInfo[elevator.getElevatorNum()][2].setText(tempRequests);
 	}
 
 	public void setFaultInfo(ElevatorStateEvent elevator){
 		if(elevator.getErrorState().equals(ErrorState.NO_ERROR)) {
-			elevInfo[elevator.getElevatorNum()][2].setText("Fault: NO FAULT");
+			elevInfo[elevator.getElevatorNum()][3].setText("Fault: NO FAULT");
 		} else {	//Might need to put conditional here
-			elevInfo[elevator.getElevatorNum()][2].setText("Fault: " + elevator.getErrorState());
+			elevInfo[elevator.getElevatorNum()][3].setText("Fault: " + elevator.getErrorState());
 			for (int i = 0; i <floorNum; i++) {
 				floors[elevator.getElevatorNum()][i].setIcon(new ImageIcon("Util\\Images\\Shutdown.png"));
 			}
 		}
+	}
+	
+	public void setElevatorState(ElevatorStateEvent elevator) {
+		if((elevator.getErrorState().equals(ErrorState.NO_ERROR))) { elevInfo[elevator.getElevatorNum()][1].setText("Current State: " + elevator.getElevatorState()); return; }
+		
+		elevInfo[elevator.getElevatorNum()][1].setText("Current State: " + FaultState.ERROR);
 	}
 	
 	public void update(ArrayList<ElevatorStateEvent> states) {
@@ -234,6 +246,7 @@ public class GUI {
 				setDirectionInfo(e);
 				setRequestInfo(e);
 				setFaultInfo(e);
+				setElevatorState(e);
 			}
 			
 		}
@@ -253,22 +266,25 @@ public class GUI {
 					//Process regular change
 					
 					//check if its the current floor
+
 					if(e.getCurrFloor() == i) {
-						System.out.
-							println(i);
+					//  ;) your welcome
 						
-						System.
-							out.
-								println
-									(e.
-											getCurrFloor
-														()
-														)
-										;
-						floors[e.getElevatorNum()][0].setIcon(new ImageIcon("Util\\Images\\Moving.jpg"));
+//						System.out.
+//							println(i);
+//						
+//						System.
+//							out.
+//								println
+//									(e.
+//											getCurrFloor
+//														()
+//														)
+//										;
+						floors[e.getElevatorNum()][i].setIcon(new ImageIcon("Util\\Images\\Moving.jpg"));
 					} else {
 						//else make it gray
-						floors[e.getElevatorNum()][floorNum - 1 - i].setIcon(new ImageIcon("Util\\Images\\Closed.png"));
+						floors[e.getElevatorNum()][i].setIcon(new ImageIcon("Util\\Images\\Closed.png"));
 					}
 					
 					
